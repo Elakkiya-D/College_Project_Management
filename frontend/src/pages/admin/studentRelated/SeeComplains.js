@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAllComplains } from '../../../redux/complainRelated/complainHandle';
 import { deleteUser } from '../../../redux/userRelated/userHandle';
@@ -6,6 +6,7 @@ import TableTemplate from '../../../components/TableTemplate';
 import ModuleLayout from '../../../components/ModuleLayout';
 import FeedbackIcon from '@mui/icons-material/Feedback';
 import MarkEmailReadIcon from '@mui/icons-material/MarkEmailRead';
+import ConfirmModal from '../../../components/ConfirmModal';
 
 const SeeComplains = () => {
   const dispatch = useDispatch();
@@ -33,11 +34,19 @@ const SeeComplains = () => {
     };
   }) : [];
 
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [deleteInfo, setDeleteInfo] = useState({ id: null, address: "" });
+
   const deleteHandler = (deleteID, address) => {
-    if (!window.confirm("Are you sure you want to resolve and delete this complaint?")) return;
-    dispatch(deleteUser(deleteID, address))
+    setDeleteInfo({ id: deleteID, address: address });
+    setConfirmOpen(true);
+  }
+
+  const confirmDelete = () => {
+    dispatch(deleteUser(deleteInfo.id, deleteInfo.address))
       .then(() => {
         dispatch(getAllComplains(currentUser._id, "Complain"));
+        setConfirmOpen(false);
       })
       .catch((error) => console.log(error));
   }
@@ -65,6 +74,13 @@ const SeeComplains = () => {
       emptyIcon={<FeedbackIcon />}
     >
       <TableTemplate buttonHaver={ComplainActions} columns={complainColumns} rows={complainRows} />
+      <ConfirmModal
+        open={confirmOpen}
+        handleClose={() => setConfirmOpen(false)}
+        handleConfirm={confirmDelete}
+        title="Resolve Complaint"
+        description="Are you sure you want to resolve and delete this complaint? This action cannot be undone."
+      />
     </ModuleLayout>
   );
 };

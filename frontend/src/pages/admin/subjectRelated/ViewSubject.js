@@ -5,6 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { BottomNavigation, BottomNavigationAction, Paper } from '@mui/material';
 import TableTemplate from '../../../components/TableTemplate';
+import ConfirmModal from '../../../components/ConfirmModal';
 
 import InsertChartIcon from '@mui/icons-material/InsertChart';
 import InsertChartOutlinedIcon from '@mui/icons-material/InsertChartOutlined';
@@ -45,10 +46,18 @@ const ViewSubject = () => {
     setSelectedSection(newSection);
   };
 
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [deleteInfo, setDeleteInfo] = useState({ id: null, address: "" });
+
   const deleteHandler = (deleteID, address) => {
-    if (!window.confirm("Are you sure you want to remove this subject?")) return;
-    dispatch(deleteUser(deleteID, address))
+    setDeleteInfo({ id: deleteID, address: address });
+    setConfirmOpen(true);
+  }
+
+  const confirmDelete = () => {
+    dispatch(deleteUser(deleteInfo.id, deleteInfo.address))
       .then(() => {
+        setConfirmOpen(false);
         navigate(-1);
       });
   }
@@ -274,6 +283,13 @@ const ViewSubject = () => {
             {activeTab === 'students' && <SubjectStudentsSection />}
 
           </div>
+          <ConfirmModal
+            open={confirmOpen}
+            handleClose={() => setConfirmOpen(false)}
+            handleConfirm={confirmDelete}
+            title="Delete Subject"
+            description="Are you sure you want to delete this subject? This process cannot be undone."
+          />
         </>
       )}
     </div>

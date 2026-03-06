@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from "react-router-dom";
 import NoteAddIcon from '@mui/icons-material/AddAlert';
@@ -7,6 +7,7 @@ import { getAllNotices } from '../../../redux/noticeRelated/noticeHandle';
 import { deleteUser } from '../../../redux/userRelated/userHandle';
 import TableTemplate from '../../../components/TableTemplate';
 import ModuleLayout from '../../../components/ModuleLayout';
+import ConfirmModal from '../../../components/ConfirmModal';
 
 const ShowNotices = () => {
     const navigate = useNavigate()
@@ -18,11 +19,19 @@ const ShowNotices = () => {
         dispatch(getAllNotices(currentUser._id, "Notice"));
     }, [currentUser._id, dispatch]);
 
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const [deleteInfo, setDeleteInfo] = useState({ id: null, address: "" });
+
     const deleteHandler = (deleteID, address) => {
-        if (!window.confirm("Are you sure you want to delete this notice?")) return;
-        dispatch(deleteUser(deleteID, address))
+        setDeleteInfo({ id: deleteID, address: address });
+        setConfirmOpen(true);
+    }
+
+    const confirmDelete = () => {
+        dispatch(deleteUser(deleteInfo.id, deleteInfo.address))
             .then(() => {
                 dispatch(getAllNotices(currentUser._id, "Notice"));
+                setConfirmOpen(false);
             })
     }
 
@@ -75,6 +84,13 @@ const ShowNotices = () => {
             emptyActionLabel="Create Announcement"
         >
             <TableTemplate buttonHaver={NoticeActions} columns={noticeColumns} rows={noticeRows} />
+            <ConfirmModal
+                open={confirmOpen}
+                handleClose={() => setConfirmOpen(false)}
+                handleConfirm={confirmDelete}
+                title="Delete Notice"
+                description="Are you sure you want to delete this notice? This announcement will be removed permanently."
+            />
         </ModuleLayout>
     );
 };

@@ -9,6 +9,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import TableTemplate from '../../../components/TableTemplate';
 import Popup from '../../../components/Popup';
 import ModuleLayout from '../../../components/ModuleLayout';
+import ConfirmModal from '../../../components/ConfirmModal';
 
 const ShowSubjects = () => {
     const navigate = useNavigate()
@@ -23,11 +24,19 @@ const ShowSubjects = () => {
     const [showPopup, setShowPopup] = useState(false);
     const [message, setMessage] = useState("");
 
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const [deleteInfo, setDeleteInfo] = useState({ id: null, address: "" });
+
     const deleteHandler = (deleteID, address) => {
-        if (!window.confirm("Are you sure you want to remove this?")) return;
-        dispatch(deleteUser(deleteID, address))
+        setDeleteInfo({ id: deleteID, address: address });
+        setConfirmOpen(true);
+    }
+
+    const confirmDelete = () => {
+        dispatch(deleteUser(deleteInfo.id, deleteInfo.address))
             .then(() => {
                 dispatch(getSubjectList(currentUser._id, "AllSubjects"));
+                setConfirmOpen(false);
             });
     }
 
@@ -86,6 +95,13 @@ const ShowSubjects = () => {
         >
             <TableTemplate buttonHaver={SubjectActions} columns={subjectColumns} rows={subjectRows} />
             <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} />
+            <ConfirmModal
+                open={confirmOpen}
+                handleClose={() => setConfirmOpen(false)}
+                handleConfirm={confirmDelete}
+                title="Remove Subject"
+                description="Are you sure you want to remove this subject? This action will remove it from the curriculum permanently."
+            />
         </ModuleLayout>
     );
 };
