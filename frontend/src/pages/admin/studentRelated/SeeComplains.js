@@ -46,9 +46,9 @@ const SeeComplains = () => {
     <div className="flex justify-end pr-4">
       <button
         onClick={() => deleteHandler(row.id, "Complain")}
-        className="flex items-center gap-2 px-3 py-1.5 bg-white border border-black/5 rounded-xl text-[10px] font-black uppercase tracking-wider text-textDark/40 hover:bg-slate-50 hover:text-blue-600 transition-all shadow-sm"
+        className="flex items-center gap-2 px-3 py-1.5 bg-white border border-black/5 rounded-xl text-[10px] font-black uppercase tracking-wider text-textDark/40 hover:bg-slate-50 hover:text-brand transition-all shadow-sm"
       >
-        <MarkEmailReadIcon className="text-blue-400" style={{ fontSize: 16 }} />
+        <MarkEmailReadIcon className="text-accent" style={{ fontSize: 16 }} />
         Resolve
       </button>
     </div>

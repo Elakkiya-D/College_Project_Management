@@ -135,5 +135,11 @@ const { createPaymentIntent, handleStripeWebhook } = require('../controllers/pay
 router.post('/api/payment/create-intent', createPaymentIntent);
 router.post('/api/webhook', handleStripeWebhook);
 
+// Assignments
+const { assignmentCreate, assignmentList, getTeacherAssignments, deleteAssignment } = require('../controllers/assignment-controller.js');
+router.post('/AssignmentCreate', assignmentCreate);
+router.get('/AssignmentList/:id', assignmentList); // For student (gets by class)
+router.get('/TeacherAssignments/:id', getTeacherAssignments); // For teacher
+router.delete("/Assignment/:id", deleteAssignment);
 
 module.exports = router;

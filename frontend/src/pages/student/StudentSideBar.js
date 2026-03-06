@@ -11,10 +11,10 @@ import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 
 const StudentSideBar = () => {
     return (
-        <div className="flex flex-col h-screen sticky top-0 bg-gradient-to-b from-blue-600 to-indigo-700 text-white w-64 overflow-y-auto font-poppins shadow-xl z-20">
+        <div className="flex flex-col h-screen sticky top-0 bg-gradient-to-b from-[#F59E0B] via-[#F59E0B] to-[#065F46] text-white w-64 overflow-y-auto font-poppins shadow-xl z-20">
             {/* Top: Logo + Portal Title */}
             <div className="flex items-center gap-3 px-6 py-6 border-b border-white/10 mb-2">
-                <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-blue-600 font-black text-xl shadow-md">
+                <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-[#F59E0B] font-black text-xl shadow-md">
                     S
                 </div>
                 <div>
@@ -41,6 +41,12 @@ const StudentSideBar = () => {
                     icon={<AssignmentIcon />}
                     label="Academics"
                     pathMatchPattern="/Student/subjects"
+                />
+                <MenuItem
+                    to="/Student/assignments"
+                    icon={<AssignmentIcon />}
+                    label="Assignments"
+                    pathMatchPattern="/Student/assignments"
                 />
                 <MenuItem
                     to="/Student/attendance"

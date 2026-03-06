@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getUserDetails } from '../../../redux/userRelated/userHandle';
+import { getUserDetails, deleteUser } from '../../../redux/userRelated/userHandle';
 import { useNavigate, useParams } from 'react-router-dom'
 import { getSubjectList } from '../../../redux/sclassRelated/sclassHandle';
 import { Box, Button, Collapse, IconButton, Table, TableBody, TableHead, Typography, Avatar } from '@mui/material';
@@ -59,7 +59,7 @@ const ViewStudent = () => {
 
     if (loading) return (
         <div className="flex justify-center items-center py-40">
-            <svg className="animate-spin h-12 w-12 text-blue-600" viewBox="0 0 24 24">
+            <svg className="animate-spin h-12 w-12 text-brand" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
@@ -99,7 +99,7 @@ const ViewStudent = () => {
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id)}
                         className={`px-6 py-2.5 rounded-xl font-extrabold text-sm flex items-center gap-2 transition-all ${activeTab === tab.id
-                            ? 'bg-blue-600 text-white shadow-md'
+                            ? 'bg-brand text-white shadow-md'
                             : 'text-textDark/40 hover:text-textDark/60 hover:bg-white'
                             }`}
                     >
@@ -114,15 +114,15 @@ const ViewStudent = () => {
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         <div className="lg:col-span-1 space-y-8">
                             <ContentCard className="flex flex-col items-center">
-                                <Avatar sx={{ width: 120, height: 120, bgcolor: '#2563EB', fontSize: '3rem', mb: 4, shadow: 4 }}>
+                                <Avatar sx={{ width: 120, height: 120, bgcolor: '#ca8a04', fontSize: '3rem', mb: 4, shadow: 4 }}>
                                     {userDetails.name?.charAt(0)}
                                 </Avatar>
                                 <h3 className="text-2xl font-black text-textDark mb-1">{userDetails.name}</h3>
-                                <p className="text-blue-600 font-bold uppercase tracking-widest text-xs mb-8">Roll No: {userDetails.rollNum}</p>
+                                <p className="text-brand font-bold uppercase tracking-widest text-xs mb-8">Roll No: {userDetails.rollNum}</p>
 
                                 <div className="w-full space-y-4 pt-6 border-t border-black/5">
-                                    <DetailItem icon={<ClassIcon className="text-blue-400" fontSize="small" />} label="Class" value={userDetails.sclassName?.sclassName} />
-                                    <DetailItem icon={<SchoolIcon className="text-blue-400" fontSize="small" />} label="Institution" value={userDetails.school?.schoolName} />
+                                    <DetailItem icon={<ClassIcon className="text-accent" fontSize="small" />} label="Class" value={userDetails.sclassName?.sclassName} />
+                                    <DetailItem icon={<SchoolIcon className="text-accent" fontSize="small" />} label="Institution" value={userDetails.school?.schoolName} />
                                 </div>
                             </ContentCard>
 
@@ -145,12 +145,15 @@ const ViewStudent = () => {
                                     <DetailBlock label="Institution" value={userDetails.school?.schoolName} />
                                 </div>
                                 <div className="mt-12 flex gap-4">
-                                    <button className="h-11 px-6 bg-blue-600 text-white font-bold rounded-xl shadow-md hover:brightness-110 transition-all">
+                                    <button className="h-11 px-6 bg-brand text-white font-bold rounded-xl shadow-md hover:brightness-110 transition-all">
                                         Edit Record
                                     </button>
                                     <button
-                                        onClick={() => setMessage("Delete function is currently restricted.") || setShowPopup(true)}
-                                        className="h-11 px-6 border border-blue-600 text-blue-600 font-bold rounded-xl hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all"
+                                        onClick={() => {
+                                            dispatch(deleteUser(studentID, "Student"))
+                                                .then(() => navigate(-1));
+                                        }}
+                                        className="h-11 px-6 border border-yellow-600 text-brand font-bold rounded-xl hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all"
                                     >
                                         Delete Student
                                     </button>
@@ -183,12 +186,12 @@ const ViewStudent = () => {
                                             <React.Fragment key={index}>
                                                 <StyledTableRow className="hover:bg-slate-50/50 transition-colors">
                                                     <StyledTableCell className="!font-bold">{subName}</StyledTableCell>
-                                                    <StyledTableCell className="!text-blue-600 font-bold">{present}</StyledTableCell>
+                                                    <StyledTableCell className="!text-brand font-bold">{present}</StyledTableCell>
                                                     <StyledTableCell>{sessions}</StyledTableCell>
                                                     <StyledTableCell>
                                                         <div className="flex items-center gap-2">
                                                             <div className="w-16 h-2 bg-slate-100 rounded-full overflow-hidden">
-                                                                <div className="h-full bg-blue-600" style={{ width: `${percentage}%` }}></div>
+                                                                <div className="h-full bg-brand" style={{ width: `${percentage}%` }}></div>
                                                             </div>
                                                             <span className="font-black text-xs text-textDark/60">{percentage}%</span>
                                                         </div>
@@ -206,7 +209,7 @@ const ViewStudent = () => {
                                                             </IconButton>
                                                             <button
                                                                 onClick={() => navigate(`/Admin/subject/student/attendance/${studentID}/${subId}`)}
-                                                                className="px-3 py-1 bg-blue-600 text-white rounded-lg text-xs font-bold hover:brightness-110"
+                                                                className="px-3 py-1 bg-brand text-white rounded-lg text-xs font-bold hover:brightness-110"
                                                             >
                                                                 Edit
                                                             </button>
@@ -217,7 +220,7 @@ const ViewStudent = () => {
                                                     <StyledTableCell style={{ paddingBottom: 0, paddingTop: 0, border: 0 }} colSpan={6}>
                                                         <Collapse in={openStates[subId]} timeout="auto" unmountOnExit>
                                                             <div className="my-4 ml-8 p-6 bg-slate-50 rounded-2xl border border-black/5">
-                                                                <h4 className="text-sm font-black text-blue-600 mb-4 uppercase tracking-widest">Daily History</h4>
+                                                                <h4 className="text-sm font-black text-brand mb-4 uppercase tracking-widest">Daily History</h4>
                                                                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
                                                                     {allData.map((data, idx) => (
                                                                         <div key={idx} className="bg-white p-3 rounded-xl border border-black/5 shadow-sm text-center">
@@ -240,11 +243,11 @@ const ViewStudent = () => {
                             <div className="mt-8 flex justify-between items-center">
                                 <div className="flex items-center gap-4">
                                     <p className="text-sm font-bold text-textDark/60 uppercase tracking-widest">Aggregate Rating:</p>
-                                    <span className="text-3xl font-black text-blue-600">{overallAttendancePercentage.toFixed(1)}%</span>
+                                    <span className="text-3xl font-black text-brand">{overallAttendancePercentage.toFixed(1)}%</span>
                                 </div>
                                 <div className="flex gap-4">
                                     <button onClick={() => removeHandler(studentID, "RemoveStudentAtten")} className="h-11 px-6 border border-red-600 text-red-600 font-bold rounded-xl hover:bg-red-50">Clear Logs</button>
-                                    <button onClick={() => navigate("/Admin/students/student/attendance/" + studentID)} className="h-11 px-6 bg-blue-600 text-white font-bold rounded-xl shadow-md">Record Attendance</button>
+                                    <button onClick={() => navigate("/Admin/students/student/attendance/" + studentID)} className="h-11 px-6 bg-brand text-white font-bold rounded-xl shadow-md">Record Attendance</button>
                                 </div>
                             </div>
                         </ContentCard>
@@ -272,7 +275,7 @@ const ViewStudent = () => {
                                         {subjectMarks.map((result, index) => result.subName && (
                                             <StyledTableRow key={index} className="hover:bg-slate-50/50">
                                                 <StyledTableCell className="!font-bold">{result.subName.subName}</StyledTableCell>
-                                                <StyledTableCell className="!text-xl font-black text-blue-600">{result.marksObtained}</StyledTableCell>
+                                                <StyledTableCell className="!text-xl font-black text-brand">{result.marksObtained}</StyledTableCell>
                                                 <StyledTableCell>
                                                     <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase ${result.marksObtained >= 40 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
                                                         {result.marksObtained >= 40 ? 'Pass' : 'Fail'}
@@ -282,7 +285,7 @@ const ViewStudent = () => {
                                         ))}
                                     </TableBody>
                                 </Table>
-                                <button onClick={() => navigate("/Admin/students/student/marks/" + studentID)} className="h-11 px-8 bg-blue-600 text-white font-extrabold rounded-xl shadow-md">Add Marks</button>
+                                <button onClick={() => navigate("/Admin/students/student/marks/" + studentID)} className="h-11 px-8 bg-brand text-white font-extrabold rounded-xl shadow-md">Add Marks</button>
                             </ContentCard>
                         </div>
                     </div>
@@ -305,7 +308,7 @@ const DetailItem = ({ icon, label, value }) => (
 
 const DetailBlock = ({ label, value }) => (
     <div className="p-4 bg-slate-50 rounded-2xl border border-black/5 group hover:bg-white hover:shadow-md transition-all">
-        <p className="text-[10px] uppercase font-black text-textDark/30 mb-1 group-hover:text-blue-600 transition-colors">{label}</p>
+        <p className="text-[10px] uppercase font-black text-textDark/30 mb-1 group-hover:text-brand transition-colors">{label}</p>
         <p className="text-lg font-extrabold text-textDark">{value || 'N/A'}</p>
     </div>
 );

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getClassStudents, getSubjectDetails } from '../../../redux/sclassRelated/sclassHandle';
+import { deleteUser } from '../../../redux/userRelated/userHandle';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { BottomNavigation, BottomNavigationAction, Paper } from '@mui/material';
@@ -44,6 +45,14 @@ const ViewSubject = () => {
     setSelectedSection(newSection);
   };
 
+  const deleteHandler = (deleteID, address) => {
+    if (!window.confirm("Are you sure you want to remove this subject?")) return;
+    dispatch(deleteUser(deleteID, address))
+      .then(() => {
+        navigate(-1);
+      });
+  }
+
   const studentColumns = [
     { id: 'rollNum', label: 'Roll No.', minWidth: 100 },
     { id: 'name', label: 'Name', minWidth: 170 },
@@ -62,7 +71,7 @@ const ViewSubject = () => {
       <div className="flex items-center gap-2 justify-end pr-4">
         <button
           onClick={() => navigate("/Admin/students/student/" + row.id)}
-          className="px-4 py-1.5 text-xs font-semibold text-blue-600 bg-blue-50 border border-blue-100 rounded-lg hover:bg-blue-600 hover:text-white transition-all shadow-sm"
+          className="px-4 py-1.5 text-xs font-semibold text-brand bg-surface border border-yellow-100 rounded-lg hover:bg-brand hover:text-white transition-all shadow-sm"
         >
           View
         </button>
@@ -81,7 +90,7 @@ const ViewSubject = () => {
       <div className="flex items-center gap-2 justify-end pr-4">
         <button
           onClick={() => navigate("/Admin/students/student/" + row.id)}
-          className="px-4 py-1.5 text-xs font-semibold text-blue-600 bg-blue-50 border border-blue-100 rounded-lg hover:bg-blue-600 hover:text-white transition-all shadow-sm"
+          className="px-4 py-1.5 text-xs font-semibold text-brand bg-surface border border-yellow-100 rounded-lg hover:bg-brand hover:text-white transition-all shadow-sm"
         >
           View
         </button>
@@ -109,7 +118,7 @@ const ViewSubject = () => {
             </div>
             <button
               onClick={() => navigate("/Admin/class/addstudents/" + classID)}
-              className="mt-4 px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-sm hover:bg-blue-700 hover:shadow-md transition-all flex items-center gap-2"
+              className="mt-4 px-6 py-2 bg-brand text-white font-semibold rounded-lg shadow-sm hover:bg-brand/90 hover:shadow-md transition-all flex items-center gap-2"
             >
               <AddCircleOutlineIcon fontSize="small" /> Add Students
             </button>
@@ -133,12 +142,12 @@ const ViewSubject = () => {
                 <BottomNavigationAction
                   label="Attendance"
                   value="attendance"
-                  icon={selectedSection === 'attendance' ? <TableChartIcon className="text-blue-600" /> : <TableChartOutlinedIcon />}
+                  icon={selectedSection === 'attendance' ? <TableChartIcon className="text-brand" /> : <TableChartOutlinedIcon />}
                 />
                 <BottomNavigationAction
                   label="Marks"
                   value="marks"
-                  icon={selectedSection === 'marks' ? <InsertChartIcon className="text-blue-600" /> : <InsertChartOutlinedIcon />}
+                  icon={selectedSection === 'marks' ? <InsertChartIcon className="text-brand" /> : <InsertChartOutlinedIcon />}
                 />
               </BottomNavigation>
             </Paper>
@@ -214,7 +223,7 @@ const ViewSubject = () => {
     <div className="max-w-6xl mx-auto px-6 py-8 w-full font-poppins bg-gray-50 min-h-screen animate-fade-in">
       {subloading ? (
         <div className="flex justify-center items-center py-32">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-600"></div>
         </div>
       ) : (
         <>
@@ -234,7 +243,10 @@ const ViewSubject = () => {
               <button className="px-4 py-2 text-sm font-semibold text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:text-gray-900 transition-all shadow-sm flex items-center gap-2">
                 <EditOutlinedIcon fontSize="small" /> Edit
               </button>
-              <button className="px-4 py-2 text-sm font-semibold text-red-600 bg-red-50 border border-red-100 rounded-lg hover:bg-red-600 hover:text-white transition-all shadow-sm flex items-center gap-2">
+              <button
+                onClick={() => deleteHandler(subjectID, "Subject")}
+                className="px-4 py-2 text-sm font-semibold text-red-600 bg-red-50 border border-red-100 rounded-lg hover:bg-red-600 hover:text-white transition-all shadow-sm flex items-center gap-2"
+              >
                 <DeleteOutlineOutlinedIcon fontSize="small" /> Delete
               </button>
             </div>
@@ -272,12 +284,12 @@ const ViewSubject = () => {
 const InfoCard = ({ icon, label, value, highlight }) => (
   <div className="bg-gray-50 rounded-xl p-5 flex flex-col gap-3 shadow-sm hover:shadow-md transition-all duration-300 hover:scale-[1.01] border border-gray-100">
     <div className="flex items-center gap-3">
-      <div className={`p-2 bg-white rounded-lg shadow-sm ${highlight ? 'text-blue-500' : 'text-gray-400'}`}>
+      <div className={`p-2 bg-white rounded-lg shadow-sm ${highlight ? 'text-accent' : 'text-gray-400'}`}>
         {icon}
       </div>
       <span className="text-xs uppercase tracking-wider font-semibold text-gray-500">{label}</span>
     </div>
-    <span className={`text-xl font-bold tracking-tight truncate ${highlight ? 'text-blue-700' : 'text-gray-800'}`}>
+    <span className={`text-xl font-bold tracking-tight truncate ${highlight ? 'text-yellow-700' : 'text-gray-800'}`}>
       {value || 'N/A'}
     </span>
   </div>
@@ -286,11 +298,11 @@ const InfoCard = ({ icon, label, value, highlight }) => (
 /* Custom Tab Button */
 const TabButton = ({ isActive, onClick, label }) => (
   <button
-    className={`pb-4 text-sm font-bold tracking-wide transition-all duration-200 relative ${isActive ? 'text-blue-600' : 'text-gray-400 hover:text-gray-800'}`}
+    className={`pb-4 text-sm font-bold tracking-wide transition-all duration-200 relative ${isActive ? 'text-brand' : 'text-gray-400 hover:text-gray-800'}`}
     onClick={onClick}
   >
     {label}
-    {isActive && <span className="absolute bottom-0 left-0 w-full h-[3px] bg-blue-600 rounded-t-sm" />}
+    {isActive && <span className="absolute bottom-0 left-0 w-full h-[3px] bg-brand rounded-t-sm" />}
   </button>
 );
 

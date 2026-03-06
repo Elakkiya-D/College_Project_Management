@@ -94,7 +94,7 @@ const StudentComplain = () => {
                             <button
                                 type="submit"
                                 disabled={loader}
-                                className="w-full h-14 bg-blue-600 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-lg shadow-blue-200 hover:bg-blue-700 hover:shadow-blue-300 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:translate-y-0"
+                                className="w-full h-14 bg-brand text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-lg shadow-brand/20 hover:bg-brand/90 hover:shadow-yellow-300 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:translate-y-0"
                             >
                                 {loader ? <CircularProgress size={20} color="inherit" /> : (
                                     <>
@@ -109,9 +109,9 @@ const StudentComplain = () => {
                 {/* Info Side (5 cols) */}
                 <div className="lg:col-span-5 space-y-8">
                     <div className="bg-white rounded-3xl p-8 border border-slate-200/60 shadow-sm relative overflow-hidden group">
-                        <CampaignIcon className="absolute -top-6 -right-6 text-blue-50 text-[160px] -rotate-12 group-hover:rotate-0 transition-transform duration-700" />
+                        <CampaignIcon className="absolute -top-6 -right-6 text-yellow-50 text-[160px] -rotate-12 group-hover:rotate-0 transition-transform duration-700" />
                         <div className="relative z-10 space-y-6">
-                            <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 border border-blue-100">
+                            <div className="w-14 h-14 bg-surface rounded-2xl flex items-center justify-center text-brand border border-yellow-100">
                                 <InfoIcon />
                             </div>
                             <div className="space-y-2">
@@ -129,7 +129,7 @@ const StudentComplain = () => {
                     </div>
 
                     <div className="p-6 bg-slate-800 rounded-3xl text-white shadow-xl shadow-slate-200">
-                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-300 mb-2">Notice</p>
+                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-yellow-300 mb-2">Notice</p>
                         <p className="text-sm font-medium opacity-80 leading-relaxed">
                             False or misleading submissions may delay the resolution process for other students. Please adhere to the ethical conduct guidelines.
                         </p>
@@ -143,7 +143,7 @@ const StudentComplain = () => {
 
 const GuidelineItem = ({ text }) => (
     <li className="flex items-center gap-3 text-xs font-bold text-slate-600">
-        <div className="w-1.5 h-1.5 rounded-full bg-blue-400"></div>
+        <div className="w-1.5 h-1.5 rounded-full bg-accent"></div>
         {text}
     </li>
 );
@@ -165,8 +165,8 @@ const formStyles = {
         borderRadius: '16px',
         backgroundColor: '#f8fafc',
         "& fieldset": { borderColor: '#e2e8f0' },
-        "&:hover fieldset": { borderColor: '#2563eb' },
-        "&.Mui-focused fieldset": { borderColor: '#2563eb' },
+        "&:hover fieldset": { borderColor: '#ca8a04' },
+        "&.Mui-focused fieldset": { borderColor: '#ca8a04' },
     },
     "& .MuiInputLabel-root": { display: 'none' },
 };

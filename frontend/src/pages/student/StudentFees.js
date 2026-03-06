@@ -41,8 +41,8 @@ const StudentFees = () => {
 
             {loading ? (
                 <div className="py-20 flex justify-center flex-col items-center gap-4">
-                    <div className="w-12 h-12 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin"></div>
-                    <p className="text-sm font-black text-blue-600 uppercase tracking-widest">Auditing Accounts...</p>
+                    <div className="w-12 h-12 border-4 border-yellow-100 border-t-yellow-600 rounded-full animate-spin"></div>
+                    <p className="text-sm font-black text-brand uppercase tracking-widest">Auditing Accounts...</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -73,7 +73,7 @@ const StudentFees = () => {
                         <div className="p-8 bg-slate-900 rounded-3xl text-white shadow-2xl relative overflow-hidden group">
                             <AccountBalanceWalletIcon className="absolute -bottom-4 -right-4 text-white/5 text-9xl group-hover:scale-110 transition-transform duration-700" />
                             <div className="relative z-10 space-y-6">
-                                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-400">Total Outstanding</p>
+                                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-accent">Total Outstanding</p>
                                 <div className="space-y-1">
                                     <h2 className="text-4xl font-black tracking-tight">
                                         ₹{feesList && !feesList.empty ? feesList.filter(f => f.status === 'pending').reduce((acc, curr) => acc + curr.amount, 0) : 0}
@@ -102,7 +102,7 @@ const StudentFees = () => {
             {showPayment && selectedFee && (
                 <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-6 animate-fade-in shadow-2xl">
                     <div className="bg-white w-full max-w-xl rounded-[40px] shadow-2xl overflow-hidden animate-slide-up">
-                        <div className="bg-blue-600 p-8 text-white relative">
+                        <div className="bg-brand p-8 text-white relative">
                             <button
                                 onClick={() => setShowPayment(false)}
                                 className="absolute top-8 right-8 w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-all text-white border border-white/10"
@@ -137,8 +137,8 @@ const StudentFees = () => {
 const FeeRow = ({ fee, onPay }) => {
     const isPaid = fee.status === 'paid';
     return (
-        <div className={`p-6 rounded-2xl border transition-all duration-300 flex items-center gap-6 group ${isPaid ? 'bg-slate-50 border-slate-100 opacity-80' : 'bg-white border-slate-100 hover:border-blue-200 hover:shadow-md'}`}>
-            <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border transition-colors ${isPaid ? 'bg-blue-50 text-blue-600 border-blue-100' : 'bg-slate-50 text-slate-400 border-slate-200 group-hover:bg-blue-600 group-hover:text-white group-hover:border-blue-600'}`}>
+        <div className={`p-6 rounded-2xl border transition-all duration-300 flex items-center gap-6 group ${isPaid ? 'bg-slate-50 border-slate-100 opacity-80' : 'bg-white border-slate-100 hover:border-yellow-200 hover:shadow-md'}`}>
+            <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border transition-colors ${isPaid ? 'bg-surface text-brand border-yellow-100' : 'bg-slate-50 text-slate-400 border-slate-200 group-hover:bg-brand group-hover:text-white group-hover:border-yellow-600'}`}>
                 <PaymentIcon />
             </div>
             <div className="flex-1 min-w-0">
@@ -155,13 +155,13 @@ const FeeRow = ({ fee, onPay }) => {
             {!isPaid && (
                 <button
                     onClick={onPay}
-                    className="h-10 px-6 bg-slate-900 text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-600 hover:-translate-y-0.5 transition-all shadow-sm"
+                    className="h-10 px-6 bg-slate-900 text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-brand hover:-translate-y-0.5 transition-all shadow-sm"
                 >
                     Pay Now
                 </button>
             )}
             {isPaid && (
-                <div className="h-10 px-6 bg-blue-50 text-blue-600 rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center gap-2 border border-blue-100 cursor-default">
+                <div className="h-10 px-6 bg-surface text-brand rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center gap-2 border border-yellow-100 cursor-default">
                     Paid ✅
                 </div>
             )}

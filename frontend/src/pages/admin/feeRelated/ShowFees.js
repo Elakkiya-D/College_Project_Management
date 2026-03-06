@@ -13,11 +13,13 @@ const ShowFees = () => {
     const { currentUser } = useSelector(state => state.user);
     const [fees, setFees] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [showConfirm, setShowConfirm] = useState(false);
+    const [feeToDelete, setFeeToDelete] = useState(null);
 
     useEffect(() => {
         const fetchFees = async () => {
             try {
-                const result = await axios.get(`${process.env.REACT_APP_BASE_URL}/api/admin/fees/list`);
+                const result = await axios.get(`${process.env.REACT_APP_BASE_URL || "http://localhost:5000"}/api/admin/fees/list`);
                 if (result.data.message) {
                     setFees([]);
                 } else {
@@ -32,13 +34,22 @@ const ShowFees = () => {
         fetchFees();
     }, []);
 
-    const handleDelete = async (id) => {
-        if (!window.confirm("Are you sure you want to delete this fee record?")) return;
+    const deleteHandler = (id) => {
+        setFeeToDelete(id);
+        setShowConfirm(true);
+    };
+
+    const confirmDelete = async () => {
+        if (!feeToDelete) return;
         try {
-            await axios.delete(`${process.env.REACT_APP_BASE_URL}/api/admin/fees/delete/${id}`);
-            setFees(fees.filter(fee => fee._id !== id));
+            await axios.delete(`${process.env.REACT_APP_BASE_URL || "http://localhost:5000"}/api/admin/fees/delete/${feeToDelete}`);
+            setFees(fees.filter(fee => fee._id !== feeToDelete));
+            setShowConfirm(false);
+            setFeeToDelete(null);
         } catch (error) {
             console.error("Error deleting fee:", error);
+            setShowConfirm(false);
+            setFeeToDelete(null);
         }
     };
 
@@ -61,7 +72,7 @@ const ShowFees = () => {
             {/* Content Section */}
             {loading ? (
                 <div className="flex justify-center items-center py-20">
-                    <svg className="animate-spin h-10 w-10 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <svg className="animate-spin h-10 w-10 text-brand" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
@@ -75,7 +86,7 @@ const ShowFees = () => {
                     <p className="text-textDark/60 max-w-sm mb-8 font-medium">Your fee registry is currently empty. Start by adding a fee record for a student or class.</p>
                     <button
                         onClick={() => navigate("/Admin/addfee")}
-                        className="px-8 py-3 bg-blue-600 text-white font-semibold rounded-xl shadow-md hover:bg-blue-700 hover:-translate-y-[1px] transition-all"
+                        className="px-8 py-3 bg-brand text-white font-semibold rounded-xl shadow-md hover:bg-brand/90 hover:-translate-y-[1px] transition-all"
                     >
                         Create First Fee Entry
                     </button>
@@ -119,7 +130,7 @@ const ShowFees = () => {
                                     </td>
                                     <td className="px-8 py-4 whitespace-nowrap text-right text-sm">
                                         <button
-                                            onClick={() => handleDelete(fee._id)}
+                                            onClick={() => deleteHandler(fee._id)}
                                             className="p-2 text-gray-400 hover:text-red-600 bg-white hover:bg-red-50 rounded-xl border border-gray-200 hover:border-red-200 transition-all shadow-sm"
                                         >
                                             <DeleteForeverIcon fontSize="small" />
@@ -129,6 +140,26 @@ const ShowFees = () => {
                             ))}
                         </tbody>
                     </table>
+                </div>
+            )}
+
+            {showConfirm && (
+                <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-6 animate-fade-in">
+                    <div className="bg-white w-full max-w-md rounded-[32px] shadow-2xl overflow-hidden p-8 space-y-6">
+                        <div className="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center text-red-600">
+                            <DeleteForeverIcon fontSize="large" />
+                        </div>
+                        <div className="space-y-2">
+                            <h3 className="text-xl font-black text-slate-800 tracking-tight">Confirm Deletion</h3>
+                            <p className="text-sm font-medium text-slate-500 leading-relaxed">
+                                Are you sure you want to delete this fee record? This action cannot be undone.
+                            </p>
+                        </div>
+                        <div className="flex gap-4 pt-2">
+                            <button onClick={() => setShowConfirm(false)} className="flex-1 h-12 rounded-xl font-black text-xs uppercase tracking-widest text-slate-400 hover:bg-slate-50 transition-all">Cancel</button>
+                            <button onClick={confirmDelete} className="flex-[2] h-12 bg-red-600 text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-red-700 transition-all shadow-lg shadow-red-200">Yes, Delete</button>
+                        </div>
+                    </div>
                 </div>
             )}
         </div>

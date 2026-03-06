@@ -105,9 +105,9 @@ const AddStudent = ({ situation }) => {
 
                                 {situation === "Student" && (
                                     <div className="flex flex-col space-y-2 group">
-                                        <label className="text-sm font-medium text-gray-700 group-focus-within:text-blue-600 transition-colors">Assign to Class</label>
+                                        <label className="text-sm font-medium text-gray-700 group-focus-within:text-brand transition-colors">Assign to Class</label>
                                         <select
-                                            className="w-full px-4 py-3 bg-white rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800 transition-all appearance-none"
+                                            className="w-full px-4 py-3 bg-white rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-brand text-gray-800 transition-all appearance-none"
                                             value={className}
                                             onChange={changeHandler}
                                             required
@@ -120,7 +120,7 @@ const AddStudent = ({ situation }) => {
                                     </div>
                                 )}
 
-                                <InputField label="Roll Number / Student ID" placeholder="e.g. 202401" value={rollNum} onChange={setRollNum} type="number" required />
+                                <InputField label="Roll Number / Student ID" placeholder="e.g. 2024A01" value={rollNum} onChange={setRollNum} type="text" required />
                                 <InputField label="Create Account Password" placeholder="••••••••" value={password} onChange={setPassword} type="password" required />
                             </div>
 
@@ -128,7 +128,7 @@ const AddStudent = ({ situation }) => {
                                 <button
                                     type="submit"
                                     disabled={loader}
-                                    className={`px-5 py-2.5 rounded-lg font-semibold shadow-sm transition-all duration-200 flex items-center justify-center gap-2 ${loader ? 'bg-gray-300 text-white cursor-not-allowed' : 'bg-blue-600 text-white hover:bg-blue-700'}`}
+                                    className={`px-5 py-2.5 rounded-lg font-semibold shadow-sm transition-all duration-200 flex items-center justify-center gap-2 ${loader ? 'bg-gray-300 text-white cursor-not-allowed' : 'bg-brand text-white hover:bg-brand/90'}`}
                                 >
                                     {loader ? (
                                         <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24">
@@ -165,9 +165,9 @@ const AddStudent = ({ situation }) => {
 
 const InputField = ({ label, placeholder, value, onChange, type, required }) => (
     <div className="flex flex-col space-y-2 group">
-        <label className="text-sm font-medium text-gray-700 group-focus-within:text-blue-600 transition-colors">{label}</label>
+        <label className="text-sm font-medium text-gray-700 group-focus-within:text-brand transition-colors">{label}</label>
         <input
-            className="w-full px-4 py-3 bg-white rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800 transition-all placeholder-gray-400"
+            className="w-full px-4 py-3 bg-white rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-brand text-gray-800 transition-all placeholder-gray-400"
             type={type}
             placeholder={placeholder}
             value={value}
@@ -179,7 +179,7 @@ const InputField = ({ label, placeholder, value, onChange, type, required }) => 
 
 const GuideItem = ({ title, detail }) => (
     <li className="flex gap-3">
-        <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-blue-600 shrink-0"></div>
+        <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-brand shrink-0"></div>
         <div>
             <p className="text-xs font-black text-textDark leading-tight mb-1">{title}</p>
             <p className="text-[11px] font-medium text-textDark/60 leading-normal">{detail}</p>

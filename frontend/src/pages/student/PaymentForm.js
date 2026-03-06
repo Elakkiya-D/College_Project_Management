@@ -56,12 +56,12 @@ const PaymentForm = ({ studentFeeId, onSuccess, onClose }) => {
             <div className="space-y-4">
                 <div className="flex items-center justify-between">
                     <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Card Credentials</label>
-                    <div className="flex items-center gap-2 text-[10px] font-black text-blue-400 uppercase tracking-widest">
+                    <div className="flex items-center gap-2 text-[10px] font-black text-accent uppercase tracking-widest">
                         <LockIcon sx={{ fontSize: 12 }} /> AES-256 Secured
                     </div>
                 </div>
 
-                <div className="p-6 bg-slate-50 border border-slate-100 rounded-3xl group-focus-within:border-blue-400 transition-all shadow-inner">
+                <div className="p-6 bg-slate-50 border border-slate-100 rounded-3xl group-focus-within:border-accent transition-all shadow-inner">
                     <CardElement options={cardStyles} />
                 </div>
             </div>
@@ -84,7 +84,7 @@ const PaymentForm = ({ studentFeeId, onSuccess, onClose }) => {
                 <button
                     type="submit"
                     disabled={!stripe || loading}
-                    className="flex-[2] h-14 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-xl hover:bg-blue-600 hover:shadow-blue-200 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:translate-y-0"
+                    className="flex-[2] h-14 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-xl hover:bg-brand hover:shadow-brand/20 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:translate-y-0"
                 >
                     {loading ? <CircularProgress size={20} color="inherit" /> : (
                         <>

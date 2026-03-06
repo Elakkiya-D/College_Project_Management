@@ -123,8 +123,8 @@ const AdminHomePage = () => {
 
 const ModernStatCard = ({ title, count, icon, prefix = "", trend, color }) => {
     const colorClasses = {
-        blue: "text-blue-600 bg-blue-50 border-blue-100",
-        indigo: "text-indigo-600 bg-indigo-50 border-indigo-100",
+        blue: "text-brand bg-surface border-yellow-100",
+        indigo: "text-brand bg-surface border-yellow-100",
         emerald: "text-emerald-600 bg-emerald-50 border-emerald-100",
         amber: "text-amber-600 bg-amber-50 border-amber-100",
     };
@@ -157,7 +157,7 @@ const ModernStatCard = ({ title, count, icon, prefix = "", trend, color }) => {
 const ActionButton = ({ icon, label, onClick }) => (
     <button
         onClick={onClick}
-        className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-gray-700 hover:text-blue-600 hover:border-blue-200 hover:bg-blue-50 hover:shadow-sm transition-all duration-200"
+        className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-gray-700 hover:text-brand hover:border-yellow-200 hover:bg-surface hover:shadow-sm transition-all duration-200"
     >
         {React.cloneElement(icon, { sx: { fontSize: 18 } })}
         {label}

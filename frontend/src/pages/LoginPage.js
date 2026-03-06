@@ -88,16 +88,16 @@ const LoginPage = ({ role }) => {
     const getTheme = (role) => {
         switch (role) {
             case "Admin": return {
-                primaryBtn: "bg-brand text-white hover:brightness-110 focus:ring-brand/40 shadow-brand/20",
-                textClass: "text-brand",
-                iconContainer: "bg-brand/10",
-                rightBg: "bg-brand",
+                primaryBtn: "bg-accent text-white hover:brightness-110 focus:ring-accent/40 shadow-accent/20",
+                textClass: "text-accent",
+                iconContainer: "bg-accent/10",
+                rightBg: "bg-accent",
                 illustrationSrc: bgEducation,
                 illustrationBlend: "mix-blend-multiply opacity-40",
                 sideTitle: "Enterprise Control System",
                 sideSubtitle: "Secure access to manage the entire institution's operational data, users, and core configuration.",
                 sideTextColor: "text-white",
-                icon: <AccountCircle style={{ fontSize: 36 }} className="text-brand" />
+                icon: <AccountCircle style={{ fontSize: 36 }} className="text-accent" />
             };
             case "Student": return {
                 primaryBtn: "bg-accent text-white hover:brightness-110 focus:ring-accent/40 shadow-accent/20",
@@ -112,16 +112,16 @@ const LoginPage = ({ role }) => {
                 icon: <School style={{ fontSize: 36 }} className="text-accent" />
             };
             case "Teacher": return {
-                primaryBtn: "bg-slate-800 text-white hover:bg-slate-700 focus:ring-slate-500/40 shadow-slate-800/20",
-                textClass: "text-slate-800",
-                iconContainer: "bg-slate-100",
-                rightBg: "bg-slate-800",
+                primaryBtn: "bg-brand text-white hover:brightness-110 focus:ring-brand/40 shadow-brand/20",
+                textClass: "text-brand",
+                iconContainer: "bg-brand/10",
+                rightBg: "bg-brand",
                 illustrationSrc: bgEducation,
                 illustrationBlend: "opacity-20 mix-blend-overlay",
                 sideTitle: "Faculty Workspace",
                 sideSubtitle: "Manage your classes, grade students, and seamlessly organize your daily academic schedule.",
                 sideTextColor: "text-white",
-                icon: <Group style={{ fontSize: 36 }} className="text-slate-800" />
+                icon: <Group style={{ fontSize: 36 }} className="text-brand" />
             };
             default: return {};
         }
@@ -168,7 +168,7 @@ const LoginPage = ({ role }) => {
                                             <label className="text-sm font-extrabold tracking-wider text-textDark/80 uppercase">Roll Number</label>
                                             <input
                                                 name="rollNumber"
-                                                type="number"
+                                                type="text"
                                                 placeholder="Enter your roll number"
                                                 className={`w-full px-4 py-3.5 rounded-xl border ${rollNumberError ? 'border-red-500 bg-red-50' : 'border-black/10'} focus:outline-none focus:ring-4 focus:ring-accent/30 transition-all font-bold text-textDark shadow-sm`}
                                                 onChange={handleInputChange}
@@ -194,7 +194,7 @@ const LoginPage = ({ role }) => {
                                             name="email"
                                             type="email"
                                             placeholder="name@institution.edu"
-                                            className={`w-full px-4 py-3.5 rounded-xl border ${emailError ? 'border-red-500 bg-red-50' : 'border-black/10'} focus:outline-none focus:ring-4 ${role === 'Admin' ? 'focus:ring-brand/30' : 'focus:ring-slate-400'} transition-all font-bold text-textDark shadow-sm`}
+                                            className={`w-full px-4 py-3.5 rounded-xl border ${emailError ? 'border-red-500 bg-red-50' : 'border-black/10'} focus:outline-none focus:ring-4 ${role === 'Admin' ? 'focus:ring-accent/30' : 'focus:ring-slate-400'} transition-all font-bold text-textDark shadow-sm`}
                                             onChange={handleInputChange}
                                         />
                                         {emailError && <span className="text-xs text-red-500 font-bold">Email is required</span>}
@@ -209,7 +209,7 @@ const LoginPage = ({ role }) => {
                                             name="password"
                                             type={toggle ? 'text' : 'password'}
                                             placeholder="Enter your password"
-                                            className={`w-full pl-4 pr-12 py-3.5 rounded-xl border ${passwordError ? 'border-red-500 bg-red-50' : 'border-black/10'} focus:outline-none focus:ring-4 ${role === 'Admin' ? 'focus:ring-brand/30' : role === 'Student' ? 'focus:ring-accent/30' : 'focus:ring-slate-400'} transition-all font-bold text-textDark shadow-sm`}
+                                            className={`w-full pl-4 pr-12 py-3.5 rounded-xl border ${passwordError ? 'border-red-500 bg-red-50' : 'border-black/10'} focus:outline-none focus:ring-4 ${role === 'Admin' ? 'focus:ring-accent/30' : role === 'Student' ? 'focus:ring-accent/30' : 'focus:ring-slate-400'} transition-all font-bold text-textDark shadow-sm`}
                                             onChange={handleInputChange}
                                         />
                                         <button

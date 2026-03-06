@@ -33,7 +33,7 @@ const ModuleLayout = ({
                 {loading ? (
                     /* Standard Loading State */
                     <div className="flex justify-center items-center py-24">
-                        <svg className="animate-spin h-10 w-10 text-blue-600" viewBox="0 0 24 24">
+                        <svg className="animate-spin h-10 w-10 text-brand" viewBox="0 0 24 24">
                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
@@ -45,14 +45,14 @@ const ModuleLayout = ({
                             /* Standard Empty State Centered inside Card */
                             <div className="flex flex-col items-center justify-center py-16 text-center">
                                 <div className="w-20 h-20 bg-background rounded-full flex items-center justify-center mb-6 border border-black/5 shadow-inner">
-                                    {emptyIcon && React.cloneElement(emptyIcon, { className: "text-blue-400", style: { fontSize: 40 } })}
+                                    {emptyIcon && React.cloneElement(emptyIcon, { className: "text-accent", style: { fontSize: 40 } })}
                                 </div>
                                 <h3 className="text-2xl font-black text-textDark mb-2">{emptyTitle}</h3>
                                 <p className="text-textDark/60 max-w-sm mb-8 font-medium">{emptySubtitle}</p>
                                 {emptyAction && emptyActionLabel && (
                                     <button
                                         onClick={emptyAction}
-                                        className="px-8 py-3 bg-blue-600 text-white font-semibold rounded-xl shadow-md hover:bg-blue-700 hover:-translate-y-[1px] transition-all"
+                                        className="px-8 py-3 bg-brand text-white font-semibold rounded-xl shadow-md hover:bg-brand/90 hover:-translate-y-[1px] transition-all"
                                     >
                                         {emptyActionLabel}
                                     </button>

@@ -60,13 +60,13 @@ const ViewStdAttendance = () => {
                 <div className="flex bg-white rounded-lg border border-gray-200 p-1 shadow-sm">
                     <button
                         onClick={() => setViewMode('table')}
-                        className={`px-4 py-2 rounded-md text-sm font-semibold transition-all ${viewMode === 'table' ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-500 hover:bg-gray-50'}`}
+                        className={`px-4 py-2 rounded-md text-sm font-semibold transition-all ${viewMode === 'table' ? 'bg-brand text-white shadow-sm' : 'text-gray-500 hover:bg-gray-50'}`}
                     >
                         Logs
                     </button>
                     <button
                         onClick={() => setViewMode('chart')}
-                        className={`px-4 py-2 rounded-md text-sm font-semibold transition-all ${viewMode === 'chart' ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-500 hover:bg-gray-50'}`}
+                        className={`px-4 py-2 rounded-md text-sm font-semibold transition-all ${viewMode === 'chart' ? 'bg-brand text-white shadow-sm' : 'text-gray-500 hover:bg-gray-50'}`}
                     >
                         Analytics
                     </button>
@@ -75,27 +75,27 @@ const ViewStdAttendance = () => {
 
             {loading ? (
                 <div className="py-20 flex justify-center flex-col items-center gap-4">
-                    <div className="w-12 h-12 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin"></div>
-                    <p className="text-sm font-black text-blue-600 uppercase tracking-widest">Crunching Session Data...</p>
+                    <div className="w-12 h-12 border-4 border-yellow-100 border-t-yellow-600 rounded-full animate-spin"></div>
+                    <p className="text-sm font-black text-brand uppercase tracking-widest">Crunching Session Data...</p>
                 </div>
             ) : subjectAttendance.length > 0 ? (
                 <div className="space-y-8">
                     {/* Summary Bar */}
-                    <div className="bg-blue-600 rounded-2xl p-8 text-white shadow-lg flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden relative group">
+                    <div className="bg-brand rounded-2xl p-8 text-white shadow-lg flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden relative group">
                         <EventAvailableIcon className="absolute -bottom-4 -left-4 text-white/5 text-[120px] -rotate-12 group-hover:scale-110 transition-transform duration-700" />
                         <div className="z-10 text-center md:text-left">
                             <h2 className="text-3xl font-black tracking-tighter mb-1">
-                                {overallAttendancePercentage.toFixed(1)}% <span className="text-lg text-blue-200">Overall Presence</span>
+                                {overallAttendancePercentage.toFixed(1)}% <span className="text-lg text-yellow-200">Overall Presence</span>
                             </h2>
-                            <p className="text-xs font-bold uppercase tracking-widest text-blue-200 opacity-80 italic">System Synchronized | Real-time Academic Tracking</p>
+                            <p className="text-xs font-bold uppercase tracking-widest text-yellow-200 opacity-80 italic">System Synchronized | Real-time Academic Tracking</p>
                         </div>
                         <div className="z-10 flex gap-4">
                             <div className="px-5 py-2 bg-white/10 rounded-xl border border-white/10 backdrop-blur-sm">
-                                <p className="text-[10px] font-black uppercase tracking-widest text-blue-100 mb-0.5">Sessions Attended</p>
+                                <p className="text-[10px] font-black uppercase tracking-widest text-yellow-100 mb-0.5">Sessions Attended</p>
                                 <p className="text-xl font-black text-white">{subjectAttendance.filter(a => a.status === 'Present').length}</p>
                             </div>
                             <div className="px-5 py-2 bg-white/10 rounded-xl border border-white/10 backdrop-blur-sm">
-                                <p className="text-[10px] font-black uppercase tracking-widest text-blue-100 mb-0.5">Total Registered</p>
+                                <p className="text-[10px] font-black uppercase tracking-widest text-yellow-100 mb-0.5">Total Registered</p>
                                 <p className="text-xl font-black text-white">{subjectAttendance.length}</p>
                             </div>
                         </div>
@@ -109,7 +109,7 @@ const ViewStdAttendance = () => {
                                     const isOpen = !!openStates[subId];
 
                                     return (
-                                        <div key={index} className="bg-slate-50/50 rounded-2xl border border-slate-100 overflow-hidden transition-all group hover:bg-white hover:shadow-md hover:border-blue-100">
+                                        <div key={index} className="bg-slate-50/50 rounded-2xl border border-slate-100 overflow-hidden transition-all group hover:bg-white hover:shadow-md hover:border-yellow-100">
                                             <div
                                                 className="p-6 cursor-pointer flex flex-col md:flex-row md:items-center justify-between gap-4"
                                                 onClick={() => toggleRow(subId)}
@@ -132,7 +132,7 @@ const ViewStdAttendance = () => {
                                                         <p className="text-[10px] font-black uppercase tracking-widest text-slate-300">Attendance</p>
                                                         <p className="text-sm font-bold text-slate-700">{present} / {sessions}</p>
                                                     </div>
-                                                    <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-all">
+                                                    <div className="w-8 h-8 rounded-lg bg-surface flex items-center justify-center text-brand group-hover:bg-brand group-hover:text-white transition-all">
                                                         {isOpen ? <KeyboardArrowUpIcon fontSize="small" /> : <KeyboardArrowDownIcon fontSize="small" />}
                                                     </div>
                                                 </div>
@@ -153,7 +153,7 @@ const ViewStdAttendance = () => {
                                                                     const date = new Date(data.date);
                                                                     const dateStr = date.toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' });
                                                                     return (
-                                                                        <tr key={data._id || i} className="hover:bg-indigo-50/10 transition-colors">
+                                                                        <tr key={data._id || i} className="hover:bg-surface/10 transition-colors">
                                                                             <td className="px-4 py-3 text-sm font-bold text-slate-600 flex items-center gap-2">
                                                                                 <CalendarMonthIcon className="text-slate-300" fontSize="inherit" />
                                                                                 {dateStr}
@@ -187,13 +187,13 @@ const ViewStdAttendance = () => {
             ) : (
                 <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-20 flex flex-col items-center text-center space-y-6">
                     <div className="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center border border-slate-100 shadow-inner group hover:scale-110 transition-transform duration-500">
-                        <CalendarMonthIcon className="text-blue-200 group-hover:text-blue-400 transition-colors" style={{ fontSize: 50 }} />
+                        <CalendarMonthIcon className="text-yellow-200 group-hover:text-accent transition-colors" style={{ fontSize: 50 }} />
                     </div>
                     <div className="space-y-2">
                         <h2 className="text-2xl font-black text-slate-800">No Attendance Records</h2>
                         <p className="text-sm font-medium text-slate-400 max-w-sm">Your attendance data is currently empty. Start attending classes to see your statistics synchronized here.</p>
                     </div>
-                    <button className="px-8 py-3 bg-blue-600 text-white font-black text-xs uppercase tracking-widest rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all">
+                    <button className="px-8 py-3 bg-brand text-white font-black text-xs uppercase tracking-widest rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all">
                         Refresh Dashboard
                     </button>
                 </div>

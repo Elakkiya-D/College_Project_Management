@@ -79,13 +79,13 @@ const AddTeacher = () => {
       <div className="mt-8 animate-slide-up max-w-2xl mx-auto">
         <ContentCard>
           <div className="flex items-center gap-4 mb-8 pb-6 border-b border-black/5">
-            <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600">
+            <div className="w-14 h-14 bg-surface rounded-2xl flex items-center justify-center text-brand">
               <PersonAddAlt1Icon />
             </div>
             <div>
               <h3 className="text-xl font-black text-textDark">Account Details</h3>
               <p className="text-sm font-medium text-textDark/60">
-                Assigning to: <span className="text-blue-600 font-bold">{subjectDetails && subjectDetails.sclassName && subjectDetails.sclassName.sclassName}</span> - <span className="font-bold text-textDark">{subjectDetails && subjectDetails.subName}</span>
+                Assigning to: <span className="text-brand font-bold">{subjectDetails && subjectDetails.sclassName && subjectDetails.sclassName.sclassName}</span> - <span className="font-bold text-textDark">{subjectDetails && subjectDetails.subName}</span>
               </p>
             </div>
           </div>
@@ -101,7 +101,7 @@ const AddTeacher = () => {
                   onChange={(event) => setName(event.target.value)}
                   autoComplete="name"
                   required
-                  className="w-full px-4 py-3 bg-white rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-gray-800"
+                  className="w-full px-4 py-3 bg-white rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-brand transition-all text-gray-800"
                 />
               </div>
 
@@ -114,7 +114,7 @@ const AddTeacher = () => {
                   onChange={(event) => setEmail(event.target.value)}
                   autoComplete="email"
                   required
-                  className="w-full px-4 py-3 bg-white rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-gray-800"
+                  className="w-full px-4 py-3 bg-white rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-brand transition-all text-gray-800"
                 />
               </div>
 
@@ -127,7 +127,7 @@ const AddTeacher = () => {
                   onChange={(event) => setPassword(event.target.value)}
                   autoComplete="new-password"
                   required
-                  className="w-full px-4 py-3 bg-white rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-gray-800"
+                  className="w-full px-4 py-3 bg-white rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-brand transition-all text-gray-800"
                 />
               </div>
             </div>
@@ -136,7 +136,7 @@ const AddTeacher = () => {
               <button
                 type="submit"
                 disabled={loader}
-                className="px-5 py-2.5 bg-blue-600 text-white rounded-lg shadow-sm font-semibold hover:bg-blue-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[160px]"
+                className="px-5 py-2.5 bg-brand text-white rounded-lg shadow-sm font-semibold hover:bg-brand/90 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[160px]"
               >
                 {loader ? <CircularProgress size={20} color="inherit" /> : 'Register Faculty'}
               </button>

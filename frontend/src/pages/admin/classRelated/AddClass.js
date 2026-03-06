@@ -70,7 +70,7 @@ const AddClass = () => {
             <div className="mt-8 animate-slide-up max-w-2xl mx-auto">
                 <ContentCard>
                     <div className="flex items-center gap-4 mb-8 pb-6 border-b border-black/5">
-                        <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600">
+                        <div className="w-14 h-14 bg-surface rounded-2xl flex items-center justify-center text-brand">
                             <AddCardIcon />
                         </div>
                         <div>
@@ -89,7 +89,7 @@ const AddClass = () => {
                                     value={sclassName}
                                     onChange={(event) => setSclassName(event.target.value)}
                                     required
-                                    className="w-full px-4 py-3 bg-white rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-gray-800"
+                                    className="w-full px-4 py-3 bg-white rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-brand transition-all text-gray-800"
                                 />
                             </div>
                         </div>
@@ -98,7 +98,7 @@ const AddClass = () => {
                             <button
                                 type="submit"
                                 disabled={loader}
-                                className="px-5 py-2.5 bg-blue-600 text-white rounded-lg shadow-sm font-semibold hover:bg-blue-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[120px]"
+                                className="px-5 py-2.5 bg-brand text-white rounded-lg shadow-sm font-semibold hover:bg-brand/90 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[120px]"
                             >
                                 {loader ? <CircularProgress size={20} color="inherit" /> : 'Create Class'}
                             </button>

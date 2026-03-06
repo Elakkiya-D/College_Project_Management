@@ -44,16 +44,11 @@ const ClassDetails = () => {
     const [message, setMessage] = useState("");
 
     const deleteHandler = (deleteID, address) => {
-        console.log(deleteID);
-        console.log(address);
-        setMessage("Sorry the delete function has been disabled for now.")
-        setShowPopup(true)
-        // dispatch(deleteUser(deleteID, address))
-        //     .then(() => {
-        //         dispatch(getClassStudents(classID));
-        //         dispatch(resetSubjects())
-        //         dispatch(getSubjectList(classID, "ClassSubjects"))
-        //     })
+        dispatch(deleteUser(deleteID, address))
+            .then(() => {
+                dispatch(getClassStudents(classID));
+                dispatch(getSubjectList(classID, "ClassSubjects"))
+            })
     }
 
     const subjectColumns = [
@@ -74,7 +69,7 @@ const ClassDetails = () => {
             <div className="flex items-center gap-2 justify-end pr-4">
                 <button
                     onClick={() => navigate(`/Admin/class/subject/${classID}/${row.id}`)}
-                    className="px-3 py-1.5 bg-blue-50 text-blue-600 font-bold text-sm rounded-lg hover:bg-blue-600 hover:text-white transition-all shadow-sm"
+                    className="px-3 py-1.5 bg-surface text-brand font-bold text-sm rounded-lg hover:bg-brand hover:text-white transition-all shadow-sm"
                 >
                     View Subject
                 </button>
@@ -113,7 +108,7 @@ const ClassDetails = () => {
                         </div>
                         <button
                             onClick={() => navigate("/Admin/addsubject/" + classID)}
-                            className="mt-4 px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-sm hover:bg-blue-700 hover:shadow-md transition-all flex items-center gap-2"
+                            className="mt-4 px-6 py-2 bg-brand text-white font-semibold rounded-lg shadow-sm hover:bg-brand/90 hover:shadow-md transition-all flex items-center gap-2"
                         >
                             <PostAddIcon fontSize="small" /> Register Subject
                         </button>
@@ -124,7 +119,7 @@ const ClassDetails = () => {
                             <h2 className="text-lg font-semibold text-gray-800 tracking-tight">Assigned Subjects</h2>
                             <button
                                 onClick={() => navigate("/Admin/addsubject/" + classID)}
-                                className="px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg text-sm shadow-sm hover:bg-blue-700 transition-all flex items-center gap-2"
+                                className="px-4 py-2 bg-brand text-white font-semibold rounded-lg text-sm shadow-sm hover:bg-brand/90 transition-all flex items-center gap-2"
                             >
                                 <PostAddIcon fontSize="small" /> Add Subject
                             </button>
@@ -156,7 +151,7 @@ const ClassDetails = () => {
             <div className="flex items-center gap-2 justify-end pr-4">
                 <button
                     onClick={() => navigate("/Admin/students/student/attendance/" + row.id)}
-                    className="px-3 py-1.5 bg-blue-50 text-blue-600 font-bold text-sm rounded-lg hover:bg-blue-600 hover:text-white transition-all shadow-sm whitespace-nowrap"
+                    className="px-3 py-1.5 bg-surface text-brand font-bold text-sm rounded-lg hover:bg-brand hover:text-white transition-all shadow-sm whitespace-nowrap"
                 >
                     Attendance
                 </button>
@@ -201,7 +196,7 @@ const ClassDetails = () => {
                         </div>
                         <button
                             onClick={() => navigate("/Admin/class/addstudents/" + classID)}
-                            className="mt-4 px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-sm hover:bg-blue-700 hover:shadow-md transition-all flex items-center gap-2"
+                            className="mt-4 px-6 py-2 bg-brand text-white font-semibold rounded-lg shadow-sm hover:bg-brand/90 hover:shadow-md transition-all flex items-center gap-2"
                         >
                             <PersonAddAlt1Icon fontSize="small" /> Add Students
                         </button>
@@ -212,7 +207,7 @@ const ClassDetails = () => {
                             <h2 className="text-lg font-semibold text-gray-800 tracking-tight">Student Roster</h2>
                             <button
                                 onClick={() => navigate("/Admin/class/addstudents/" + classID)}
-                                className="px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg text-sm shadow-sm hover:bg-blue-700 transition-all flex items-center gap-2"
+                                className="px-4 py-2 bg-brand text-white font-semibold rounded-lg text-sm shadow-sm hover:bg-brand/90 transition-all flex items-center gap-2"
                             >
                                 <PersonAddAlt1Icon fontSize="small" /> Add Student
                             </button>
@@ -272,7 +267,7 @@ const ClassDetails = () => {
                                 </div>
                                 <button
                                     onClick={() => navigate("/Admin/class/addstudents/" + classID)}
-                                    className="px-6 py-2 bg-blue-600 text-white font-bold rounded-xl shadow-md hover:brightness-110 transition-all"
+                                    className="px-6 py-2 bg-brand text-white font-bold rounded-xl shadow-md hover:brightness-110 transition-all"
                                 >
                                     Add Students
                                 </button>
@@ -286,7 +281,7 @@ const ClassDetails = () => {
                                 </div>
                                 <button
                                     onClick={() => navigate("/Admin/addsubject/" + classID)}
-                                    className="px-6 py-2 bg-blue-600 text-white font-bold rounded-xl shadow-md hover:brightness-110 transition-all"
+                                    className="px-6 py-2 bg-brand text-white font-bold rounded-xl shadow-md hover:brightness-110 transition-all"
                                 >
                                     Add Subject
                                 </button>
@@ -302,7 +297,7 @@ const ClassDetails = () => {
         <div className="max-w-6xl mx-auto px-6 py-8 w-full font-poppins bg-gray-50 min-h-screen animate-fade-in">
             {loading ? (
                 <div className="flex justify-center items-center py-32">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-600"></div>
                 </div>
             ) : (
                 <>
@@ -358,12 +353,12 @@ const ClassDetails = () => {
 const InfoCard = ({ icon, label, value, highlight }) => (
     <div className="bg-gray-50 rounded-xl p-5 flex flex-col gap-3 shadow-sm hover:shadow-md transition-all duration-300 hover:scale-[1.01] border border-gray-100">
         <div className="flex items-center gap-3">
-            <div className={`p-2 bg-white rounded-lg shadow-sm ${highlight ? 'text-blue-500' : 'text-gray-400'}`}>
+            <div className={`p-2 bg-white rounded-lg shadow-sm ${highlight ? 'text-accent' : 'text-gray-400'}`}>
                 {icon}
             </div>
             <span className="text-xs uppercase tracking-wider font-semibold text-gray-500">{label}</span>
         </div>
-        <span className={`text-xl font-bold tracking-tight truncate ${highlight ? 'text-blue-700' : 'text-gray-800'}`}>
+        <span className={`text-xl font-bold tracking-tight truncate ${highlight ? 'text-yellow-700' : 'text-gray-800'}`}>
             {value || 'N/A'}
         </span>
     </div>
@@ -372,11 +367,11 @@ const InfoCard = ({ icon, label, value, highlight }) => (
 /* Custom Tab Button */
 const TabButton = ({ isActive, onClick, label }) => (
     <button
-        className={`pb-4 text-sm font-bold tracking-wide transition-all duration-200 relative ${isActive ? 'text-blue-600' : 'text-gray-400 hover:text-gray-800'}`}
+        className={`pb-4 text-sm font-bold tracking-wide transition-all duration-200 relative ${isActive ? 'text-brand' : 'text-gray-400 hover:text-gray-800'}`}
         onClick={onClick}
     >
         {label}
-        {isActive && <span className="absolute bottom-0 left-0 w-full h-[3px] bg-blue-600 rounded-t-sm" />}
+        {isActive && <span className="absolute bottom-0 left-0 w-full h-[3px] bg-brand rounded-t-sm" />}
     </button>
 );
 

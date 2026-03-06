@@ -21,7 +21,7 @@ const PageHeader = ({ title, subtitle, actions }) => {
                             key={index}
                             onClick={action.onClick}
                             className={`flex items-center gap-2 px-5 py-2.5 rounded-lg shadow-sm font-semibold text-sm transition-all duration-200 ${action.variant === 'primary' || !action.variant
-                                    ? 'bg-blue-600 text-white hover:bg-blue-700'
+                                    ? 'bg-brand text-white hover:bg-brand/90'
                                     : action.variant === 'secondary'
                                         ? 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300'
                                         : action.variant === 'danger'

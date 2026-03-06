@@ -1,0 +1,16 @@
+{
+  "files": {
+    "main.css": "/static/css/main.39e31ad4.css",
+    "main.js": "/static/js/main.1bfbef9f.js",
+    "static/media/bg-education.jpg": "/static/media/bg-education.e115a03d8dabb17f2ef4.jpg",
+    "static/media/students.jpg": "/static/media/students.0826d8c9a63a09a53ac4.jpg",
+    "static/media/designlogin.jpg": "/static/media/designlogin.751234bd6c6154b7f73c.jpg",
+    "index.html": "/index.html",
+    "main.39e31ad4.css.map": "/static/css/main.39e31ad4.css.map",
+    "main.1bfbef9f.js.map": "/static/js/main.1bfbef9f.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.39e31ad4.css",
+    "static/js/main.1bfbef9f.js"
+  ]
+}

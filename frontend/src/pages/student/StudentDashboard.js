@@ -7,6 +7,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import StudentSideBar from './StudentSideBar';
 import StudentHomePage from './StudentHomePage';
 import StudentProfile from './StudentProfile';
+import StudentAssignments from './StudentAssignments';
 import StudentSubjects from './StudentSubjects';
 import ViewStdAttendance from './ViewStdAttendance';
 import StudentComplain from './StudentComplain';
@@ -52,18 +53,18 @@ const StudentDashboard = () => {
             {/* Main Content Area */}
             <div className="flex-1 flex flex-col min-h-screen overflow-hidden">
                 {/* Desktop and Mobile Top Header */}
-                <header className="bg-white shadow-sm h-16 flex items-center justify-between px-4 lg:px-8 border-b border-gray-100 z-10 sticky top-0">
+                <header className="bg-gradient-to-r from-[#065F46] via-[#065F46] to-[#F59E0B] shadow-md h-16 flex items-center justify-between px-4 lg:px-8 z-10 sticky top-0 text-white">
                     <div className="flex items-center gap-4">
                         <button
                             onClick={() => setSidebarOpen(true)}
-                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all lg:hidden"
+                            className="p-2 text-white hover:bg-white/10 rounded-lg transition-all lg:hidden"
                         >
                             <MenuIcon />
                         </button>
-                        <h1 className="font-semibold text-gray-900 tracking-wide lg:hidden text-lg">STUDENT PORTAL</h1>
-                        <h1 className="font-semibold text-gray-900 tracking-wide hidden lg:block text-lg">Dashboard</h1>
+                        <h1 className="font-semibold text-white tracking-wide lg:hidden text-lg">STUDENT PORTAL</h1>
+                        <h1 className="font-semibold text-white tracking-wide hidden lg:block text-lg">Dashboard</h1>
                     </div>
-                    <AccountMenu />
+                    <AccountMenu lightTheme={true} />
                 </header>
 
                 <main className="flex-1 overflow-auto bg-gray-50 relative">
@@ -77,6 +78,7 @@ const StudentDashboard = () => {
                             <Route path="/Student/subjects" element={<StudentSubjects />} />
                             <Route path="/Student/attendance" element={<ViewStdAttendance />} />
                             <Route path="/Student/fees" element={<StudentFees />} />
+                            <Route path="/Student/assignments" element={<StudentAssignments />} />
                             <Route path="/Student/complain" element={<StudentComplain />} />
 
                             <Route path="/logout" element={<Logout />} />

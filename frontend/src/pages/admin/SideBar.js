@@ -14,7 +14,7 @@ import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 
 const SideBar = () => {
     return (
-        <div className="flex flex-col h-full bg-gradient-to-b from-blue-800 to-indigo-950 text-white/80 overflow-y-auto w-full min-h-[calc(100vh-64px)] pt-2 pb-4">
+        <div className="flex flex-col h-full bg-gradient-to-b from-[#F59E0B] via-[#F59E0B] to-[#065F46] text-white overflow-y-auto w-full min-h-[calc(100vh-64px)] pt-2 pb-4">
 
             {/* Main Navigation */}
             <div className="flex-1 flex flex-col gap-1 px-3">

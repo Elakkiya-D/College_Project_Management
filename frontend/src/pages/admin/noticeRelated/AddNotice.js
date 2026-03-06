@@ -79,10 +79,10 @@ const AddNotice = () => {
           </button>
           <button
             onClick={() => navigate('/Admin/notices')}
-            className="px-4 py-2 text-sm font-semibold text-blue-600 bg-blue-50 border border-blue-100 rounded-lg hover:bg-blue-600 hover:text-white transition-all shadow-sm flex items-center gap-2 group"
+            className="px-4 py-2 text-sm font-semibold text-brand bg-surface border border-yellow-100 rounded-lg hover:bg-brand hover:text-white transition-all shadow-sm flex items-center gap-2 group"
             type="button"
           >
-            <ListAltIcon fontSize="small" className="text-blue-500 group-hover:text-blue-200 transition-colors" /> View Notices
+            <ListAltIcon fontSize="small" className="text-accent group-hover:text-yellow-200 transition-colors" /> View Notices
           </button>
         </div>
       </div>
@@ -105,7 +105,7 @@ const AddNotice = () => {
                 placeholder="E.g., Midterm Examination Details"
                 value={title}
                 onChange={(event) => setTitle(event.target.value)}
-                className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none bg-gray-50/50 focus:bg-white text-gray-800 placeholder-gray-400"
+                className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-brand/20 focus:border-yellow-500 transition-all outline-none bg-gray-50/50 focus:bg-white text-gray-800 placeholder-gray-400"
                 required
               />
             </div>
@@ -119,7 +119,8 @@ const AddNotice = () => {
                 type="date"
                 value={date}
                 onChange={(event) => setDate(event.target.value)}
-                className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none bg-gray-50/50 focus:bg-white text-gray-800 placeholder-gray-400"
+                min={new Date().toISOString().split("T")[0]}
+                className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-brand/20 focus:border-yellow-500 transition-all outline-none bg-gray-50/50 focus:bg-white text-gray-800 placeholder-gray-400"
                 required
               />
             </div>
@@ -133,7 +134,7 @@ const AddNotice = () => {
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none bg-gray-50/50 focus:bg-white text-gray-800 appearance-none"
+                className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-brand/20 focus:border-yellow-500 transition-all outline-none bg-gray-50/50 focus:bg-white text-gray-800 appearance-none"
               >
                 <option value="">Select a category</option>
                 <option value="academic">Academic</option>
@@ -151,7 +152,7 @@ const AddNotice = () => {
               <select
                 value={visibility}
                 onChange={(e) => setVisibility(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none bg-gray-50/50 focus:bg-white text-gray-800 appearance-none"
+                className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-brand/20 focus:border-yellow-500 transition-all outline-none bg-gray-50/50 focus:bg-white text-gray-800 appearance-none"
               >
                 <option value="All">All Users</option>
                 <option value="Students">Students Only</option>
@@ -169,7 +170,7 @@ const AddNotice = () => {
                 value={details}
                 onChange={(event) => setDetails(event.target.value)}
                 placeholder="Type your full notice content here..."
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 min-h-[140px] resize-y placeholder-gray-400 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none bg-gray-50/50 focus:bg-white text-gray-800 leading-relaxed"
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 min-h-[140px] resize-y placeholder-gray-400 focus:ring-2 focus:ring-brand/20 focus:border-yellow-500 transition-all outline-none bg-gray-50/50 focus:bg-white text-gray-800 leading-relaxed"
                 required
               />
             </div>
@@ -189,13 +190,13 @@ const AddNotice = () => {
             <button
               type="submit"
               disabled={loader}
-              className="px-6 py-2.5 text-sm font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-700 hover:shadow-md transition-all shadow-sm flex items-center gap-2 group disabled:opacity-70 disabled:cursor-not-allowed hover:-translate-y-[1px]"
+              className="px-6 py-2.5 text-sm font-bold text-white bg-brand rounded-lg hover:bg-brand/90 hover:shadow-md transition-all shadow-sm flex items-center gap-2 group disabled:opacity-70 disabled:cursor-not-allowed hover:-translate-y-[1px]"
             >
               {loader ? (
                 <CircularProgress size={20} color="inherit" />
               ) : (
                 <>
-                  <SendIcon fontSize="small" className="text-blue-200 group-hover:text-white transition-colors" /> Publish Notice
+                  <SendIcon fontSize="small" className="text-yellow-200 group-hover:text-white transition-colors" /> Publish Notice
                 </>
               )}
             </button>

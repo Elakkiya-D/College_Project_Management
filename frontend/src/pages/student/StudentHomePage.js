@@ -9,6 +9,7 @@ import AssignmentIcon from "@mui/icons-material/AssignmentOutlined";
 import AttendanceIcon from "@mui/icons-material/EventAvailable";
 import { getSubjectList } from '../../redux/sclassRelated/sclassHandle';
 import DashboardContainer from '../../components/DashboardContainer';
+import axios from 'axios';
 
 const StudentHomePage = () => {
     const dispatch = useDispatch();
@@ -17,11 +18,24 @@ const StudentHomePage = () => {
     const { subjectsList } = useSelector((state) => state.sclass);
 
     const [subjectAttendance, setSubjectAttendance] = useState([]);
+    const [numberOfAssignments, setNumberOfAssignments] = useState(0);
 
     const classID = currentUser.sclassName._id
 
     useEffect(() => {
         dispatch(getSubjectList(classID, "ClassSubjects"));
+
+        const fetchAssignmentsCount = async () => {
+            try {
+                const res = await axios.get(`${process.env.REACT_APP_BASE_URL || "http://localhost:5000"}/AssignmentList/${classID}`);
+                if (Array.isArray(res.data)) {
+                    setNumberOfAssignments(res.data.length);
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        };
+        fetchAssignmentsCount();
     }, [dispatch, classID]);
 
     const numberOfSubjects = Array.isArray(subjectsList) ? subjectsList.length : 0;
@@ -56,15 +70,15 @@ const StudentHomePage = () => {
                     <StatCard
                         label="Enrolled Subjects"
                         count={numberOfSubjects}
-                        icon={<SubjectIcon className="text-blue-600 w-5 h-5" />}
+                        icon={<SubjectIcon className="text-brand w-5 h-5" />}
                         helper="Courses registered"
                     />
                 </div>
                 <div className="col-span-1 md:col-span-1 xl:col-span-1">
                     <StatCard
                         label="Upcoming Assignments"
-                        count={12}
-                        icon={<AssignmentIcon className="text-blue-600 w-5 h-5" />}
+                        count={numberOfAssignments}
+                        icon={<AssignmentIcon className="text-brand w-5 h-5" />}
                         helper="Submission pending"
                     />
                 </div>
@@ -72,7 +86,7 @@ const StudentHomePage = () => {
                     <StatCard
                         label="Attendance Score"
                         count={Math.round(overallAttendancePercentage)}
-                        icon={<AttendanceIcon className="text-emerald-600 w-5 h-5" />}
+                        icon={<AttendanceIcon className="text-brand w-5 h-5" />}
                         helper="Percentage avg."
                         suffix="%"
                     />
@@ -86,7 +100,7 @@ const StudentHomePage = () => {
                     <DashboardCard title="Attendance Analysis" subtitle="Overview of your presence across all sessions.">
                         <div className="flex flex-col items-center justify-center min-h-[300px]">
                             {loading ? (
-                                <div className="animate-pulse text-blue-600 font-bold">Analyzing data...</div>
+                                <div className="animate-pulse text-brand font-bold">Analyzing data...</div>
                             ) : subjectAttendance.length > 0 ? (
                                 <div className="w-full h-[300px]">
                                     <CustomPieChart data={chartData} />

@@ -9,7 +9,7 @@ const TopNavbar = () => {
     const { currentUser } = useSelector(state => state.user);
 
     return (
-        <header className="h-16 sticky top-0 z-50 bg-gradient-to-r from-blue-600 to-indigo-600 shadow-md flex items-center justify-between px-8 text-white">
+        <header className="h-16 sticky top-0 z-50 bg-gradient-to-r from-[#065F46] via-[#065F46] to-[#F59E0B] shadow-md flex items-center justify-between px-8 text-white">
             {/* Left: Logo / Brand */}
             <div className="flex items-center gap-2">
                 <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center font-bold text-white shadow-sm backdrop-blur-sm border border-white/30">
@@ -44,7 +44,7 @@ const TopNavbar = () => {
                 </div>
                 <button className="p-2 relative text-white/80 hover:text-white transition-colors rounded-full hover:bg-white/10 hidden sm:block">
                     <NotificationsNoneIcon />
-                    <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-400 rounded-full border-2 border-indigo-600 shadow-sm"></span>
+                    <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-400 rounded-full border-2 border-brand shadow-sm"></span>
                 </button>
                 <div className="pl-2 border-l border-white/20 ml-1 opacity-90">
                     <AccountMenu />

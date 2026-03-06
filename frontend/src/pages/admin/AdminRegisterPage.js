@@ -81,7 +81,7 @@ const AdminRegisterPage = () => {
                 {/* Left Side: Registration Form */}
                 <div className="bg-surface p-8 sm:p-12 rounded-2xl shadow-xl border border-black/5 animate-slide-up">
                     <div className="mb-10 text-center lg:text-left">
-                        <h1 className="text-3xl sm:text-4xl font-extrabold text-blue-600 mb-3">Create Your College Account</h1>
+                        <h1 className="text-3xl sm:text-4xl font-extrabold text-brand mb-3">Create Your College Account</h1>
                         <p className="text-textDark/60 font-medium">Start managing your institution with our professional ERP toolkit.</p>
                     </div>
 
@@ -154,7 +154,7 @@ const AdminRegisterPage = () => {
                             <button
                                 type="submit"
                                 disabled={loader}
-                                className="w-full h-14 bg-blue-600 text-white font-extrabold rounded-2xl shadow-lg hover:shadow-xl hover:-translate-y-1 active:scale-[0.98] transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                className="w-full h-14 bg-brand text-white font-extrabold rounded-2xl shadow-lg hover:shadow-xl hover:-translate-y-1 active:scale-[0.98] transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                             >
                                 {loader ? (
                                     <CircularProgress size={24} color="inherit" />
@@ -177,15 +177,15 @@ const AdminRegisterPage = () => {
                 <div className="hidden lg:flex flex-col items-center justify-center text-center p-12 bg-surface/40 border border-black/5 rounded-[40px] h-full min-h-[600px] animate-fade-in relative overflow-hidden group">
                     {/* Decorative Elements */}
                     <div className="absolute top-0 right-0 w-64 h-64 bg-accent/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl"></div>
-                    <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-600/5 rounded-full translate-y-1/2 -translate-x-1/2 blur-3xl"></div>
+                    <div className="absolute bottom-0 left-0 w-64 h-64 bg-brand/5 rounded-full translate-y-1/2 -translate-x-1/2 blur-3xl"></div>
 
                     <div className="relative z-10 space-y-8">
                         <div className="w-32 h-32 bg-white rounded-3xl shadow-2xl flex items-center justify-center mx-auto transform group-hover:rotate-6 transition-transform duration-500">
-                            <span className="text-5xl font-black text-blue-600">E</span>
+                            <span className="text-5xl font-black text-brand">E</span>
                         </div>
 
                         <div className="space-y-4">
-                            <h2 className="text-4xl font-black text-blue-600 leading-tight">
+                            <h2 className="text-4xl font-black text-brand leading-tight">
                                 Start Managing Your <br />
                                 <span className="text-accent">Institution Smarter.</span>
                             </h2>
@@ -200,7 +200,7 @@ const AdminRegisterPage = () => {
                                 Live Dashboard
                             </div>
                             <div className="px-4 py-2 bg-white rounded-full shadow-md text-xs font-black text-textDark/40 flex items-center gap-2">
-                                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                <div className="w-2 h-2 bg-accent rounded-full"></div>
                                 Secure Auth
                             </div>
                         </div>

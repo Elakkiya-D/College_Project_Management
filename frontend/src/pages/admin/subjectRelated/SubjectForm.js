@@ -108,7 +108,7 @@ const SubjectForm = () => {
                         <div key={index} className="relative animate-fade-in">
                             {/* Entry Header */}
                             <div className="flex items-center justify-between mb-6">
-                                <h4 className="text-xs font-black uppercase tracking-[0.2em] text-blue-600 bg-blue-50 px-3 py-1 rounded-md">
+                                <h4 className="text-xs font-black uppercase tracking-[0.2em] text-brand bg-surface px-3 py-1 rounded-md">
                                     Subject Entry #{index + 1}
                                 </h4>
                                 {subjects.length > 1 && (
@@ -161,7 +161,7 @@ const SubjectForm = () => {
                     <button
                         type="button"
                         onClick={handleAddSubject}
-                        className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-6 py-3 rounded-xl transition-all hover:scale-[1.02] shadow-sm"
+                        className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-brand hover:text-yellow-800 bg-surface hover:bg-yellow-100 px-6 py-3 rounded-xl transition-all hover:scale-[1.02] shadow-sm"
                     >
                         <AddIcon fontSize="small" /> Add Another Subject
                     </button>
@@ -179,7 +179,7 @@ const SubjectForm = () => {
                     <button
                         type="submit"
                         disabled={loader}
-                        className="h-12 px-10 bg-blue-600 text-white rounded-xl font-black text-xs uppercase tracking-[0.2em] shadow-lg shadow-blue-100 hover:bg-blue-700 hover:shadow-blue-200 hover:-translate-y-0.5 transition-all flex items-center gap-2 disabled:opacity-50 disabled:translate-y-0"
+                        className="h-12 px-10 bg-brand text-white rounded-xl font-black text-xs uppercase tracking-[0.2em] shadow-lg shadow-yellow-100 hover:bg-brand/90 hover:shadow-brand/20 hover:-translate-y-0.5 transition-all flex items-center gap-2 disabled:opacity-50 disabled:translate-y-0"
                     >
                         {loader ? <CircularProgress size={20} color="inherit" /> : (
                             <>
@@ -196,7 +196,7 @@ const SubjectForm = () => {
 
 const FormInput = ({ label, placeholder, value, onChange, type = "text", required, min }) => (
     <div className="flex flex-col space-y-2 group">
-        <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 group-focus-within:text-blue-600 transition-colors">
+        <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 group-focus-within:text-brand transition-colors">
             {label}
         </label>
         <input
@@ -206,7 +206,7 @@ const FormInput = ({ label, placeholder, value, onChange, type = "text", require
             onChange={onChange}
             required={required}
             min={min}
-            className="h-12 w-full px-4 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-700 font-bold placeholder:text-slate-300 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:bg-white transition-all shadow-sm"
+            className="h-12 w-full px-4 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-700 font-bold placeholder:text-slate-300 focus:outline-none focus:ring-4 focus:ring-brand/10 focus:border-yellow-500 focus:bg-white transition-all shadow-sm"
         />
     </div>
 );

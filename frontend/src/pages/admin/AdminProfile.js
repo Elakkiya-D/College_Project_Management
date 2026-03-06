@@ -39,19 +39,19 @@ const AdminProfile = () => {
                         <div className="relative mb-6">
                             <div className="w-32 h-32 rounded-full border-4 border-accent/10 p-1 flex items-center justify-center">
                                 <Avatar
-                                    sx={{ width: '100%', height: '100%', bgcolor: '#2563EB', fontSize: '2.5rem', fontWeight: 900 }}
+                                    sx={{ width: '100%', height: '100%', bgcolor: '#065F46', fontSize: '2.5rem', fontWeight: 900 }}
                                 >
                                     {currentUser.name?.charAt(0)}
                                 </Avatar>
                             </div>
-                            <div className="absolute bottom-1 right-1 w-10 h-10 bg-blue-600 rounded-full border-4 border-surface flex items-center justify-center shadow-lg">
+                            <div className="absolute bottom-1 right-1 w-10 h-10 bg-brand rounded-full border-4 border-surface flex items-center justify-center shadow-lg">
                                 <VerifiedUserIcon className="text-white" fontSize="small" />
                             </div>
                         </div>
 
                         <div className="space-y-1">
                             <h2 className="text-2xl font-black text-textDark leading-tight">{currentUser.name}</h2>
-                            <p className="text-blue-600 font-black uppercase tracking-widest text-[10px]">Super Administrator</p>
+                            <p className="text-brand font-black uppercase tracking-widest text-[10px]">Super Administrator</p>
                         </div>
 
                         <div className="w-full mt-10 pt-8 border-t border-black/5 flex flex-col items-center gap-4">
@@ -78,14 +78,14 @@ const AdminProfile = () => {
 
                     {/* Branding Preview */}
                     <div className="bg-surface rounded-xl border border-black/5 p-8 flex flex-col md:flex-row items-center gap-8 shadow-md">
-                        <div className="w-20 h-20 bg-blue-600 rounded-2xl flex items-center justify-center text-3xl font-black text-white shadow-xl rotate-3">
+                        <div className="w-20 h-20 bg-brand rounded-2xl flex items-center justify-center text-3xl font-black text-white shadow-xl rotate-3">
                             {currentUser.schoolName?.charAt(0)}
                         </div>
                         <div className="flex-1 text-center md:text-left space-y-1">
                             <h4 className="text-xl font-black text-textDark">{currentUser.schoolName}</h4>
                             <p className="text-sm text-textDark/40 font-medium tracking-wide">Authorized Academic Management Infrastructure | Instance ID: {currentUser._id?.substring(0, 8)}</p>
                         </div>
-                        <button className="px-5 py-2.5 bg-background border border-black/5 text-textDark/60 font-black text-[10px] uppercase tracking-widest rounded-xl hover:bg-white hover:text-blue-600 transition-all">
+                        <button className="px-5 py-2.5 bg-background border border-black/5 text-textDark/60 font-black text-[10px] uppercase tracking-widest rounded-xl hover:bg-white hover:text-brand transition-all">
                             View Branding
                         </button>
                     </div>
@@ -99,11 +99,11 @@ const AdminProfile = () => {
 /* Internal Row Component following the Label (small muted) / Value (bold) rule */
 const ProfileInfoRow = ({ label, value, icon }) => (
     <div className="flex items-start gap-4 group">
-        <div className="w-10 h-10 bg-background rounded-xl flex items-center justify-center text-textDark/20 group-hover:bg-blue-50 group-hover:text-blue-600 transition-all shadow-inner border border-black/5">
+        <div className="w-10 h-10 bg-background rounded-xl flex items-center justify-center text-textDark/20 group-hover:bg-surface group-hover:text-brand transition-all shadow-inner border border-black/5">
             {icon}
         </div>
         <div className="space-y-1">
-            <p className="text-[10px] font-black uppercase tracking-widest text-textDark/30 group-hover:text-blue-600 transition-colors">{label}</p>
+            <p className="text-[10px] font-black uppercase tracking-widest text-textDark/30 group-hover:text-brand transition-colors">{label}</p>
             <p className="text-base font-black text-textDark leading-snug">{value}</p>
         </div>
     </div>

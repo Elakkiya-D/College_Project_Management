@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from "react-router-dom";
 import { getAllStudents } from '../../../redux/studentRelated/studentHandle';
+import { deleteUser } from '../../../redux/userRelated/userHandle';
 import TableTemplate from '../../../components/TableTemplate';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
@@ -28,8 +29,10 @@ const ShowStudents = () => {
     const [message, setMessage] = useState("");
 
     const deleteHandler = (deleteID, address) => {
-        setMessage("Sorry the delete function has been disabled for now.");
-        setShowPopup(true);
+        dispatch(deleteUser(deleteID, address))
+            .then(() => {
+                dispatch(getAllStudents(currentUser._id));
+            });
     }
 
     const studentColumns = [
@@ -69,7 +72,7 @@ const ShowStudents = () => {
             <div className="flex items-center gap-2 justify-end relative">
                 <button
                     onClick={() => navigate("/Admin/students/student/" + row.id)}
-                    className="px-3 py-1.5 bg-background border border-textDark/10 text-blue-600 font-bold text-sm rounded-lg hover:bg-white hover:shadow-sm transition-all shadow-sm"
+                    className="px-3 py-1.5 bg-background border border-textDark/10 text-brand font-bold text-sm rounded-lg hover:bg-white hover:shadow-sm transition-all shadow-sm"
                 >
                     View
                 </button>
@@ -77,7 +80,7 @@ const ShowStudents = () => {
                 <div className="relative" ref={dropdownRef}>
                     <button
                         onClick={() => setShowDropdown(!showDropdown)}
-                        className="px-3 py-1.5 bg-blue-600 text-white font-bold text-sm rounded-lg hover:brightness-110 hover:shadow-sm transition-all shadow-sm flex items-center gap-1"
+                        className="px-3 py-1.5 bg-brand text-white font-bold text-sm rounded-lg hover:brightness-110 hover:shadow-sm transition-all shadow-sm flex items-center gap-1"
                     >
                         Action
                         <svg className={`w-4 h-4 transition-transform ${showDropdown ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
@@ -87,19 +90,19 @@ const ShowStudents = () => {
                         <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-textDark/10 z-50 overflow-hidden text-left">
                             <button
                                 onClick={() => navigate("/Admin/students/student/attendance/" + row.id)}
-                                className="w-full text-left px-4 py-2.5 text-sm font-bold text-textDark hover:bg-surface hover:text-blue-600 transition-colors border-b border-textDark/5"
+                                className="w-full text-left px-4 py-2.5 text-sm font-bold text-textDark hover:bg-surface hover:text-brand transition-colors border-b border-textDark/5"
                             >
                                 Take Attendance
                             </button>
                             <button
                                 onClick={() => navigate("/Admin/students/student/marks/" + row.id)}
-                                className="w-full text-left px-4 py-2.5 text-sm font-bold text-textDark hover:bg-surface hover:text-blue-600 transition-colors border-b border-textDark/5"
+                                className="w-full text-left px-4 py-2.5 text-sm font-bold text-textDark hover:bg-surface hover:text-brand transition-colors border-b border-textDark/5"
                             >
                                 Provide Marks
                             </button>
                             <button
                                 onClick={() => deleteHandler(row.id, "Student")}
-                                className="w-full text-left px-4 py-2.5 text-sm font-bold text-blue-600 hover:bg-red-50 transition-colors flex items-center gap-2"
+                                className="w-full text-left px-4 py-2.5 text-sm font-bold text-brand hover:bg-red-50 transition-colors flex items-center gap-2"
                             >
                                 <PersonRemoveIcon fontSize="small" /> Remove Student
                             </button>
@@ -135,7 +138,7 @@ const ShowStudents = () => {
             {/* Content Cards / Tables */}
             {loading ? (
                 <div className="flex justify-center items-center py-20">
-                    <svg className="animate-spin h-10 w-10 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <svg className="animate-spin h-10 w-10 text-brand" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
@@ -143,13 +146,13 @@ const ShowStudents = () => {
             ) : response ? (
                 <ContentCard className="flex flex-col items-center justify-center py-16 text-center">
                     <div className="w-20 h-20 bg-background rounded-full flex items-center justify-center mb-6 border border-black/5 shadow-inner">
-                        <PersonAddAlt1Icon className="text-blue-400" style={{ fontSize: 40 }} />
+                        <PersonAddAlt1Icon className="text-accent" style={{ fontSize: 40 }} />
                     </div>
                     <h3 className="text-2xl font-black text-textDark mb-2">No Students Found</h3>
                     <p className="text-textDark/60 max-w-sm mb-8 font-medium">Your student registry is currently empty. Add your first student to begin managing classes and records.</p>
                     <button
                         onClick={() => navigate("/Admin/addstudents")}
-                        className="px-8 py-3 bg-blue-600 text-white font-extrabold rounded-xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all"
+                        className="px-8 py-3 bg-brand text-white font-extrabold rounded-xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all"
                     >
                         Add First Student
                     </button>

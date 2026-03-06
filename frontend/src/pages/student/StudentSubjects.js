@@ -46,13 +46,13 @@ const StudentSubjects = () => {
                 <div className="flex bg-white rounded-lg border border-gray-200 p-1 shadow-sm">
                     <button
                         onClick={() => setViewMode('list')}
-                        className={`px-4 py-2 rounded-md text-sm font-semibold transition-all ${viewMode === 'list' ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-500 hover:bg-gray-50'}`}
+                        className={`px-4 py-2 rounded-md text-sm font-semibold transition-all ${viewMode === 'list' ? 'bg-brand text-white shadow-sm' : 'text-gray-500 hover:bg-gray-50'}`}
                     >
                         Detailed List
                     </button>
                     <button
                         onClick={() => setViewMode('chart')}
-                        className={`px-4 py-2 rounded-md text-sm font-semibold transition-all ${viewMode === 'chart' ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-500 hover:bg-gray-50'}`}
+                        className={`px-4 py-2 rounded-md text-sm font-semibold transition-all ${viewMode === 'chart' ? 'bg-brand text-white shadow-sm' : 'text-gray-500 hover:bg-gray-50'}`}
                     >
                         Performance Chart
                     </button>
@@ -61,8 +61,8 @@ const StudentSubjects = () => {
 
             {loading ? (
                 <div className="py-20 flex justify-center flex-col items-center gap-4">
-                    <div className="w-12 h-12 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin"></div>
-                    <p className="text-sm font-black text-blue-600 uppercase tracking-widest">Retrieving Transcripts...</p>
+                    <div className="w-12 h-12 border-4 border-yellow-100 border-t-yellow-600 rounded-full animate-spin"></div>
+                    <p className="text-sm font-black text-brand uppercase tracking-widest">Retrieving Transcripts...</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 gap-8">
@@ -84,7 +84,7 @@ const StudentSubjects = () => {
                                                     <tr key={result._id || index} className="hover:bg-slate-50/50 transition-colors group">
                                                         <td className="px-6 py-4">
                                                             <div className="flex items-center gap-3">
-                                                                <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-500 group-hover:scale-110 transition-transform">
+                                                                <div className="w-8 h-8 rounded-lg bg-surface flex items-center justify-center text-accent group-hover:scale-110 transition-transform">
                                                                     <MenuBookIcon fontSize="small" />
                                                                 </div>
                                                                 <span className="font-bold text-slate-700">{result.subName.subName}</span>
@@ -98,7 +98,7 @@ const StudentSubjects = () => {
                                                             <div className="flex items-center gap-2">
                                                                 <div className="flex-1 max-w-[100px] h-2 bg-slate-100 rounded-full overflow-hidden">
                                                                     <div
-                                                                        className="h-full bg-indigo-600 shadow-sm transition-all duration-1000"
+                                                                        className="h-full bg-brand shadow-sm transition-all duration-1000"
                                                                         style={{ width: `${result.marksObtained}%` }}
                                                                     ></div>
                                                                 </div>
@@ -126,9 +126,9 @@ const StudentSubjects = () => {
                             {subjectsList.length > 0 ? (
                                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mt-6">
                                     {Array.from(new Map(subjectsList.map(item => [item._id, item])).values()).map((subject, index) => (
-                                        <div key={subject._id || index} className="p-6 bg-white rounded-xl border border-gray-100 hover:border-blue-200 hover:shadow-md transition-all group flex flex-col justify-between">
+                                        <div key={subject._id || index} className="p-6 bg-white rounded-xl border border-gray-100 hover:border-yellow-200 hover:shadow-md transition-all group flex flex-col justify-between">
                                             <div className="flex items-center gap-4 mb-4">
-                                                <div className="w-12 h-12 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-center text-blue-600 group-hover:scale-105 transition-transform shrink-0">
+                                                <div className="w-12 h-12 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-center text-brand group-hover:scale-105 transition-transform shrink-0">
                                                     <MenuBookIcon className="w-5 h-5" />
                                                 </div>
                                                 <div className="space-y-1">

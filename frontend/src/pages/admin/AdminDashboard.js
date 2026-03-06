@@ -34,7 +34,7 @@ import ShowClasses from './classRelated/ShowClasses';
 
 const AdminDashboard = () => {
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', bgcolor: '#f8fafc' }} className="font-poppins">
+        <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', bgcolor: '#FAFAF9' }} className="font-poppins">
             <CssBaseline />
             <TopNavbar />
             <Box component="main" sx={{ flexGrow: 1, p: 0, overflow: 'auto', display: 'flex', flexDirection: 'column' }}>

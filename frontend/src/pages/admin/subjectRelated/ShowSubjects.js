@@ -24,9 +24,11 @@ const ShowSubjects = () => {
     const [message, setMessage] = useState("");
 
     const deleteHandler = (deleteID, address) => {
-        if (!window.confirm("Are you sure you want to remove this subject?")) return;
-        setMessage("The delete function is currently being audited for data safety.")
-        setShowPopup(true)
+        if (!window.confirm("Are you sure you want to remove this?")) return;
+        dispatch(deleteUser(deleteID, address))
+            .then(() => {
+                dispatch(getSubjectList(currentUser._id, "AllSubjects"));
+            });
     }
 
     const subjectColumns = [
@@ -49,7 +51,7 @@ const ShowSubjects = () => {
         <div className="flex items-center gap-2 justify-end pr-4">
             <button
                 onClick={() => navigate(`/Admin/subjects/subject/${row.sclassID}/${row.id}`)}
-                className="p-2 text-textDark/40 hover:text-blue-600 bg-white hover:bg-slate-50 border border-black/5 rounded-xl shadow-sm transition-all"
+                className="p-2 text-textDark/40 hover:text-brand bg-white hover:bg-slate-50 border border-black/5 rounded-xl shadow-sm transition-all"
             >
                 <VisibilityIcon fontSize="small" />
             </button>

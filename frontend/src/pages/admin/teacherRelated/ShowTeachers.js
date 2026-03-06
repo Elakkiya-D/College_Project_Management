@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { getAllTeachers } from '../../../redux/teacherRelated/teacherHandle';
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
+import { deleteUser } from '../../../redux/userRelated/userHandle';
 import TableTemplate from '../../../components/TableTemplate';
 import Popup from '../../../components/Popup';
 import PageHeader from '../../../components/PageHeader';
@@ -26,8 +27,10 @@ const ShowTeachers = () => {
     }
 
     const deleteHandler = (deleteID, address) => {
-        setMessage("Sorry the delete function has been disabled for now.");
-        setShowPopup(true);
+        dispatch(deleteUser(deleteID, address))
+            .then(() => {
+                dispatch(getAllTeachers(currentUser._id));
+            });
     };
 
     const columns = [
@@ -42,7 +45,7 @@ const ShowTeachers = () => {
             teachSubject: teacher.teachSubject?.subName || (
                 <button
                     onClick={() => navigate(`/Admin/teachers/choosesubject/${teacher.teachSclass._id}/${teacher._id}`)}
-                    className="px-3 py-1 bg-blue-600 text-white text-xs font-bold rounded shadow-sm hover:brightness-110 transition-all"
+                    className="px-3 py-1 bg-brand text-white text-xs font-bold rounded shadow-sm hover:brightness-110 transition-all"
                 >
                     Assign Subject
                 </button>
@@ -57,7 +60,7 @@ const ShowTeachers = () => {
         <div className="flex items-center gap-3 justify-end">
             <button
                 onClick={() => navigate("/Admin/teachers/teacher/" + row.id)}
-                className="px-3 py-1.5 bg-background border border-textDark/10 text-blue-600 font-bold text-sm rounded-lg hover:bg-white hover:shadow-sm transition-all shadow-sm"
+                className="px-3 py-1.5 bg-background border border-textDark/10 text-brand font-bold text-sm rounded-lg hover:bg-white hover:shadow-sm transition-all shadow-sm"
             >
                 View
             </button>
@@ -96,7 +99,7 @@ const ShowTeachers = () => {
             {/* Content Cards / Tables */}
             {loading ? (
                 <div className="flex justify-center items-center py-20">
-                    <svg className="animate-spin h-10 w-10 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <svg className="animate-spin h-10 w-10 text-brand" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
@@ -104,13 +107,13 @@ const ShowTeachers = () => {
             ) : response ? (
                 <div className="bg-surface rounded-xl border border-black/5 p-12 text-center flex flex-col items-center justify-center">
                     <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm mb-4">
-                        <PersonAddAlt1Icon className="text-blue-600" style={{ fontSize: 32 }} />
+                        <PersonAddAlt1Icon className="text-brand" style={{ fontSize: 32 }} />
                     </div>
                     <h3 className="text-xl font-bold text-textDark mb-2">No Faculty Found</h3>
                     <p className="text-textDark/70 max-w-sm mb-6">Your teaching staff registry is currently empty. Add your first teacher to begin allocating courses.</p>
                     <button
                         onClick={() => navigate("/Admin/teachers/chooseclass")}
-                        className="px-6 py-3 bg-blue-600 text-white font-bold rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all"
+                        className="px-6 py-3 bg-brand text-white font-bold rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all"
                     >
                         Add First Teacher
                     </button>

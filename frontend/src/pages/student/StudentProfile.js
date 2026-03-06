@@ -1,5 +1,6 @@
-import React from 'react'
-import { useSelector } from 'react-redux';
+import React, { useState } from 'react'
+import { useSelector, useDispatch } from 'react-redux';
+import { updateUser } from '../../redux/userRelated/userHandle';
 import { Avatar } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import BadgeIcon from '@mui/icons-material/Badge';
@@ -10,17 +11,35 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import InfoIcon from '@mui/icons-material/Info';
 
 const StudentProfile = () => {
-  const { currentUser } = useSelector((state) => state.user);
+  const { currentUser, loading } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [formData, setFormData] = useState({
+    email: currentUser.email || '',
+    phone: currentUser.phone || '',
+    address: currentUser.address || '',
+    studentCategory: currentUser.studentCategory || 'Undergraduate'
+  });
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSave = () => {
+    dispatch(updateUser(formData, currentUser._id, "Student"));
+    setIsEditing(false);
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-8 py-8 w-full animate-fade-in">
       {/* 1. Integrated Profile Header */}
       <div className="bg-white rounded-3xl shadow-sm border border-slate-200/60 overflow-hidden">
-        <div className="h-32 bg-gradient-to-r from-blue-600 to-blue-600 relative">
+        <div className="h-32 bg-gradient-to-r from-brand to-brand relative">
           <div className="absolute -bottom-12 left-8 p-1 bg-white rounded-2xl shadow-lg border border-slate-100">
             <Avatar
               alt={currentUser.name}
-              sx={{ width: 100, height: 100, borderRadius: '14px', bgcolor: '#2563eb', fontSize: '2.5rem', fontWeight: 900 }}
+              sx={{ width: 100, height: 100, borderRadius: '14px', bgcolor: '#065F46', fontSize: '2.5rem', fontWeight: 900 }}
             >
               {String(currentUser.name).charAt(0)}
             </Avatar>
@@ -30,10 +49,10 @@ const StudentProfile = () => {
           <div className="space-y-1">
             <h1 className="text-3xl font-black text-slate-800 tracking-tighter">{currentUser.name}</h1>
             <div className="flex flex-wrap gap-3">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-50 text-blue-600 text-[10px] font-black uppercase tracking-widest rounded-full border border-blue-100/50">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-surface text-brand text-[10px] font-black uppercase tracking-widest rounded-full border border-brand/20">
                 <BadgeIcon sx={{ fontSize: 12 }} /> Roll No: {currentUser.rollNum}
               </span>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-50 text-blue-600 text-[10px] font-black uppercase tracking-widest rounded-full border border-blue-100/50">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-surface text-brand text-[10px] font-black uppercase tracking-widest rounded-full border border-brand/20">
                 <SchoolIcon sx={{ fontSize: 12 }} /> {currentUser.sclassName.sclassName}
               </span>
             </div>
@@ -57,22 +76,51 @@ const StudentProfile = () => {
         {/* Academic Information */}
         <DashboardCard title="Institutional Record" subtitle="Official registration details from university registry.">
           <div className="space-y-4">
-            <InfoRow icon={<SchoolIcon className="text-blue-600 w-5 h-5" />} label="Educational Institution" value={currentUser.school.schoolName} />
-            <InfoRow icon={<BadgeIcon className="text-blue-600 w-5 h-5" />} label="Semester Registry" value={currentUser.sclassName.sclassName} />
-            <InfoRow icon={<AccountCircleIcon className="text-blue-600 w-5 h-5" />} label="Student Category" value="Full-time Undergraduate" />
+            <InfoRow icon={<SchoolIcon className="text-brand w-5 h-5" />} label="Educational Institution" value={currentUser.school.schoolName} />
+            <InfoRow icon={<BadgeIcon className="text-brand w-5 h-5" />} label="Semester Registry" value={currentUser.sclassName.sclassName} />
+            <InfoRow icon={<AccountCircleIcon className="text-brand w-5 h-5" />} label="Student Category" value={currentUser.studentCategory || "Undergraduate"} />
           </div>
         </DashboardCard>
 
         {/* Personal Data */}
-        <DashboardCard title="Security & Contact" subtitle="Verify your registered personal information.">
+        <DashboardCard title="Security & Contact" subtitle="Manage your registered personal information.">
           <div className="space-y-4">
-            <InfoRow icon={<EmailIcon className="text-blue-600 w-5 h-5" />} label="Registered Email" value="student.records@college.edu" />
-            <InfoRow icon={<PhoneIcon className="text-blue-600 w-5 h-5" />} label="Mobile Presence" value="+1 (555) 000-0000" />
-            <InfoRow icon={<LocationOnIcon className="text-blue-600 w-5 h-5" />} label="Resident Address" value="Campus Block-A, University Quarters" />
-          </div>
-          <div className="mt-8 p-4 bg-gray-50 rounded-xl border border-gray-100 flex items-start gap-4">
-            <InfoIcon className="text-gray-400" />
-            <p className="text-sm font-medium text-gray-500 leading-relaxed italic">To synchronize or update your personal records, please submit a request to the Administration Grievance portal or contact the registrar's office directly.</p>
+            {isEditing ? (
+              <div className="space-y-4">
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Registered Email</label>
+                  <input type="email" name="email" value={formData.email} onChange={handleChange} className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand text-gray-800" placeholder="student@example.com" />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Mobile Presence</label>
+                  <input type="text" name="phone" value={formData.phone} onChange={handleChange} className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand text-gray-800" placeholder="+1 555-000-0000" />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Resident Address</label>
+                  <input type="text" name="address" value={formData.address} onChange={handleChange} className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand text-gray-800" placeholder="Your residential address..." />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Student Category</label>
+                  <select name="studentCategory" value={formData.studentCategory} onChange={handleChange} className="w-full px-4 pr-10 py-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand text-gray-800 bg-white">
+                    <option value="Undergraduate">Undergraduate</option>
+                    <option value="Postgraduate">Postgraduate</option>
+                  </select>
+                </div>
+                <div className="flex items-center gap-3 pt-4 border-t border-gray-100">
+                  <button onClick={handleSave} disabled={loading} className="px-5 py-2 rounded-lg bg-brand text-white font-bold shadow-sm hover:opacity-90 transition-colors disabled:opacity-50">Save Changes</button>
+                  <button onClick={() => setIsEditing(false)} className="px-5 py-2 rounded-lg bg-gray-100 text-gray-600 font-bold hover:bg-gray-200 transition-colors">Cancel</button>
+                </div>
+              </div>
+            ) : (
+              <>
+                <InfoRow icon={<EmailIcon className="text-brand w-5 h-5" />} label="Registered Email" value={currentUser.email || "Not Provided"} />
+                <InfoRow icon={<PhoneIcon className="text-brand w-5 h-5" />} label="Mobile Presence" value={currentUser.phone || "Not Provided"} />
+                <InfoRow icon={<LocationOnIcon className="text-brand w-5 h-5" />} label="Resident Address" value={currentUser.address || "Not Provided"} />
+                <div className="pt-4 border-t border-gray-100">
+                  <button onClick={() => setIsEditing(true)} className="px-5 py-2 rounded-lg bg-white border border-gray-200 text-brand font-bold shadow-sm hover:bg-gray-50 transition-colors">Update Information</button>
+                </div>
+              </>
+            )}
           </div>
         </DashboardCard>
       </div>

@@ -38,14 +38,10 @@ const ShowClasses = () => {
   const [message, setMessage] = useState("");
 
   const deleteHandler = (deleteID, address) => {
-    console.log(deleteID);
-    console.log(address);
-    setMessage("Sorry the delete function has been disabled for now.")
-    setShowPopup(true)
-    // dispatch(deleteUser(deleteID, address))
-    //   .then(() => {
-    //     dispatch(getAllSclasses(adminID, "Sclass"));
-    //   })
+    dispatch(deleteUser(deleteID, address))
+      .then(() => {
+        dispatch(getAllSclasses(adminID, "Sclass"));
+      })
   }
 
   const sclassColumns = [
@@ -68,7 +64,7 @@ const ShowClasses = () => {
       <div className="flex items-center gap-2 justify-end pr-4">
         <button
           onClick={() => navigate("/Admin/classes/class/" + row.id)}
-          className="px-3 py-1.5 bg-blue-50 text-blue-600 font-bold text-sm rounded-lg hover:bg-blue-600 hover:text-white transition-all shadow-sm"
+          className="px-3 py-1.5 bg-surface text-brand font-bold text-sm rounded-lg hover:bg-brand hover:text-white transition-all shadow-sm"
         >
           View
         </button>
@@ -159,7 +155,7 @@ const ShowClasses = () => {
 
       {loading ? (
         <div className="flex justify-center items-center py-20">
-          <svg className="animate-spin h-10 w-10 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <svg className="animate-spin h-10 w-10 text-brand" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
           </svg>
@@ -167,13 +163,13 @@ const ShowClasses = () => {
       ) : getresponse ? (
         <div className="bg-surface rounded-xl border border-black/5 p-12 text-center flex flex-col items-center justify-center">
           <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm mb-4">
-            <AddCardIcon className="text-blue-600" style={{ fontSize: 32 }} />
+            <AddCardIcon className="text-brand" style={{ fontSize: 32 }} />
           </div>
           <h3 className="text-xl font-bold text-textDark mb-2">No Classes Found</h3>
           <p className="text-textDark/70 max-w-sm mb-6">Your registry is currently empty. Add your first class to begin enrollment.</p>
           <button
             onClick={() => navigate("/Admin/addclass")}
-            className="px-6 py-3 bg-blue-600 text-white font-bold rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all"
+            className="px-6 py-3 bg-brand text-white font-bold rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all"
           >
             Add First Class
           </button>

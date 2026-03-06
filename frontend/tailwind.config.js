@@ -5,13 +5,13 @@ module.exports = {
     theme: {
         extend: {
             colors: {
-                brand: '#2563EB',
-                background: '#f8fafc',
+                brand: '#065F46',
+                background: '#FAFAF9',
                 surface: '#ffffff',
-                accent: '#4f46e5',
+                accent: '#F59E0B',
 
                 // Keeping text defaults to avoid complete illegibility
-                textDark: '#1E1E1E',
+                textDark: '#1C1917',
                 textLight: '#F5F5F5',
             },
             fontFamily: {

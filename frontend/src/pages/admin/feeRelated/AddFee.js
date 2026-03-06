@@ -27,7 +27,7 @@ const AddFee = () => {
     useEffect(() => {
         const fetchClasses = async () => {
             try {
-                const result = await axios.get(`${process.env.REACT_APP_BASE_URL}/SclassList/${currentUser._id}`);
+                const result = await axios.get(`${process.env.REACT_APP_BASE_URL || "http://localhost:5000"}/SclassList/${currentUser._id}`);
                 if (!result.data.message) {
                     setClasses(result.data);
                 }
@@ -84,7 +84,7 @@ const AddFee = () => {
         <div className="min-h-screen bg-background py-8 px-6 font-sans">
             <div className="mx-auto max-w-7xl flex flex-col items-center">
                 <div className="sm:mx-auto sm:w-full sm:max-w-xl text-center mb-8 animate-fade-in">
-                    <h2 className="text-4xl font-extrabold text-blue-600 tracking-tight">Institutional Billing</h2>
+                    <h2 className="text-4xl font-extrabold text-brand tracking-tight">Institutional Billing</h2>
                     <p className="mt-3 text-slate-500 font-bold text-lg bg-white px-4 py-2 rounded-xl inline-block shadow-sm border border-slate-100">
                         Create and distribute fee records to entire student classes.
                     </p>
@@ -105,7 +105,7 @@ const AddFee = () => {
                                 <select
                                     value={selectedClass}
                                     onChange={(e) => setSelectedClass(e.target.value)}
-                                    className="w-full h-12 px-4 border border-slate-200 bg-slate-50 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 font-bold transition-all"
+                                    className="w-full h-12 px-4 border border-slate-200 bg-slate-50 rounded-xl focus:outline-none focus:ring-4 focus:ring-brand/10 focus:border-yellow-500 font-bold transition-all"
                                     required
                                 >
                                     <option value="" disabled>Select Enrollment Group...</option>
@@ -122,7 +122,7 @@ const AddFee = () => {
                                         name="feeType"
                                         value={feeData.feeType}
                                         onChange={handleChange}
-                                        className="w-full h-12 px-4 border border-slate-200 bg-slate-50 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 font-bold transition-all"
+                                        className="w-full h-12 px-4 border border-slate-200 bg-slate-50 rounded-xl focus:outline-none focus:ring-4 focus:ring-brand/10 focus:border-yellow-500 font-bold transition-all"
                                         required
                                     >
                                         <option value="Tuition Fee">Tuition Fee</option>
@@ -141,7 +141,7 @@ const AddFee = () => {
                                         min="1"
                                         value={feeData.amount}
                                         onChange={handleChange}
-                                        className="w-full h-12 px-4 border border-slate-200 bg-slate-50 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 font-bold transition-all"
+                                        className="w-full h-12 px-4 border border-slate-200 bg-slate-50 rounded-xl focus:outline-none focus:ring-4 focus:ring-brand/10 focus:border-yellow-500 font-bold transition-all"
                                         placeholder="5000"
                                         required
                                     />
@@ -155,7 +155,8 @@ const AddFee = () => {
                                     name="dueDate"
                                     value={feeData.dueDate}
                                     onChange={handleChange}
-                                    className="w-full h-12 px-4 border border-slate-200 bg-slate-50 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 font-bold transition-all"
+                                    min={new Date().toISOString().split("T")[0]}
+                                    className="w-full h-12 px-4 border border-slate-200 bg-slate-50 rounded-xl focus:outline-none focus:ring-4 focus:ring-brand/10 focus:border-yellow-500 font-bold transition-all"
                                     required
                                 />
                             </div>
@@ -168,14 +169,14 @@ const AddFee = () => {
                                     onChange={handleChange}
                                     rows="3"
                                     placeholder="Provide context for this billing cycle..."
-                                    className="w-full p-4 border border-slate-200 bg-slate-50 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 font-bold transition-all resize-none"
+                                    className="w-full p-4 border border-slate-200 bg-slate-50 rounded-xl focus:outline-none focus:ring-4 focus:ring-brand/10 focus:border-yellow-500 font-bold transition-all resize-none"
                                 />
                             </div>
 
                             <button
                                 type="submit"
                                 disabled={loading || reduxLoading}
-                                className="w-full h-14 bg-blue-600 text-white rounded-xl font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-blue-100 hover:bg-blue-700 hover:-translate-y-1 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+                                className="w-full h-14 bg-brand text-white rounded-xl font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-yellow-100 hover:bg-brand/90 hover:-translate-y-1 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
                             >
                                 {(loading || reduxLoading) ? "Initializing Distribution..." : "Distribute Fees"}
                             </button>
@@ -187,18 +188,18 @@ const AddFee = () => {
             {showConfirm && (
                 <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-6 animate-fade-in">
                     <div className="bg-white w-full max-w-md rounded-[32px] shadow-2xl overflow-hidden p-8 space-y-6">
-                        <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600">
+                        <div className="w-16 h-16 bg-surface rounded-2xl flex items-center justify-center text-brand">
                             <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                         </div>
                         <div className="space-y-2">
                             <h3 className="text-xl font-black text-slate-800 tracking-tight">Confirm Distribution</h3>
                             <p className="text-sm font-medium text-slate-500 leading-relaxed">
-                                You are about to generate <span className="text-blue-600 font-bold">₹{feeData.amount}</span> invoices for all students in the selected class. This action cannot be undone.
+                                You are about to generate <span className="text-brand font-bold">₹{feeData.amount}</span> invoices for all students in the selected class. This action cannot be undone.
                             </p>
                         </div>
                         <div className="flex gap-4 pt-2">
                             <button onClick={() => setShowConfirm(false)} className="flex-1 h-12 rounded-xl font-black text-xs uppercase tracking-widest text-slate-400 hover:bg-slate-50 transition-all">Cancel</button>
-                            <button onClick={confirmSubmit} className="flex-[2] h-12 bg-slate-900 text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-blue-600 transition-all shadow-lg">Confirm & Send</button>
+                            <button onClick={confirmSubmit} className="flex-[2] h-12 bg-slate-900 text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-brand transition-all shadow-lg">Confirm & Send</button>
                         </div>
                     </div>
                 </div>

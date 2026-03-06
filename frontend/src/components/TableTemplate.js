@@ -78,7 +78,7 @@ const TableTemplate = ({ buttonHaver: ButtonHaver, columns, rows }) => {
                                 setRowsPerPage(Number(e.target.value));
                                 setPage(0);
                             }}
-                            className="bg-transparent border border-gray-200 rounded-md py-1 px-2 focus:ring-2 focus:ring-blue-500 outline-none text-gray-700 font-medium"
+                            className="bg-transparent border border-gray-200 rounded-md py-1 px-2 focus:ring-2 focus:ring-brand outline-none text-gray-700 font-medium"
                         >
                             <option value={5}>5</option>
                             <option value={10}>10</option>
