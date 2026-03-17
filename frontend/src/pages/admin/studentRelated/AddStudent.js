@@ -10,6 +10,7 @@ import PageHeader from '../../../components/PageHeader';
 import ContentCard from '../../../components/ContentCard';
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 import { DEPARTMENT_COURSE_OPTIONS } from '../../../constants/academics';
+import { getApiErrorMessage, getApiUrl, getAuthHeaders } from '../../../utils/api';
 
 const AddStudent = ({ situation }) => {
     const dispatch = useDispatch();
@@ -39,15 +40,9 @@ const AddStudent = ({ situation }) => {
     const [showPopup, setShowPopup] = useState(false);
     const [message, setMessage] = useState('');
 
-    const baseUrl = process.env.REACT_APP_BASE_URL || '';
     const adminID = currentUser._id;
     const role = 'Student';
     const attendance = [];
-
-    const getAuthHeaders = () => {
-        const token = localStorage.getItem('authToken');
-        return token ? { Authorization: `Bearer ${token}` } : {};
-    };
 
     useEffect(() => {
         if (situation !== 'Student') {
@@ -83,7 +78,7 @@ const AddStudent = ({ situation }) => {
 
         const loadDepartments = async () => {
             try {
-                const result = await axios.get(`${baseUrl}/api/v2/departments`, {
+                const result = await axios.get(getApiUrl('/api/v2/departments'), {
                     headers: { ...getAuthHeaders() },
                 });
 
@@ -111,7 +106,7 @@ const AddStudent = ({ situation }) => {
         return () => {
             isMounted = false;
         };
-    }, [baseUrl, departmentId, situation]);
+    }, [departmentId, situation]);
 
     useEffect(() => {
         if (situation !== 'Student') return;
@@ -129,7 +124,7 @@ const AddStudent = ({ situation }) => {
             setCourseError('');
 
             try {
-                const result = await axios.get(`${baseUrl}/api/v2/courses/by-department/${departmentId}`, {
+                const result = await axios.get(getApiUrl(`/api/v2/courses/by-department/${departmentId}`), {
                     headers: { ...getAuthHeaders() },
                 });
 
@@ -170,7 +165,7 @@ const AddStudent = ({ situation }) => {
                 );
 
                 if (!fallbackCourses.length) {
-                    setCourseError('Unable to load courses for the selected department.');
+                    setCourseError(getApiErrorMessage(_error, 'Unable to load courses for the selected department.'));
                 }
             } finally {
                 if (isMounted) setCourseLoader(false);
@@ -182,7 +177,7 @@ const AddStudent = ({ situation }) => {
         return () => {
             isMounted = false;
         };
-    }, [baseUrl, departmentId, departmentLabel, situation]);
+    }, [departmentId, departmentLabel, situation]);
 
     const handleDepartmentChange = (event) => {
         const nextDepartmentId = event.target.value;

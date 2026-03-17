@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { calculateOverallAttendancePercentage, calculateSubjectAttendancePercentage, groupAttendanceBySubject } from '../../components/attendanceCalculator';
 import CustomBarChart from '../../components/CustomBarChart'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -9,11 +9,10 @@ import FactCheckIcon from '@mui/icons-material/FactCheck';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 
 const ViewStdAttendance = () => {
-    const dispatch = useDispatch();
     const [openStates, setOpenStates] = useState({});
     const [viewMode, setViewMode] = useState('table'); // 'table' or 'chart'
 
-    const { userDetails, currentUser, loading } = useSelector((state) => state.user);
+    const { userDetails, loading } = useSelector((state) => state.user);
 
     const [subjectAttendance, setSubjectAttendance] = useState([]);
 

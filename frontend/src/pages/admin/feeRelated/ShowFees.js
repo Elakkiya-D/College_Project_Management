@@ -1,32 +1,32 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import PageHeader from '../../../components/PageHeader';
-import ContentCard from '../../../components/ContentCard';
 import AddCardIcon from '@mui/icons-material/AddCard';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import CurrencyRupeeIcon from '@mui/icons-material/CurrencyRupee';
 import ModuleLayout from '../../../components/ModuleLayout';
+import { getApiErrorMessage, getApiUrl } from '../../../utils/api';
 
 const ShowFees = () => {
     const navigate = useNavigate();
-    const { currentUser } = useSelector(state => state.user);
     const [fees, setFees] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [errorMessage, setErrorMessage] = useState('');
 
     useEffect(() => {
         const fetchFees = async () => {
             try {
-                const result = await axios.get(`${process.env.REACT_APP_BASE_URL}/api/admin/fees/list`);
+                const result = await axios.get(getApiUrl('/api/admin/fees/list'));
                 if (result.data.message) {
                     setFees([]);
+                    setErrorMessage(result.data.message);
                 } else {
                     setFees(result.data);
+                    setErrorMessage('');
                 }
                 setLoading(false);
             } catch (error) {
-                console.error("Error fetching fees:", error);
+                setErrorMessage(getApiErrorMessage(error, 'Unable to load the fee registry.'));
                 setLoading(false);
             }
         };
@@ -36,10 +36,11 @@ const ShowFees = () => {
     const handleDelete = async (id) => {
         if (!window.confirm("Are you sure you want to delete this fee record?")) return;
         try {
-            await axios.delete(`${process.env.REACT_APP_BASE_URL}/api/admin/fees/delete/${id}`);
+            await axios.delete(getApiUrl(`/api/admin/fees/delete/${id}`));
             setFees(fees.filter(fee => fee._id !== id));
+            setErrorMessage('');
         } catch (error) {
-            console.error("Error deleting fee:", error);
+            setErrorMessage(getApiErrorMessage(error, 'Unable to delete the fee record.'));
         }
     };
 
@@ -63,6 +64,11 @@ const ShowFees = () => {
             emptyAction={() => navigate("/Admin/addfee")}
             emptyActionLabel="Create First Fee Entry"
         >
+            {errorMessage && (
+                <div className="mb-6 rounded-2xl border border-red-100 bg-red-50 px-5 py-4 text-sm font-semibold text-red-700">
+                    {errorMessage}
+                </div>
+            )}
             <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-100">
                     <thead className="bg-gray-50/50">

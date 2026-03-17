@@ -41,11 +41,13 @@ const courseSeed = {
 };
 
 async function seed() {
-  if (!process.env.mongo) {
-    throw new Error("Missing mongo connection string in environment.");
+  const mongoUri = process.env.MONGO_URI || process.env.mongo;
+
+  if (!mongoUri) {
+    throw new Error("Missing MONGO_URI connection string in environment.");
   }
 
-  await mongoose.connect(process.env.mongo);
+  await mongoose.connect(mongoUri);
 
   const departmentMap = {};
 

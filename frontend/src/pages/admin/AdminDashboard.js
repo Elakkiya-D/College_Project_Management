@@ -4,8 +4,8 @@ import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import Logout from '../Logout';
 import AdminProfile from './AdminProfile';
 import AdminHomePage from './AdminHomePage';
-import TopNavbar from './TopNavbar';
-import SideBar from './SideBar';
+import Navbar from './components/Navbar';
+import Sidebar from './components/Sidebar';
 
 import AddStudent from './studentRelated/AddStudent';
 import SeeComplains from './studentRelated/SeeComplains';
@@ -51,7 +51,7 @@ const AdminDashboard = () => {
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', bgcolor: '#f8fafc' }} className="font-poppins">
             <CssBaseline />
-            <TopNavbar onMenuToggle={handleSidebarToggle} />
+            <Navbar onMenuToggle={handleSidebarToggle} />
 
             <Box sx={{ display: 'flex', flexGrow: 1, minHeight: 0 }}>
                 <Box
@@ -65,7 +65,7 @@ const AdminDashboard = () => {
                         top: 64,
                     }}
                 >
-                    <SideBar />
+                    <Sidebar />
                 </Box>
 
                 <Drawer
@@ -85,7 +85,7 @@ const AdminDashboard = () => {
                     }}
                 >
                     <div className="h-full bg-slate-900">
-                        <SideBar />
+                        <Sidebar />
                     </div>
                 </Drawer>
 
@@ -110,7 +110,7 @@ const AdminDashboard = () => {
                         <Route path="/Admin/addnotice" element={<AddNotice />} />
                         <Route path="/Admin/notices" element={<ShowNotices />} />
 
-                        {/* Subject */}
+                        {/* Course */}
                         <Route path="/Admin/subjects" element={<ShowSubjects />} />
                         <Route path="/Admin/subjects/subject/:classID/:subjectID" element={<ViewSubject />} />
                         <Route path="/Admin/subjects/chooseclass" element={<ChooseClass situation="Subject" />} />
@@ -121,7 +121,7 @@ const AdminDashboard = () => {
                         <Route path="/Admin/subject/student/attendance/:studentID/:subjectID" element={<StudentAttendance situation="Subject" />} />
                         <Route path="/Admin/subject/student/marks/:studentID/:subjectID" element={<StudentExamMarks situation="Subject" />} />
 
-                        {/* Class */}
+                        {/* Department */}
                         <Route path="/Admin/addclass" element={<AddClass />} />
                         <Route path="/Admin/classes" element={<ShowClasses />} />
                         <Route path="/Admin/classes/class/:id" element={<ClassDetails />} />
@@ -134,7 +134,7 @@ const AdminDashboard = () => {
                         <Route path="/Admin/students/student/attendance/:id" element={<StudentAttendance situation="Student" />} />
                         <Route path="/Admin/students/student/marks/:id" element={<StudentExamMarks situation="Student" />} />
 
-                        {/* Teacher */}
+                        {/* Faculty */}
                         <Route path="/Admin/teachers" element={<ShowTeachers />} />
                         <Route path="/Admin/teachers/teacher/:id" element={<TeacherDetails />} />
                         <Route path="/Admin/teachers/chooseclass" element={<ChooseClass situation="Teacher" />} />

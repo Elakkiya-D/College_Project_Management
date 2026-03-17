@@ -235,9 +235,9 @@ const LoginPage = ({ role }) => {
                                         Remember me
                                     </span>
                                 </label>
-                                <a href="#" className={`text-sm font-bold hover:underline transition-colors ${theme.textClass}`}>
+                                <button type="button" className={`text-sm font-bold hover:underline transition-colors ${theme.textClass}`}>
                                     Forgot password?
-                                </a>
+                                </button>
                             </div>
 
                             {/* Submit Button */}

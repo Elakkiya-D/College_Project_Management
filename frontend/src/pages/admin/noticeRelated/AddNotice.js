@@ -8,11 +8,7 @@ import Popup from '../../../components/Popup';
 
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ListAltIcon from '@mui/icons-material/ListAlt';
-import NotesIcon from '@mui/icons-material/Notes';
-import LabelOutlinedIcon from '@mui/icons-material/LabelOutlined';
-import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import SendIcon from '@mui/icons-material/Send';
-import ClearIcon from '@mui/icons-material/Clear';
 import DashboardContainer from '../../../components/DashboardContainer';
 import PageHeader from '../../../components/PageHeader';
 import ContentCard from '../../../components/ContentCard';

@@ -25,6 +25,12 @@ router.post("/departments", requireAuth, requireRole("ADMIN"), requireFields(["n
 router.put("/departments/:id", requireAuth, requireRole("ADMIN"), validateObjectIdParam("id"), updateDepartment);
 router.delete("/departments/:id", requireAuth, requireRole("ADMIN"), validateObjectIdParam("id"), deleteDepartment);
 
+// Department aliases (ADMIN)
+router.get("/department", requireAuth, requireRole("ADMIN"), listDepartments);
+router.post("/department", requireAuth, requireRole("ADMIN"), requireFields(["name", "code"]), createDepartment);
+router.put("/department/:id", requireAuth, requireRole("ADMIN"), validateObjectIdParam("id"), updateDepartment);
+router.delete("/department/:id", requireAuth, requireRole("ADMIN"), validateObjectIdParam("id"), deleteDepartment);
+
 // Faculty (ADMIN)
 router.get("/faculty", requireAuth, requireRole("ADMIN"), listFaculty);
 router.post(
@@ -47,6 +53,29 @@ router.put(
 	updateFaculty
 );
 router.delete("/faculty/:id", requireAuth, requireRole("ADMIN"), validateObjectIdParam("id"), deleteFaculty);
+
+// Faculty aliases (ADMIN)
+router.get("/faculties", requireAuth, requireRole("ADMIN"), listFaculty);
+router.post(
+	"/faculties",
+	requireAuth,
+	requireRole("ADMIN"),
+	requireFields(["name", "email", "password", "departmentId"]),
+	validateEmailField("email"),
+	validateObjectIdBody("departmentId", { required: true }),
+	createFaculty
+);
+router.get("/faculties/:id", requireAuth, requireRole("ADMIN"), validateObjectIdParam("id"), getFaculty);
+router.put(
+	"/faculties/:id",
+	requireAuth,
+	requireRole("ADMIN"),
+	validateObjectIdParam("id"),
+	validateEmailField("email"),
+	validateObjectIdBody("departmentId"),
+	updateFaculty
+);
+router.delete("/faculties/:id", requireAuth, requireRole("ADMIN"), validateObjectIdParam("id"), deleteFaculty);
 
 // Course (ADMIN)
 router.get("/courses", requireAuth, requireRole("ADMIN"), listCourses);
@@ -78,6 +107,36 @@ router.put(
 );
 router.delete("/courses/:id", requireAuth, requireRole("ADMIN"), validateObjectIdParam("id"), deleteCourse);
 
+// Course aliases (ADMIN)
+router.get("/course", requireAuth, requireRole("ADMIN"), listCourses);
+router.get(
+	"/course/by-department/:departmentId",
+	validateObjectIdParam("departmentId"),
+	listCoursesByDepartment
+);
+router.get("/course/:id", requireAuth, requireRole("ADMIN"), validateObjectIdParam("id"), getCourse);
+router.post(
+	"/course",
+	requireAuth,
+	requireRole("ADMIN"),
+	requireFields(["name", "code", "credits", "departmentId"]),
+	validateNumberField("credits", { min: 0, max: 30 }),
+	validateObjectIdBody("departmentId", { required: true }),
+	validateObjectIdBody("assignedFacultyId"),
+	createCourse
+);
+router.put(
+	"/course/:id",
+	requireAuth,
+	requireRole("ADMIN"),
+	validateObjectIdParam("id"),
+	validateNumberField("credits", { min: 0, max: 30 }),
+	validateObjectIdBody("departmentId"),
+	validateObjectIdBody("assignedFacultyId"),
+	updateCourse
+);
+router.delete("/course/:id", requireAuth, requireRole("ADMIN"), validateObjectIdParam("id"), deleteCourse);
+
 // Student (ADMIN)
 router.get("/students", requireAuth, requireRole("ADMIN"), listStudents);
 router.post(
@@ -104,6 +163,33 @@ router.put(
 	updateStudent
 );
 router.delete("/students/:id", requireAuth, requireRole("ADMIN"), validateObjectIdParam("id"), deleteStudent);
+
+// Student aliases (ADMIN)
+router.get("/student", requireAuth, requireRole("ADMIN"), listStudents);
+router.post(
+	"/student",
+	requireAuth,
+	requireRole("ADMIN"),
+	requireFields(["name", "email", "password", "registerNumber", "departmentId"]),
+	validateEmailField("email"),
+	validateObjectIdBody("departmentId", { required: true }),
+	validateArrayField("enrolledCourseIds"),
+	validateObjectIdBody("enrolledCourseIds", { isArray: true }),
+	createStudent
+);
+router.get("/student/:id", requireAuth, requireRole("ADMIN"), validateObjectIdParam("id"), getStudent);
+router.put(
+	"/student/:id",
+	requireAuth,
+	requireRole("ADMIN"),
+	validateObjectIdParam("id"),
+	validateEmailField("email"),
+	validateObjectIdBody("departmentId"),
+	validateArrayField("enrolledCourseIds"),
+	validateObjectIdBody("enrolledCourseIds", { isArray: true }),
+	updateStudent
+);
+router.delete("/student/:id", requireAuth, requireRole("ADMIN"), validateObjectIdParam("id"), deleteStudent);
 
 // Attendance (FACULTY)
 router.post(

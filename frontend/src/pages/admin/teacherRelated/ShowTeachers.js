@@ -6,7 +6,6 @@ import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import TableTemplate from '../../../components/TableTemplate';
 import Popup from '../../../components/Popup';
-import PageHeader from '../../../components/PageHeader';
 import ModuleLayout from '../../../components/ModuleLayout';
 
 const ShowTeachers = () => {

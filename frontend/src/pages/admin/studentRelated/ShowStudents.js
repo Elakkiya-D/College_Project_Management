@@ -7,8 +7,6 @@ import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
 import Popup from '../../../components/Popup';
 import * as React from 'react';
-import PageHeader from '../../../components/PageHeader';
-import ContentCard from '../../../components/ContentCard';
 import ModuleLayout from '../../../components/ModuleLayout';
 
 const ShowStudents = () => {

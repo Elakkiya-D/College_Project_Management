@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAllNotices } from '../redux/noticeRelated/noticeHandle';
 import CampaignIcon from '@mui/icons-material/Campaign';
-import InfoIcon from '@mui/icons-material/Info';
 
 const SeeNotice = ({ inDashboardWidget = false }) => {
     const dispatch = useDispatch();

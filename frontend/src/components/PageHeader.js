@@ -15,12 +15,12 @@ const PageHeader = ({ title, subtitle, actions }) => {
 
             {/* RIGHT SIDE: Action Buttons Group */}
             {actions && actions.length > 0 && (
-                <div className="flex flex-wrap items-center gap-3">
+                <div className="flex flex-wrap items-center gap-4">
                     {actions.map((action, index) => (
                         <button
                             key={index}
                             onClick={action.onClick}
-                            className={`flex items-center gap-2 px-5 py-2.5 rounded-lg shadow-sm font-semibold text-sm transition-all duration-200 ${action.variant === 'primary' || !action.variant
+                            className={`h-11 min-w-[148px] flex items-center justify-center gap-2 px-5 rounded-xl shadow-sm font-semibold text-sm transition-all duration-200 hover:scale-[1.05] active:scale-[0.97] ${action.variant === 'primary' || !action.variant
                                     ? 'bg-blue-600 text-white hover:bg-blue-700'
                                     : action.variant === 'secondary'
                                         ? 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300'

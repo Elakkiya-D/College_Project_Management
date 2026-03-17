@@ -4,9 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js",
+    "dev": "nodemon index.js",
+    "start": "node index.js",
     "build": "npm i",
     "seed:dropdown": "node scripts/seedDependentDropdownSample.js",
+    "smoke:v2": "node scripts/smokeTestV2.js",
+    "verify:deployment": "node scripts/verifyDeployment.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

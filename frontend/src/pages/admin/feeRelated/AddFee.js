@@ -5,6 +5,7 @@ import axios from 'axios';
 import { createFee } from '../../../redux/feeRelated/feeHandle';
 import { underControl } from '../../../redux/feeRelated/feeSlice';
 import FormLayout from '../../../components/FormLayout';
+import { getApiErrorMessage, getApiUrl } from '../../../utils/api';
 
 const AddFee = () => {
     const navigate = useNavigate();
@@ -28,12 +29,12 @@ const AddFee = () => {
     useEffect(() => {
         const fetchClasses = async () => {
             try {
-                const result = await axios.get(`${process.env.REACT_APP_BASE_URL}/SclassList/${currentUser._id}`);
+                const result = await axios.get(getApiUrl(`/SclassList/${currentUser._id}`));
                 if (!result.data.message) {
                     setClasses(result.data);
                 }
             } catch (error) {
-                console.error("Error fetching classes:", error);
+                setMessage({ text: getApiErrorMessage(error, 'Unable to load departments for billing.'), type: 'error' });
             }
         };
         fetchClasses();

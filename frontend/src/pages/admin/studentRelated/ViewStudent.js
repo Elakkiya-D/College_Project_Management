@@ -3,8 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/userRelated/userHandle';
 import { useNavigate, useParams } from 'react-router-dom'
 import { getSubjectList } from '../../../redux/sclassRelated/sclassHandle';
-import { Box, Button, Collapse, IconButton, Table, TableBody, TableHead, Typography, Avatar } from '@mui/material';
-import { KeyboardArrowUp, KeyboardArrowDown, Delete as DeleteIcon } from '@mui/icons-material';
+import { Collapse, IconButton, Table, TableBody, TableHead, Avatar } from '@mui/material';
+import { Delete as DeleteIcon } from '@mui/icons-material';
 import { removeStuff, updateStudentFields } from '../../../redux/studentRelated/studentHandle';
 import { calculateOverallAttendancePercentage, calculateSubjectAttendancePercentage, groupAttendanceBySubject } from '../../../components/attendanceCalculator';
 import CustomBarChart from '../../../components/CustomBarChart'
@@ -23,7 +23,7 @@ const ViewStudent = () => {
     const navigate = useNavigate()
     const params = useParams()
     const dispatch = useDispatch()
-    const { userDetails, response, loading, error } = useSelector((state) => state.user);
+    const { userDetails, loading } = useSelector((state) => state.user);
 
     const studentID = params.id
     const address = "Student"

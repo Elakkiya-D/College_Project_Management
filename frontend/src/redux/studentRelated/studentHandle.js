@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { getApiErrorMessage, getApiUrl } from '../../utils/api';
 import {
     getRequest,
     getSuccess,
@@ -11,14 +12,14 @@ export const getAllStudents = (id) => async (dispatch) => {
     dispatch(getRequest());
 
     try {
-        const result = await axios.get(`${process.env.REACT_APP_BASE_URL}/Students/${id}`);
+        const result = await axios.get(getApiUrl(`/Students/${id}`));
         if (result.data.message) {
             dispatch(getFailed(result.data.message));
         } else {
             dispatch(getSuccess(result.data));
         }
     } catch (error) {
-        dispatch(getError(error));
+        dispatch(getError(getApiErrorMessage(error, 'Unable to load students')));
     }
 }
 
@@ -26,7 +27,7 @@ export const updateStudentFields = (id, fields, address) => async (dispatch) => 
     dispatch(getRequest());
 
     try {
-        const result = await axios.put(`${process.env.REACT_APP_BASE_URL}/${address}/${id}`, fields, {
+        const result = await axios.put(getApiUrl(`/${address}/${id}`), fields, {
             headers: { 'Content-Type': 'application/json' },
         });
         if (result.data.message) {
@@ -35,7 +36,7 @@ export const updateStudentFields = (id, fields, address) => async (dispatch) => 
             dispatch(stuffDone());
         }
     } catch (error) {
-        dispatch(getError(error));
+        dispatch(getError(getApiErrorMessage(error, 'Unable to update student')));
     }
 }
 
@@ -43,13 +44,13 @@ export const removeStuff = (id, address) => async (dispatch) => {
     dispatch(getRequest());
 
     try {
-        const result = await axios.put(`${process.env.REACT_APP_BASE_URL}/${address}/${id}`);
+        const result = await axios.put(getApiUrl(`/${address}/${id}`));
         if (result.data.message) {
             dispatch(getFailed(result.data.message));
         } else {
             dispatch(stuffDone());
         }
     } catch (error) {
-        dispatch(getError(error));
+        dispatch(getError(getApiErrorMessage(error, 'Unable to update student attendance')));
     }
 }

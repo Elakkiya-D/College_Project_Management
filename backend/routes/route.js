@@ -1,5 +1,4 @@
 const router = require('express').Router();
-const express = require('express');
 
 // const { adminRegister, adminLogIn, deleteAdmin, getAdminDetail, updateAdmin } = require('../controllers/admin-controller.js');
 
@@ -136,8 +135,7 @@ const { createPaymentIntent, confirmPaymentIntent, handleStripeWebhook } = requi
 router.post('/api/payment/create-intent', createPaymentIntent);
 router.post('/api/payment/confirm', confirmPaymentIntent);
 
-// Stripe requires raw body for webhook signature verification
-router.post('/api/webhook', express.raw({ type: 'application/json' }), handleStripeWebhook);
+router.post('/api/webhook', handleStripeWebhook);
 
 
 module.exports = router;

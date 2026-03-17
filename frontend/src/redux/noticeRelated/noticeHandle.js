@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { getApiErrorMessage, getApiUrl } from '../../utils/api';
 import {
     getRequest,
     getSuccess,
@@ -10,13 +11,13 @@ export const getAllNotices = (id, address) => async (dispatch) => {
     dispatch(getRequest());
 
     try {
-        const result = await axios.get(`${process.env.REACT_APP_BASE_URL}/${address}List/${id}`);
+        const result = await axios.get(getApiUrl(`/${address}List/${id}`));
         if (result.data.message) {
             dispatch(getFailed(result.data.message));
         } else {
             dispatch(getSuccess(result.data));
         }
     } catch (error) {
-        dispatch(getError(error));
+        dispatch(getError(getApiErrorMessage(error, 'Unable to load notices')));
     }
 }

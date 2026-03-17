@@ -1,11 +1,22 @@
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const stripe = process.env.STRIPE_SECRET_KEY ? require('stripe')(process.env.STRIPE_SECRET_KEY) : null;
 const StudentFee = require('../models/studentFeeSchema');
+
+const ensureStripeConfigured = (res, requiresWebhookSecret = false) => {
+    if (!stripe || (requiresWebhookSecret && !process.env.STRIPE_WEBHOOK_SECRET)) {
+        res.status(503).json({ message: 'Stripe payment integration is not configured.' });
+        return false;
+    }
+
+    return true;
+};
 
 /**
  * STRIPE WEBHOOK HANDLER - /api/webhook
  * Authenticates Stripe events and synchronizes institutional records.
  */
 const handleStripeWebhook = async (req, res) => {
+    if (!ensureStripeConfigured(res, true)) return;
+
     const sig = req.headers['stripe-signature'];
     let event;
 
@@ -84,6 +95,8 @@ const finalizeInstitutionalPayment = async (studentFeeId, stripeId) => {
  */
 const createPaymentIntent = async (req, res) => {
     try {
+        if (!ensureStripeConfigured(res)) return;
+
         const { studentFeeId } = req.body;
 
         const studentFee = await StudentFee.findById(studentFeeId).populate('feeId');
@@ -116,6 +129,8 @@ const createPaymentIntent = async (req, res) => {
  */
 const confirmPaymentIntent = async (req, res) => {
     try {
+        if (!ensureStripeConfigured(res)) return;
+
         const { studentFeeId, paymentIntentId } = req.body;
 
         if (!studentFeeId || !paymentIntentId) {

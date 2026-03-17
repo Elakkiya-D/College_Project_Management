@@ -5,8 +5,7 @@ import axios from 'axios';
 import { CircularProgress } from '@mui/material';
 import LockIcon from '@mui/icons-material/Lock';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
-
-const BASE_URL = process.env.REACT_APP_BASE_URL || "http://localhost:5000";
+import { getApiErrorMessage, getApiUrl } from '../../utils/api';
 
 const PaymentForm = ({ studentFeeId, onSuccess, onClose }) => {
     const stripe = useStripe();
@@ -25,7 +24,7 @@ const PaymentForm = ({ studentFeeId, onSuccess, onClose }) => {
 
         try {
             // 1. Create Payment Intent on our backend
-            const { data } = await axios.post(`${BASE_URL}/api/payment/create-intent`, {
+            const { data } = await axios.post(getApiUrl('/api/payment/create-intent'), {
                 studentFeeId: studentFeeId.toString()
             });
 
@@ -45,7 +44,7 @@ const PaymentForm = ({ studentFeeId, onSuccess, onClose }) => {
             } else {
                 if (result.paymentIntent.status === 'succeeded') {
                     // 3. Confirm server-side and mark as paid (works even without webhooks in dev)
-                    await axios.post(`${BASE_URL}/api/payment/confirm`, {
+                    await axios.post(getApiUrl('/api/payment/confirm'), {
                         studentFeeId: studentFeeId.toString(),
                         paymentIntentId: result.paymentIntent.id,
                     });
@@ -54,7 +53,7 @@ const PaymentForm = ({ studentFeeId, onSuccess, onClose }) => {
                 }
             }
         } catch (err) {
-            setError(err.response?.data?.message || err.message);
+            setError(getApiErrorMessage(err, 'Unable to complete payment'));
             setLoading(false);
         }
     };

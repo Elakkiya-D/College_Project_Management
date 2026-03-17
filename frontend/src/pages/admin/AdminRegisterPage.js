@@ -2,23 +2,17 @@ import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { Grid, Box, Typography, Paper, Checkbox, FormControlLabel, TextField, CssBaseline, IconButton, InputAdornment, CircularProgress } from '@mui/material';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { CircularProgress } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import bgpic from "../../assets/designlogin.jpg"
-import { LightPurpleButton } from '../../components/buttonStyles';
 import { registerUser } from '../../redux/userRelated/userHandle';
-import styled from 'styled-components';
 import Popup from '../../components/Popup';
-
-const defaultTheme = createTheme();
 
 const AdminRegisterPage = () => {
 
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
-    const { status, currentUser, response, error, currentRole } = useSelector(state => state.user);;
+    const { status, currentUser, response, error, currentRole } = useSelector(state => state.user);
 
     const [toggle, setToggle] = useState(false)
     const [loader, setLoader] = useState(false)

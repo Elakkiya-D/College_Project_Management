@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { getTeacherDetails } from '../../../redux/teacherRelated/teacherHandle';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { Button } from '@mui/material';
 import PageHeader from '../../../components/PageHeader';
 import ContentCard from '../../../components/ContentCard';
 import BadgeIcon from '@mui/icons-material/Badge';

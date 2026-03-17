@@ -25,7 +25,6 @@ const TeacherHomePage = () => {
     }, [dispatch, subjectID, classID]);
 
     const numberOfStudents = sclassStudents && sclassStudents.length;
-    const numberOfSessions = subjectDetails && subjectDetails.sessions
 
     return (
         <>
@@ -46,7 +45,7 @@ const TeacherHomePage = () => {
                             <Title>
                                 Total Lessons
                             </Title>
-                            <Data start={0} end={2} duration={5} />
+                            <Data start={0} end={subjectDetails?.sessions || 0} duration={5} />
                         </StyledPaper>
                     </Grid>
                     <Grid item xs={12} md={3} lg={3}>
