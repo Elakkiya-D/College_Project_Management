@@ -2,10 +2,11 @@ const bcrypt = require('bcrypt');
 const Admin = require('../models/adminSchema.js');
 const Sclass = require('../models/sclassSchema.js');
 const Student = require('../models/studentSchema.js');
-const Teacher = require('../models/teacherSchema.js');
+const Faculty = require('../models/facultySchema.js');
 const Subject = require('../models/subjectSchema.js');
 const Notice = require('../models/noticeSchema.js');
 const Complain = require('../models/complainSchema.js');
+const { signAuthToken } = require('../utils/authToken');
 
 const adminRegister = async (req, res) => {
     try {
@@ -43,7 +44,11 @@ const adminLogIn = async (req, res) => {
             const validated = await bcrypt.compare(req.body.password, admin.password);
             if (validated) {
                 admin.password = undefined;
-                res.send(admin);
+                const token = signAuthToken({
+                    sub: admin._id.toString(),
+                    role: admin.role || 'Admin',
+                });
+                res.send({ user: admin, token });
             } else {
                 res.send({ message: "Invalid password" });
             }
@@ -76,7 +81,7 @@ const deleteAdmin = async (req, res) => {
 
         await Sclass.deleteMany({ school: req.params.id });
         await Student.deleteMany({ school: req.params.id });
-        await Teacher.deleteMany({ school: req.params.id });
+        await Faculty.deleteMany({ school: req.params.id });
         await Subject.deleteMany({ school: req.params.id });
         await Notice.deleteMany({ school: req.params.id });
         await Complain.deleteMany({ school: req.params.id });

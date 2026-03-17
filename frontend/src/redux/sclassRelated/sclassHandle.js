@@ -71,7 +71,7 @@ export const getSubjectList = (id, address) => async (dispatch) => {
     }
 }
 
-export const getTeacherFreeClassSubjects = (id) => async (dispatch) => {
+export const getFacultyFreeClassSubjects = (id) => async (dispatch) => {
     dispatch(getRequest());
 
     try {

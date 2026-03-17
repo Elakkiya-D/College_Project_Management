@@ -37,14 +37,14 @@ const ChooseUser = ({ visitor }) => {
       } else {
         navigate('/Studentlogin');
       }
-    } else if (user === "Teacher") {
+    } else if (user === "Faculty") {
       if (visitor === "guest") {
         const email = "tony@12";
         const fields = { email, password };
         setLoader(true);
         dispatch(loginUser(fields, user));
       } else {
-        navigate('/Teacherlogin');
+        navigate('/Facultylogin');
       }
     }
   };
@@ -55,8 +55,8 @@ const ChooseUser = ({ visitor }) => {
         navigate('/Admin/dashboard');
       } else if (currentRole === 'Student') {
         navigate('/Student/dashboard');
-      } else if (currentRole === 'Teacher') {
-        navigate('/Teacher/dashboard');
+      } else if (currentRole === 'Faculty') {
+        navigate('/Faculty/dashboard');
       }
     } else if (status === 'error') {
       setLoader(false);
@@ -129,19 +129,19 @@ const ChooseUser = ({ visitor }) => {
             </p>
           </div>
 
-          {/* Teacher Card */}
+          {/* Faculty Card */}
           <div
-            onClick={() => navigateHandler("Teacher")}
+            onClick={() => navigateHandler("Faculty")}
             className="group bg-surface rounded-2xl shadow-md p-8 text-center cursor-pointer transform transition-all duration-300 hover:scale-105 hover:bg-accent hover:shadow-xl border border-black/5"
           >
             <div className="w-20 h-20 mx-auto bg-background/50 group-hover:bg-white/20 rounded-full flex items-center justify-center mb-6 transition-colors duration-300 shadow-inner">
               <Group className="text-brand group-hover:text-white transition-colors duration-300" style={{ fontSize: 44 }} />
             </div>
             <h2 className="text-2xl font-bold text-textDark group-hover:text-white mb-3 transition-colors duration-300">
-              Teacher
+              Faculty
             </h2>
             <p className="text-textDark/70 group-hover:text-white/90 text-sm font-medium leading-relaxed transition-colors duration-300">
-              Login as a teacher to manage courses, grade assignments, and monitor class progress.
+              Login as faculty to manage courses, grade assignments, and monitor class progress.
             </p>
           </div>
 

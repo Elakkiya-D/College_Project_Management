@@ -1,28 +1,28 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-    teachersList: [],
-    teacherDetails: [],
+    facultyList: [],
+    facultyDetails: null,
     loading: false,
     error: null,
     response: null,
 };
 
-const teacherSlice = createSlice({
-    name: 'teacher',
+const facultySlice = createSlice({
+    name: 'faculty',
     initialState,
     reducers: {
         getRequest: (state) => {
             state.loading = true;
         },
         doneSuccess: (state, action) => {
-            state.teacherDetails = action.payload;
+            state.facultyDetails = action.payload;
             state.loading = false;
             state.error = null;
             state.response = null;
         },
         getSuccess: (state, action) => {
-            state.teachersList = action.payload;
+            state.facultyList = action.payload;
             state.loading = false;
             state.error = null;
             state.response = null;
@@ -40,7 +40,7 @@ const teacherSlice = createSlice({
             state.loading = false;
             state.error = null;
             state.response = null;
-        }
+        },
     },
 });
 
@@ -50,7 +50,7 @@ export const {
     getFailed,
     getError,
     doneSuccess,
-    postDone
-} = teacherSlice.actions;
+    postDone,
+} = facultySlice.actions;
 
-export const teacherReducer = teacherSlice.reducer;
+export const facultyReducer = facultySlice.reducer;

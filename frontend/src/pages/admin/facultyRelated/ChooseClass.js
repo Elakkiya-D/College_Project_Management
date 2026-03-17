@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { getAllSclasses } from '../../../redux/sclassRelated/sclassHandle';
@@ -8,32 +8,31 @@ import ClassIcon from '@mui/icons-material/Class';
 import TableTemplate from '../../../components/TableTemplate';
 
 const ChooseClass = ({ situation }) => {
-    const navigate = useNavigate()
+    const navigate = useNavigate();
     const dispatch = useDispatch();
 
     const { sclassesList, loading, error, getresponse } = useSelector((state) => state.sclass);
-    const { currentUser } = useSelector(state => state.user)
+    const { currentUser } = useSelector(state => state.user);
 
     useEffect(() => {
-        dispatch(getAllSclasses(currentUser._id, "Sclass"));
+        dispatch(getAllSclasses(currentUser._id, 'Sclass'));
     }, [currentUser._id, dispatch]);
 
     if (error) {
-        console.log(error)
+        console.log(error);
     }
 
     const navigateHandler = (classID) => {
-        if (situation === "Teacher") {
-            navigate("/Admin/teachers/choosesubject/" + classID)
+        if (situation === 'Faculty') {
+            navigate('/Admin/faculty/choosesubject/' + classID);
+        } else if (situation === 'Subject') {
+            navigate('/Admin/addsubject/' + classID);
         }
-        else if (situation === "Subject") {
-            navigate("/Admin/addsubject/" + classID)
-        }
-    }
+    };
 
     const sclassColumns = [
         { id: 'name', label: 'Department (Dept)', minWidth: 170 },
-    ]
+    ];
 
     const sclassRows = Array.isArray(sclassesList)
         ? sclassesList.map((sclass) => ({
@@ -59,13 +58,13 @@ const ChooseClass = ({ situation }) => {
         <div className="max-w-7xl mx-auto px-6 py-8 w-full animate-fade-in">
             <PageHeader
                 title="Select Department"
-                subtitle={`Assign to a specific department for ${situation === 'Teacher' ? 'Faculty' : 'Course'} allocation.`}
+                subtitle={`Assign to a specific department for ${situation === 'Faculty' ? 'Faculty' : 'Course'} allocation.`}
                 actions={[
                     {
                         label: 'Go Back',
                         variant: 'secondary',
-                        onClick: () => navigate(-1)
-                    }
+                        onClick: () => navigate(-1),
+                    },
                 ]}
             />
             {loading ? (
@@ -85,7 +84,7 @@ const ChooseClass = ({ situation }) => {
                             <h3 className="text-2xl font-black text-textDark mb-2">No Departments Configured</h3>
                             <p className="text-textDark/60 max-w-sm mb-8 font-medium">Create a department before allocating faculty to it.</p>
                             <button
-                                onClick={() => navigate("/Admin/addclass")}
+                                onClick={() => navigate('/Admin/addclass')}
                                 className="px-8 py-3 bg-blue-600 text-white font-bold rounded-xl shadow-md hover:brightness-110 transition-all"
                             >
                                 Setup First Department
@@ -104,6 +103,6 @@ const ChooseClass = ({ situation }) => {
             )}
         </div>
     );
-}
+};
 
-export default ChooseClass
+export default ChooseClass;

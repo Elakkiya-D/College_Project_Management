@@ -1,8 +1,9 @@
 const bcrypt = require('bcrypt');
-const Teacher = require('../models/teacherSchema.js');
+const Faculty = require('../models/facultySchema.js');
 const Subject = require('../models/subjectSchema.js');
 const Sclass = require('../models/sclassSchema.js');
 const { parseTabularFile } = require('../utils/bulkUploadParser.js');
+const { signAuthToken } = require('../utils/authToken');
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const DEFAULT_BULK_PASSWORD = process.env.BULK_UPLOAD_DEFAULT_PASSWORD || 'ChangeMe@123';
@@ -10,11 +11,11 @@ const DEFAULT_BULK_PASSWORD = process.env.BULK_UPLOAD_DEFAULT_PASSWORD || 'Chang
 const normalizeText = (value) => String(value || '').trim();
 const normalizeEmail = (value) => normalizeText(value).toLowerCase();
 
-const teacherRegister = async (req, res) => {
+const facultyRegister = async (req, res) => {
     const name = normalizeText(req.body.name);
     const email = normalizeEmail(req.body.email);
     const password = normalizeText(req.body.password);
-    const role = normalizeText(req.body.role) || 'Teacher';
+    const role = normalizeText(req.body.role) || 'Faculty';
     const school = normalizeText(req.body.school);
     const teachSubject = normalizeText(req.body.teachSubject);
     const teachSclass = normalizeText(req.body.teachSclass);
@@ -48,15 +49,15 @@ const teacherRegister = async (req, res) => {
             return res.status(400).json({ message: 'Selected course mapping is invalid' });
         }
 
-        const existingTeacherByEmail = await Teacher.findOne({ email, school });
-        if (existingTeacherByEmail) {
+        const existingFacultyByEmail = await Faculty.findOne({ email, school });
+        if (existingFacultyByEmail) {
             return res.send({ message: 'Email already exists' });
         }
 
         const salt = await bcrypt.genSalt(10);
         const hashedPass = await bcrypt.hash(password, salt);
 
-        const teacher = new Teacher({
+        const faculty = new Faculty({
             name,
             email,
             password: hashedPass,
@@ -67,8 +68,8 @@ const teacherRegister = async (req, res) => {
             designation,
         });
 
-        let result = await teacher.save();
-        await Subject.findByIdAndUpdate(mappedCourse._id, { teacher: teacher._id });
+        let result = await faculty.save();
+        await Subject.findByIdAndUpdate(mappedCourse._id, { faculty: faculty._id });
         result.password = undefined;
         return res.send(result);
     } catch (err) {
@@ -76,113 +77,119 @@ const teacherRegister = async (req, res) => {
     }
 };
 
-const teacherLogIn = async (req, res) => {
+const facultyLogIn = async (req, res) => {
     try {
-        let teacher = await Teacher.findOne({ email: req.body.email });
-        if (teacher) {
-            const validated = await bcrypt.compare(req.body.password, teacher.password);
+        let faculty = await Faculty.findOne({ email: req.body.email });
+        if (faculty) {
+            const validated = await bcrypt.compare(req.body.password, faculty.password);
             if (validated) {
-                teacher = await teacher.populate("teachSubject", "subName sessions")
-                teacher = await teacher.populate("school", "schoolName")
-                teacher = await teacher.populate("teachSclass", "sclassName")
-                teacher.password = undefined;
-                res.send(teacher);
+                faculty = await faculty.populate('teachSubject', 'subName sessions');
+                faculty = await faculty.populate('school', 'schoolName');
+                faculty = await faculty.populate('teachSclass', 'sclassName');
+                faculty.password = undefined;
+                const token = signAuthToken({
+                    sub: faculty._id.toString(),
+                    role: faculty.role || 'Faculty',
+                    school: faculty.school?._id?.toString() || faculty.school?.toString(),
+                });
+                res.send({ user: faculty, token });
             } else {
-                res.send({ message: "Invalid password" });
+                res.send({ message: 'Invalid password' });
             }
         } else {
-            res.send({ message: "Teacher not found" });
+            res.send({ message: 'Faculty not found' });
         }
     } catch (err) {
         res.status(500).json(err);
     }
 };
 
-const getTeachers = async (req, res) => {
+const getFacultyList = async (req, res) => {
     try {
-        let teachers = await Teacher.find({ school: req.params.id })
-            .populate("teachSubject", "subName")
-            .populate("teachSclass", "sclassName");
-        if (teachers.length > 0) {
-            let modifiedTeachers = teachers.map((teacher) => {
-                return { ...teacher._doc, password: undefined };
+        let faculty = await Faculty.find({ school: req.params.id })
+            .populate('teachSubject', 'subName')
+            .populate('teachSclass', 'sclassName');
+        if (faculty.length > 0) {
+            let modifiedFaculty = faculty.map((member) => {
+                return { ...member._doc, password: undefined };
             });
-            res.send(modifiedTeachers);
+            res.send(modifiedFaculty);
         } else {
-            res.send({ message: "No teachers found" });
+            res.send({ message: 'No faculty found' });
         }
     } catch (err) {
         res.status(500).json(err);
     }
 };
 
-const getTeacherDetail = async (req, res) => {
+const getFacultyDetail = async (req, res) => {
     try {
-        let teacher = await Teacher.findById(req.params.id)
-            .populate("teachSubject", "subName sessions")
-            .populate("school", "schoolName")
-            .populate("teachSclass", "sclassName")
-        if (teacher) {
-            teacher.password = undefined;
-            res.send(teacher);
-        }
-        else {
-            res.send({ message: "No teacher found" });
+        let faculty = await Faculty.findById(req.params.id)
+            .populate('teachSubject', 'subName sessions')
+            .populate('school', 'schoolName')
+            .populate('teachSclass', 'sclassName');
+        if (faculty) {
+            faculty.password = undefined;
+            res.send(faculty);
+        } else {
+            res.send({ message: 'No faculty found' });
         }
     } catch (err) {
         res.status(500).json(err);
     }
-}
+};
 
-const updateTeacherSubject = async (req, res) => {
-    const { teacherId, teachSubject } = req.body;
+const updateFacultySubject = async (req, res) => {
+    const { facultyId, teachSubject } = req.body;
     try {
-        const updatedTeacher = await Teacher.findByIdAndUpdate(
-            teacherId,
+        const updatedFaculty = await Faculty.findByIdAndUpdate(
+            facultyId,
             { teachSubject },
             { new: true }
         );
 
-        await Subject.findByIdAndUpdate(teachSubject, { teacher: updatedTeacher._id });
+        await Subject.findByIdAndUpdate(teachSubject, { faculty: updatedFaculty._id });
 
-        res.send(updatedTeacher);
+        res.send(updatedFaculty);
     } catch (error) {
         res.status(500).json(error);
     }
 };
 
-const deleteTeacher = async (req, res) => {
+const deleteFaculty = async (req, res) => {
     try {
-        const deletedTeacher = await Teacher.findByIdAndDelete(req.params.id);
+        const deletedFaculty = await Faculty.findByIdAndDelete(req.params.id);
 
-        await Subject.updateOne(
-            { teacher: deletedTeacher._id, teacher: { $exists: true } },
-            { $unset: { teacher: 1 } }
-        );
+        if (deletedFaculty) {
+            await Subject.updateOne(
+                { faculty: deletedFaculty._id },
+                { $unset: { faculty: 1 } }
+            );
+        }
 
-        res.send(deletedTeacher);
+        res.send(deletedFaculty);
     } catch (error) {
         res.status(500).json(error);
     }
 };
 
-const deleteTeachers = async (req, res) => {
+const deleteFacultyList = async (req, res) => {
     try {
-        const deletionResult = await Teacher.deleteMany({ school: req.params.id });
+        const facultyList = await Faculty.find({ school: req.params.id });
+        const deletionResult = await Faculty.deleteMany({ school: req.params.id });
 
-        const deletedCount = deletionResult.deletedCount || 0;
-
-        if (deletedCount === 0) {
-            res.send({ message: "No teachers found to delete" });
+        if ((deletionResult.deletedCount || 0) === 0) {
+            res.send({ message: 'No faculty found to delete' });
             return;
         }
 
-        const deletedTeachers = await Teacher.find({ school: req.params.id });
-
-        await Subject.updateMany(
-            { teacher: { $in: deletedTeachers.map(teacher => teacher._id) }, teacher: { $exists: true } },
-            { $unset: { teacher: "" }, $unset: { teacher: null } }
-        );
+        const facultyIds = facultyList.map((member) => member._id);
+        if (facultyIds.length) {
+            await Subject.updateMany(
+                { faculty: { $in: facultyIds } },
+                { $unset: { faculty: 1 } }
+            );
+        }
 
         res.send(deletionResult);
     } catch (error) {
@@ -190,23 +197,23 @@ const deleteTeachers = async (req, res) => {
     }
 };
 
-const deleteTeachersByClass = async (req, res) => {
+const deleteFacultyByClass = async (req, res) => {
     try {
-        const deletionResult = await Teacher.deleteMany({ sclassName: req.params.id });
+        const facultyList = await Faculty.find({ teachSclass: req.params.id });
+        const deletionResult = await Faculty.deleteMany({ teachSclass: req.params.id });
 
-        const deletedCount = deletionResult.deletedCount || 0;
-
-        if (deletedCount === 0) {
-            res.send({ message: "No teachers found to delete" });
+        if ((deletionResult.deletedCount || 0) === 0) {
+            res.send({ message: 'No faculty found to delete' });
             return;
         }
 
-        const deletedTeachers = await Teacher.find({ sclassName: req.params.id });
-
-        await Subject.updateMany(
-            { teacher: { $in: deletedTeachers.map(teacher => teacher._id) }, teacher: { $exists: true } },
-            { $unset: { teacher: "" }, $unset: { teacher: null } }
-        );
+        const facultyIds = facultyList.map((member) => member._id);
+        if (facultyIds.length) {
+            await Subject.updateMany(
+                { faculty: { $in: facultyIds } },
+                { $unset: { faculty: 1 } }
+            );
+        }
 
         res.send(deletionResult);
     } catch (error) {
@@ -214,31 +221,30 @@ const deleteTeachersByClass = async (req, res) => {
     }
 };
 
-const teacherAttendance = async (req, res) => {
+const facultyAttendance = async (req, res) => {
     const { status, date } = req.body;
 
     try {
-        const teacher = await Teacher.findById(req.params.id);
+        const faculty = await Faculty.findById(req.params.id);
 
-        if (!teacher) {
-            return res.send({ message: 'Teacher not found' });
+        if (!faculty) {
+            return res.send({ message: 'Faculty not found' });
         }
 
-        const existingAttendance = teacher.attendance.find(
-            (a) =>
-                a.date.toDateString() === new Date(date).toDateString()
+        const existingAttendance = faculty.attendance.find(
+            (record) => record.date.toDateString() === new Date(date).toDateString()
         );
 
         if (existingAttendance) {
             existingAttendance.status = status;
         } else {
-            teacher.attendance.push({ date, status });
+            faculty.attendance.push({ date, status });
         }
 
-        const result = await teacher.save();
+        const result = await faculty.save();
         return res.send(result);
     } catch (error) {
-        res.status(500).json(error)
+        res.status(500).json(error);
     }
 };
 
@@ -317,18 +323,18 @@ const bulkUploadFaculty = async (req, res) => {
                 continue;
             }
 
-            const existingFaculty = await Teacher.findOne({ email, school: adminID });
+            const existingFaculty = await Faculty.findOne({ email, school: adminID });
             if (existingFaculty) {
                 report.failedCount += 1;
                 report.errors.push({ row: row.rowNumber, message: `Email already exists: ${email}` });
                 continue;
             }
 
-            const faculty = new Teacher({
+            const faculty = new Faculty({
                 name,
                 email,
                 password: defaultPasswordHash,
-                role: 'Teacher',
+                role: 'Faculty',
                 designation,
                 school: adminID,
                 teachSclass: mappedDepartment._id,
@@ -365,14 +371,14 @@ const bulkUploadFaculty = async (req, res) => {
 };
 
 module.exports = {
-    teacherRegister,
-    teacherLogIn,
-    getTeachers,
-    getTeacherDetail,
-    updateTeacherSubject,
-    deleteTeacher,
-    deleteTeachers,
-    deleteTeachersByClass,
-    teacherAttendance,
+    facultyRegister,
+    facultyLogIn,
+    getFacultyList,
+    getFacultyDetail,
+    updateFacultySubject,
+    deleteFaculty,
+    deleteFacultyList,
+    deleteFacultyByClass,
+    facultyAttendance,
     bulkUploadFaculty,
 };

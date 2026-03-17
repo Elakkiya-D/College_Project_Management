@@ -182,11 +182,11 @@ const ViewSubject = () => {
             value={String(numberOfStudents)}
           />
 
-          {subjectDetails?.teacher ? (
+          {subjectDetails?.faculty ? (
             <InfoCard
               icon={<PersonOutlineOutlinedIcon fontSize="small" />}
               label="Assigned Faculty"
-              value={subjectDetails.teacher.name}
+              value={subjectDetails?.faculty?.name}
               highlight
             />
           ) : (
@@ -198,7 +198,7 @@ const ViewSubject = () => {
                 <span className="text-sm font-semibold text-orange-600">Pending Assignment</span>
               </div>
               <button
-                onClick={() => navigate("/Admin/teachers/addteacher/" + subjectDetails._id)}
+                onClick={() => navigate("/Admin/faculty/addfaculty/" + subjectDetails._id)}
                 className="w-full mt-3 px-4 py-2 bg-white text-orange-600 text-sm font-bold rounded-lg border border-orange-200 hover:bg-orange-600 hover:text-white transition-all shadow-sm"
               >
                 Assign Course Faculty

@@ -25,11 +25,11 @@ import ShowSubjects from './subjectRelated/ShowSubjects';
 import SubjectForm from './subjectRelated/SubjectForm';
 import ViewSubject from './subjectRelated/ViewSubject';
 
-import AddTeacher from './teacherRelated/AddTeacher';
-import ChooseClass from './teacherRelated/ChooseClass';
-import ChooseSubject from './teacherRelated/ChooseSubject';
-import ShowTeachers from './teacherRelated/ShowTeachers';
-import TeacherDetails from './teacherRelated/TeacherDetails';
+import AddFaculty from './facultyRelated/AddFaculty';
+import ChooseClass from './facultyRelated/ChooseClass';
+import ChooseSubject from './facultyRelated/ChooseSubject';
+import ShowFaculty from './facultyRelated/ShowFaculty';
+import FacultyDetails from './facultyRelated/FacultyDetails';
 
 import AddClass from './classRelated/AddClass';
 import ClassDetails from './classRelated/ClassDetails';
@@ -138,19 +138,12 @@ const AdminDashboard = () => {
                         <Route path="/Admin/students/student/marks/:id" element={<StudentExamMarks situation="Student" />} />
 
                         {/* Faculty */}
-                        <Route path="/Admin/faculty" element={<ShowTeachers />} />
-                        <Route path="/Admin/faculty/teacher/:id" element={<TeacherDetails />} />
-                        <Route path="/Admin/faculty/chooseclass" element={<ChooseClass situation="Teacher" />} />
+                        <Route path="/Admin/faculty" element={<ShowFaculty />} />
+                        <Route path="/Admin/faculty/member/:id" element={<FacultyDetails />} />
+                        <Route path="/Admin/faculty/chooseclass" element={<ChooseClass situation="Faculty" />} />
                         <Route path="/Admin/faculty/choosesubject/:id" element={<ChooseSubject situation="Norm" />} />
-                        <Route path="/Admin/faculty/choosesubject/:classID/:teacherID" element={<ChooseSubject situation="Teacher" />} />
-                        <Route path="/Admin/faculty/addteacher/:id" element={<AddTeacher />} />
-
-                        <Route path="/Admin/teachers" element={<ShowTeachers />} />
-                        <Route path="/Admin/teachers/teacher/:id" element={<TeacherDetails />} />
-                        <Route path="/Admin/teachers/chooseclass" element={<ChooseClass situation="Teacher" />} />
-                        <Route path="/Admin/teachers/choosesubject/:id" element={<ChooseSubject situation="Norm" />} />
-                        <Route path="/Admin/teachers/choosesubject/:classID/:teacherID" element={<ChooseSubject situation="Teacher" />} />
-                        <Route path="/Admin/teachers/addteacher/:id" element={<AddTeacher />} />
+                        <Route path="/Admin/faculty/choosesubject/:classID/:facultyID" element={<ChooseSubject situation="Faculty" />} />
+                        <Route path="/Admin/faculty/addfaculty/:id" element={<AddFaculty />} />
 
                         {/* Fees */}
                         <Route path="/Admin/fees" element={<ShowFees />} />

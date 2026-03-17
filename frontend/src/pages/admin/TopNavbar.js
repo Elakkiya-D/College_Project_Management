@@ -10,7 +10,7 @@ const sectionTitles = [
     { path: '/Admin/dashboard', label: 'Admin Overview' },
     { path: '/Admin/classes', label: 'Department Management' },
     { path: '/Admin/subjects', label: 'Course Management' },
-    { path: '/Admin/teachers', label: 'Faculty Management' },
+    { path: '/Admin/faculty', label: 'Faculty Management' },
     { path: '/Admin/students', label: 'Student Management' },
     { path: '/Admin/fees', label: 'Fees and Billing' },
     { path: '/Admin/notices', label: 'Announcements' },

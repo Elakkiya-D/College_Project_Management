@@ -9,7 +9,7 @@ import DashboardCards from './components/DashboardCards';
 import SectionCard from './components/SectionCard';
 import { getAllSclasses, getSubjectList } from '../../redux/sclassRelated/sclassHandle';
 import { getAllStudents } from '../../redux/studentRelated/studentHandle';
-import { getAllTeachers } from '../../redux/teacherRelated/teacherHandle';
+import { getAllFaculty } from '../../redux/facultyRelated/facultyHandle';
 import AccountBalanceRoundedIcon from '@mui/icons-material/AccountBalanceRounded';
 import SchoolRoundedIcon from '@mui/icons-material/SchoolRounded';
 import MenuBookRoundedIcon from '@mui/icons-material/MenuBookRounded';
@@ -37,7 +37,7 @@ const AdminHomePage = () => {
 
     const { studentsList } = useSelector((state) => state.student);
     const { sclassesList, subjectsList } = useSelector((state) => state.sclass);
-    const { teachersList } = useSelector((state) => state.teacher);
+    const { facultyList } = useSelector((state) => state.faculty);
     const { currentUser } = useSelector((state) => state.user);
 
     const adminID = currentUser?._id;
@@ -48,12 +48,12 @@ const AdminHomePage = () => {
         dispatch(getAllStudents(adminID));
         dispatch(getAllSclasses(adminID, 'Sclass'));
         dispatch(getSubjectList(adminID, 'AllSubjects'));
-        dispatch(getAllTeachers(adminID));
+        dispatch(getAllFaculty(adminID));
     }, [adminID, dispatch]);
 
     const dashboardStats = useMemo(() => {
         const departmentCount = Array.isArray(sclassesList) ? sclassesList.length : 0;
-        const facultyCount = Array.isArray(teachersList) ? teachersList.length : 0;
+        const facultyCount = Array.isArray(facultyList) ? facultyList.length : 0;
         const courseCount = Array.isArray(subjectsList) ? subjectsList.length : 0;
         const studentCount = Array.isArray(studentsList) ? studentsList.length : 0;
 
@@ -87,7 +87,7 @@ const AdminHomePage = () => {
                 color: 'amber',
             },
         ];
-    }, [sclassesList, teachersList, subjectsList, studentsList]);
+    }, [sclassesList, facultyList, subjectsList, studentsList]);
 
     const today = new Date().toLocaleDateString('en-US', {
         weekday: 'long',
@@ -150,7 +150,7 @@ const AdminHomePage = () => {
                             <ActionButton
                                 label="Open Faculty"
                                 icon={<ArrowOutwardRoundedIcon sx={{ fontSize: 16 }} />}
-                                onClick={() => navigate('/Admin/teachers')}
+                                onClick={() => navigate('/Admin/faculty')}
                             />
                         </div>
                     </SectionCard>
@@ -178,7 +178,7 @@ const AdminHomePage = () => {
                             <ActionButton
                                 label="Faculty Overview"
                                 icon={<AutoAwesomeRoundedIcon sx={{ fontSize: 17 }} />}
-                                onClick={() => navigate('/Admin/teachers')}
+                                onClick={() => navigate('/Admin/faculty')}
                                 fullWidth
                             />
                         </div>

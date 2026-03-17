@@ -40,10 +40,10 @@ const SideBar = () => {
                     pathMatchPattern="/Admin/subjects"
                 />
                 <MenuItem
-                    to="/Admin/teachers"
+                    to="/Admin/faculty"
                     icon={<SupervisorAccountOutlinedIcon />}
                     label="Faculty"
-                    pathMatchPattern="/Admin/teachers"
+                    pathMatchPattern="/Admin/faculty"
                 />
                 <MenuItem
                     to="/Admin/students"

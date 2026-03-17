@@ -1,6 +1,6 @@
-const mongoose = require("mongoose")
+const mongoose = require('mongoose');
 
-const teacherSchema = new mongoose.Schema({
+const facultySchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
@@ -16,11 +16,11 @@ const teacherSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        default: "Teacher"
+        default: 'Faculty',
     },
     designation: {
         type: String,
-        default: "Faculty",
+        default: 'Faculty',
     },
     school: {
         type: mongoose.Schema.Types.ObjectId,
@@ -36,18 +36,20 @@ const teacherSchema = new mongoose.Schema({
         ref: 'sclass',
         required: true,
     },
-    attendance: [{
-        date: {
-            type: Date,
-            required: true
+    attendance: [
+        {
+            date: {
+                type: Date,
+                required: true,
+            },
+            presentCount: {
+                type: String,
+            },
+            absentCount: {
+                type: String,
+            },
         },
-        presentCount: {
-            type: String,
-        },
-        absentCount: {
-            type: String,
-        }
-    }],
+    ],
     resetPasswordToken: {
         type: String,
         default: null,
@@ -58,4 +60,4 @@ const teacherSchema = new mongoose.Schema({
     },
 }, { timestamps: true });
 
-module.exports = mongoose.model("teacher", teacherSchema)
+module.exports = mongoose.model('faculty', facultySchema);

@@ -22,9 +22,9 @@ const subjectSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'admin'
     },
-    teacher: {
+    faculty: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'teacher',
+        ref: 'faculty',
     }
 }, { timestamps: true });
 

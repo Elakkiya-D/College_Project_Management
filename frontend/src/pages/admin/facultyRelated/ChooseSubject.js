@@ -1,34 +1,32 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getTeacherFreeClassSubjects } from '../../../redux/sclassRelated/sclassHandle';
-import { updateTeachSubject } from '../../../redux/teacherRelated/teacherHandle';
+import { getFacultyFreeClassSubjects } from '../../../redux/sclassRelated/sclassHandle';
+import { updateFacultySubject } from '../../../redux/facultyRelated/facultyHandle';
 import PageHeader from '../../../components/PageHeader';
 import ContentCard from '../../../components/ContentCard';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 
 const ChooseSubject = ({ situation }) => {
     const params = useParams();
-    const navigate = useNavigate()
+    const navigate = useNavigate();
     const dispatch = useDispatch();
 
-    const [classID, setClassID] = useState("");
-    const [teacherID, setTeacherID] = useState("");
-    const [loader, setLoader] = useState(false)
+    const [classID, setClassID] = useState('');
+    const [facultyID, setFacultyID] = useState('');
+    const [loader, setLoader] = useState(false);
 
     const { subjectsList, loading, error, response } = useSelector((state) => state.sclass);
 
     useEffect(() => {
-        if (situation === "Norm") {
+        if (situation === 'Norm') {
             setClassID(params.id);
-            const classID = params.id
-            dispatch(getTeacherFreeClassSubjects(classID));
-        }
-        else if (situation === "Teacher") {
-            const { classID, teacherID } = params
-            setClassID(classID);
-            setTeacherID(teacherID);
-            dispatch(getTeacherFreeClassSubjects(classID));
+            dispatch(getFacultyFreeClassSubjects(params.id));
+        } else if (situation === 'Faculty') {
+            const { classID: paramClassId, facultyID: paramFacultyId } = params;
+            setClassID(paramClassId);
+            setFacultyID(paramFacultyId);
+            dispatch(getFacultyFreeClassSubjects(paramClassId));
         }
     }, [dispatch, params, situation]);
 
@@ -57,7 +55,7 @@ const ChooseSubject = ({ situation }) => {
                         <h3 className="text-2xl font-black text-textDark mb-2">No Free Courses Available</h3>
                         <p className="text-textDark/60 max-w-sm mb-8 font-medium">All courses assigned to the selected department already have a designated faculty member.</p>
                         <button
-                            onClick={() => navigate("/Admin/addsubject/" + classID)}
+                            onClick={() => navigate('/Admin/addsubject/' + classID)}
                             className="px-8 py-3 bg-blue-600 text-white font-bold rounded-xl shadow-md hover:brightness-110 transition-all"
                         >
                             Create New Course
@@ -67,14 +65,14 @@ const ChooseSubject = ({ situation }) => {
             </div>
         );
     } else if (error) {
-        console.log(error)
+        console.log(error);
     }
 
-    const updateSubjectHandler = (teacherId, teachSubject) => {
-        setLoader(true)
-        dispatch(updateTeachSubject(teacherId, teachSubject))
-        navigate("/Admin/teachers")
-    }
+    const updateSubjectHandler = (facultyId, teachSubject) => {
+        setLoader(true);
+        dispatch(updateFacultySubject(facultyId, teachSubject));
+        navigate('/Admin/faculty');
+    };
 
     return (
         <div className="max-w-7xl mx-auto px-6 py-8 w-full animate-fade-in">
@@ -85,8 +83,8 @@ const ChooseSubject = ({ situation }) => {
                     {
                         label: 'Go Back',
                         variant: 'secondary',
-                        onClick: () => navigate(-1)
-                    }
+                        onClick: () => navigate(-1),
+                    },
                 ]}
             />
             <div className="mt-8 animate-slide-up">
@@ -110,9 +108,9 @@ const ChooseSubject = ({ situation }) => {
                                             <span className="px-3 py-1 bg-slate-100 rounded-lg text-xs font-bold text-textDark/60 tabular-nums">{subject.subCode}</span>
                                         </td>
                                         <td className="px-6 py-4 text-right flex justify-end">
-                                            {situation === "Norm" ? (
+                                            {situation === 'Norm' ? (
                                                 <button
-                                                    onClick={() => navigate("/Admin/teachers/addteacher/" + subject._id)}
+                                                    onClick={() => navigate('/Admin/faculty/addfaculty/' + subject._id)}
                                                     className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold uppercase tracking-wider hover:brightness-110 shadow-md transition-all"
                                                 >
                                                     <MenuBookIcon fontSize="small" /> Register
@@ -120,7 +118,7 @@ const ChooseSubject = ({ situation }) => {
                                             ) : (
                                                 <button
                                                     disabled={loader}
-                                                    onClick={() => updateSubjectHandler(teacherID, subject._id)}
+                                                    onClick={() => updateSubjectHandler(facultyID, subject._id)}
                                                     className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold uppercase tracking-wider hover:brightness-110 shadow-md transition-all disabled:opacity-50"
                                                 >
                                                     {loader ? (

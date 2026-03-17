@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getSubjectDetails } from '../../../redux/sclassRelated/sclassHandle';
@@ -12,33 +12,33 @@ import Popup from '../../../components/Popup';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-const AddTeacher = () => {
-  const params = useParams()
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
+const AddFaculty = () => {
+  const params = useParams();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const subjectID = params.id
+  const subjectID = params.id;
 
   const { status, response, error } = useSelector(state => state.user);
   const { subjectDetails } = useSelector((state) => state.sclass);
 
   useEffect(() => {
-    dispatch(getSubjectDetails(subjectID, "Subject"));
+    dispatch(getSubjectDetails(subjectID, 'Subject'));
   }, [dispatch, subjectID]);
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('')
-  const [designation, setDesignation] = useState('Faculty')
+  const [password, setPassword] = useState('');
+  const [designation, setDesignation] = useState('Faculty');
 
   const [showPopup, setShowPopup] = useState(false);
-  const [message, setMessage] = useState("");
-  const [loader, setLoader] = useState(false)
+  const [message, setMessage] = useState('');
+  const [loader, setLoader] = useState(false);
 
-  const role = "Teacher"
-  const school = subjectDetails && subjectDetails.school
-  const teachSubject = subjectDetails && subjectDetails._id
-  const teachSclass = subjectDetails && subjectDetails.sclassName && subjectDetails.sclassName._id
+  const role = 'Faculty';
+  const school = subjectDetails && subjectDetails.school;
+  const teachSubject = subjectDetails && subjectDetails._id;
+  const teachSclass = subjectDetails && subjectDetails.sclassName && subjectDetails.sclassName._id;
 
   const fields = {
     name,
@@ -49,10 +49,10 @@ const AddTeacher = () => {
     teachSubject,
     teachSclass,
     designation,
-  }
+  };
 
   const submitHandler = (event) => {
-    event.preventDefault()
+    event.preventDefault();
 
     if (!name.trim() || !email.trim() || !password.trim() || !designation.trim()) {
       setMessage('Please fill all required fields before submitting.');
@@ -72,32 +72,32 @@ const AddTeacher = () => {
       return;
     }
 
-    setLoader(true)
-    dispatch(registerUser(fields, role))
-  }
+    setLoader(true);
+    dispatch(registerUser(fields, role));
+  };
 
   useEffect(() => {
     if (status === 'added') {
-      setLoader(false)
-      setMessage('Done Successfully')
-      setShowPopup(true)
+      setLoader(false);
+      setMessage('Done Successfully');
+      setShowPopup(true);
 
       const redirectTimer = setTimeout(() => {
-        dispatch(underControl())
-        navigate('/faculty')
-      }, 900)
+        dispatch(underControl());
+        navigate('/Admin/faculty');
+      }, 900);
 
-      return () => clearTimeout(redirectTimer)
+      return () => clearTimeout(redirectTimer);
     }
-    else if (status === 'failed') {
-      setMessage(response)
-      setShowPopup(true)
-      setLoader(false)
+    if (status === 'failed') {
+      setMessage(response);
+      setShowPopup(true);
+      setLoader(false);
     }
-    else if (status === 'error') {
-      setMessage("Network Error")
-      setShowPopup(true)
-      setLoader(false)
+    if (status === 'error') {
+      setMessage('Network Error');
+      setShowPopup(true);
+      setLoader(false);
     }
   }, [status, navigate, error, response, dispatch]);
 
@@ -110,8 +110,8 @@ const AddTeacher = () => {
           {
             label: 'Go Back',
             variant: 'secondary',
-            onClick: () => navigate('/faculty')
-          }
+            onClick: () => navigate('/Admin/faculty'),
+          },
         ]}
       />
 
@@ -199,6 +199,6 @@ const AddTeacher = () => {
       <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} />
     </div>
   );
-}
+};
 
-export default AddTeacher
+export default AddFaculty;

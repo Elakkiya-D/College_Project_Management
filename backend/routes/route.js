@@ -23,10 +23,12 @@ const {
     clearAllStudentsAttendance,
     removeStudentAttendanceBySubject,
     removeStudentAttendance,
-    bulkUploadStudents } = require('../controllers/student_controller.js');
+    bulkUploadStudents,
+    createStudentByFaculty } = require('../controllers/student_controller.js');
 const { subjectCreate, classSubjects, deleteSubjectsByClass, getSubjectDetail, deleteSubject, freeSubjectList, allSubjects, deleteSubjects } = require('../controllers/subject-controller.js');
-const { teacherRegister, teacherLogIn, getTeachers, getTeacherDetail, deleteTeachers, deleteTeachersByClass, deleteTeacher, updateTeacherSubject, teacherAttendance, bulkUploadFaculty } = require('../controllers/teacher-controller.js');
+const { facultyRegister, facultyLogIn, getFacultyList, getFacultyDetail, deleteFacultyList, deleteFacultyByClass, deleteFaculty, updateFacultySubject, facultyAttendance, bulkUploadFaculty } = require('../controllers/faculty-controller.js');
 const { forgotPassword, resetPassword } = require('../controllers/auth-password-controller.js');
+const { requireAuth, requireRole } = require('../middlewares/auth');
 
 const upload = multer({
     storage: multer.memoryStorage(),
@@ -37,6 +39,9 @@ const upload = multer({
 router.post('/auth/forgot-password', forgotPassword);
 router.post('/auth/reset-password', resetPassword);
 
+const requireAdmin = [requireAuth, requireRole('Admin')];
+const requireFaculty = [requireAuth, requireRole('Faculty')];
+
 // Bulk upload
 router.post('/student/bulk-upload', upload.single('file'), bulkUploadStudents);
 router.post('/faculty/bulk-upload', upload.single('file'), bulkUploadFaculty);
@@ -45,60 +50,61 @@ router.post('/faculty/bulk-upload', upload.single('file'), bulkUploadFaculty);
 router.post('/AdminReg', adminRegister);
 router.post('/AdminLogin', adminLogIn);
 
-router.get("/Admin/:id", getAdminDetail)
-router.delete("/Admin/:id", deleteAdmin)
-router.put("/Admin/:id", updateAdmin)
+router.get("/Admin/:id", requireAdmin, getAdminDetail)
+router.delete("/Admin/:id", requireAdmin, deleteAdmin)
+router.put("/Admin/:id", requireAdmin, updateAdmin)
 
 // Student
 
-router.post('/StudentReg', studentRegister);
+router.post('/StudentReg', requireAdmin, studentRegister);
 router.post('/StudentLogin', studentLogIn)
+router.post('/student/create', requireFaculty, createStudentByFaculty);
 
 router.get("/Students/:id", getStudents)
 router.get("/Student/:id", getStudentDetail)
 
-router.delete("/Students/:id", deleteStudents)
-router.delete("/StudentsClass/:id", deleteStudentsByClass)
-router.delete("/Student/:id", deleteStudent)
+router.delete("/Students/:id", requireAdmin, deleteStudents)
+router.delete("/StudentsClass/:id", requireAdmin, deleteStudentsByClass)
+router.delete("/Student/:id", requireAdmin, deleteStudent)
 
-router.put("/Student/:id", updateStudent)
+router.put("/Student/:id", requireAdmin, updateStudent)
 
-router.put('/UpdateExamResult/:id', updateExamResult)
+router.put('/UpdateExamResult/:id', requireAdmin, updateExamResult)
 
-router.put('/StudentAttendance/:id', studentAttendance)
+router.put('/StudentAttendance/:id', requireAdmin, studentAttendance)
 
-router.put('/RemoveAllStudentsSubAtten/:id', clearAllStudentsAttendanceBySubject);
-router.put('/RemoveAllStudentsAtten/:id', clearAllStudentsAttendance);
+router.put('/RemoveAllStudentsSubAtten/:id', requireAdmin, clearAllStudentsAttendanceBySubject);
+router.put('/RemoveAllStudentsAtten/:id', requireAdmin, clearAllStudentsAttendance);
 
-router.put('/RemoveStudentSubAtten/:id', removeStudentAttendanceBySubject);
-router.put('/RemoveStudentAtten/:id', removeStudentAttendance)
+router.put('/RemoveStudentSubAtten/:id', requireAdmin, removeStudentAttendanceBySubject);
+router.put('/RemoveStudentAtten/:id', requireAdmin, removeStudentAttendance)
 
-// Teacher
+// Faculty
 
-router.post('/TeacherReg', teacherRegister);
-router.post('/TeacherLogin', teacherLogIn)
+router.post('/FacultyReg', requireAdmin, facultyRegister);
+router.post('/FacultyLogin', facultyLogIn)
 
-router.get("/Teachers/:id", getTeachers)
-router.get("/Teacher/:id", getTeacherDetail)
+router.get("/Faculties/:id", requireAdmin, getFacultyList)
+router.get("/Faculty/:id", requireAdmin, getFacultyDetail)
 
-router.delete("/Teachers/:id", deleteTeachers)
-router.delete("/TeachersClass/:id", deleteTeachersByClass)
-router.delete("/Teacher/:id", deleteTeacher)
+router.delete("/Faculties/:id", requireAdmin, deleteFacultyList)
+router.delete("/FacultiesClass/:id", requireAdmin, deleteFacultyByClass)
+router.delete("/Faculty/:id", requireAdmin, deleteFaculty)
 
-router.put("/TeacherSubject", updateTeacherSubject)
+router.put("/FacultySubject", requireAdmin, updateFacultySubject)
 
-router.post('/TeacherAttendance/:id', teacherAttendance)
+router.post('/FacultyAttendance/:id', requireAdmin, facultyAttendance)
 
 // Notice
 
-router.post('/NoticeCreate', noticeCreate);
+router.post('/NoticeCreate', requireAdmin, noticeCreate);
 
 router.get('/NoticeList/:id', noticeList);
 
-router.delete("/Notices/:id", deleteNotices)
-router.delete("/Notice/:id", deleteNotice)
+router.delete("/Notices/:id", requireAdmin, deleteNotices)
+router.delete("/Notice/:id", requireAdmin, deleteNotice)
 
-router.put("/Notice/:id", updateNotice)
+router.put("/Notice/:id", requireAdmin, updateNotice)
 
 // Complain
 
@@ -106,33 +112,33 @@ router.post('/ComplainCreate', complainCreate);
 
 router.get('/ComplainList/:id', complainList);
 
-router.delete("/Complain/:id", deleteComplain);
-router.delete("/Complains/:id", deleteComplains);
+router.delete("/Complain/:id", requireAdmin, deleteComplain);
+router.delete("/Complains/:id", requireAdmin, deleteComplains);
 
 // Sclass
 
-router.post('/SclassCreate', sclassCreate);
+router.post('/SclassCreate', requireAdmin, sclassCreate);
 
 router.get('/SclassList/:id', sclassList);
 router.get("/Sclass/:id", getSclassDetail)
 
 router.get("/Sclass/Students/:id", getSclassStudents)
 
-router.delete("/Sclasses/:id", deleteSclasses)
-router.delete("/Sclass/:id", deleteSclass)
+router.delete("/Sclasses/:id", requireAdmin, deleteSclasses)
+router.delete("/Sclass/:id", requireAdmin, deleteSclass)
 
 // Subject
 
-router.post('/SubjectCreate', subjectCreate);
+router.post('/SubjectCreate', requireAdmin, subjectCreate);
 
 router.get('/AllSubjects/:id', allSubjects);
 router.get('/ClassSubjects/:id', classSubjects);
 router.get('/FreeSubjectList/:id', freeSubjectList);
 router.get("/Subject/:id", getSubjectDetail)
 
-router.delete("/Subject/:id", deleteSubject)
-router.delete("/Subjects/:id", deleteSubjects)
-router.delete("/SubjectsClass/:id", deleteSubjectsByClass)
+router.delete("/Subject/:id", requireAdmin, deleteSubject)
+router.delete("/Subjects/:id", requireAdmin, deleteSubjects)
+router.delete("/SubjectsClass/:id", requireAdmin, deleteSubjectsByClass)
 
 // Fee Management
 const {

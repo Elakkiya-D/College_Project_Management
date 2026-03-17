@@ -7,13 +7,13 @@ import {
     getError,
     postDone,
     doneSuccess
-} from './teacherSlice';
+} from './facultySlice';
 
-export const getAllTeachers = (id) => async (dispatch) => {
+export const getAllFaculty = (id) => async (dispatch) => {
     dispatch(getRequest());
 
     try {
-        const result = await axios.get(getApiUrl(`/Teachers/${id}`));
+        const result = await axios.get(getApiUrl(`/Faculties/${id}`));
         if (result.data.message) {
             dispatch(getFailed(result.data.message));
         } else {
@@ -22,30 +22,30 @@ export const getAllTeachers = (id) => async (dispatch) => {
     } catch (error) {
         dispatch(getError(getApiErrorMessage(error, 'Unable to load faculty members')));
     }
-}
+};
 
-export const getTeacherDetails = (id) => async (dispatch) => {
+export const getFacultyDetails = (id) => async (dispatch) => {
     dispatch(getRequest());
 
     try {
-        const result = await axios.get(getApiUrl(`/Teacher/${id}`));
+        const result = await axios.get(getApiUrl(`/Faculty/${id}`));
         if (result.data) {
             dispatch(doneSuccess(result.data));
         }
     } catch (error) {
         dispatch(getError(getApiErrorMessage(error, 'Unable to load faculty details')));
     }
-}
+};
 
-export const updateTeachSubject = (teacherId, teachSubject) => async (dispatch) => {
+export const updateFacultySubject = (facultyId, teachSubject) => async (dispatch) => {
     dispatch(getRequest());
 
     try {
-        await axios.put(getApiUrl('/TeacherSubject'), { teacherId, teachSubject }, {
+        await axios.put(getApiUrl('/FacultySubject'), { facultyId, teachSubject }, {
             headers: { 'Content-Type': 'application/json' },
         });
         dispatch(postDone());
     } catch (error) {
         dispatch(getError(getApiErrorMessage(error, 'Unable to assign course to faculty')));
     }
-}
+};

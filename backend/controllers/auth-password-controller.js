@@ -1,7 +1,7 @@
 const crypto = require("crypto");
 const bcrypt = require("bcrypt");
 const Admin = require("../models/adminSchema");
-const Teacher = require("../models/teacherSchema");
+const Faculty = require("../models/facultySchema");
 const V2User = require("../models/v2/User");
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -49,16 +49,16 @@ function buildResetLink(email, token) {
 async function findAccountByEmail(email) {
     const normalizedEmail = normalizeEmail(email);
 
-    const [v2User, admin, teacher] = await Promise.all([
+    const [v2User, admin, faculty] = await Promise.all([
         V2User.findOne({ email: normalizedEmail }),
         Admin.findOne({ email: normalizedEmail }),
-        Teacher.findOne({ email: normalizedEmail }),
+        Faculty.findOne({ email: normalizedEmail }),
     ]);
 
     const matches = [
         v2User ? { modelType: "v2User", record: v2User } : null,
         admin ? { modelType: "admin", record: admin } : null,
-        teacher ? { modelType: "teacher", record: teacher } : null,
+        faculty ? { modelType: "faculty", record: faculty } : null,
     ].filter(Boolean);
 
     if (matches.length === 0) {

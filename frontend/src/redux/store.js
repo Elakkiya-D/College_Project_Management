@@ -3,7 +3,7 @@ import { userReducer } from './userRelated/userSlice';
 import { studentReducer } from './studentRelated/studentSlice';
 import { noticeReducer } from './noticeRelated/noticeSlice';
 import { sclassReducer } from './sclassRelated/sclassSlice';
-import { teacherReducer } from './teacherRelated/teacherSlice';
+import { facultyReducer } from './facultyRelated/facultySlice';
 import { complainReducer } from './complainRelated/complainSlice';
 import { feeReducer } from './feeRelated/feeSlice';
 
@@ -11,7 +11,7 @@ const store = configureStore({
     reducer: {
         user: userReducer,
         student: studentReducer,
-        teacher: teacherReducer,
+        faculty: facultyReducer,
         notice: noticeReducer,
         complain: complainReducer,
         sclass: sclassReducer,

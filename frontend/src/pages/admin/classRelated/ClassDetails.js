@@ -196,10 +196,10 @@ const ClassDetails = () => {
         )
     }
 
-    const ClassTeachersSection = () => {
+    const ClassFacultySection = () => {
         return (
             <>
-                Teachers
+                Faculty
             </>
         )
     }
@@ -308,14 +308,14 @@ const ClassDetails = () => {
                             <TabButton
                                 isActive={value === '4'}
                                 onClick={() => setValue('4')}
-                                label="TEACHERS"
+                                label="FACULTY"
                             />
                         </div>
 
                         {value === '1' && <ClassDetailsSection />}
                         {value === '2' && <ClassSubjectsSection />}
                         {value === '3' && <ClassStudentsSection />}
-                        {value === '4' && <ClassTeachersSection />}
+                        {value === '4' && <ClassFacultySection />}
                     </div>
                 </>
             )}

@@ -103,7 +103,7 @@ const AddNotice = () => {
               >
                 <option value="All">All Institutional Users</option>
                 <option value="Students">Student Body</option>
-                <option value="Teachers">Faculty Only</option>
+                <option value="Faculty">Faculty Only</option>
               </select>
             </div>
 

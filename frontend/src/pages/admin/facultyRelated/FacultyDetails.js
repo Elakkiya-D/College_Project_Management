@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { getTeacherDetails } from '../../../redux/teacherRelated/teacherHandle';
+import { getFacultyDetails } from '../../../redux/facultyRelated/facultyHandle';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import PageHeader from '../../../components/PageHeader';
@@ -8,26 +8,27 @@ import BadgeIcon from '@mui/icons-material/Badge';
 import ClassIcon from '@mui/icons-material/Class';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
-const TeacherDetails = () => {
+
+const FacultyDetails = () => {
     const navigate = useNavigate();
     const params = useParams();
     const dispatch = useDispatch();
-    const { loading, teacherDetails, error } = useSelector((state) => state.teacher);
+    const { loading, facultyDetails, error } = useSelector((state) => state.faculty);
 
-    const teacherID = params.id;
+    const facultyID = params.id;
 
     useEffect(() => {
-        dispatch(getTeacherDetails(teacherID));
-    }, [dispatch, teacherID]);
+        dispatch(getFacultyDetails(facultyID));
+    }, [dispatch, facultyID]);
 
     if (error) {
         console.log(error);
     }
 
-    const isSubjectNamePresent = teacherDetails?.teachSubject?.subName;
+    const isSubjectNamePresent = facultyDetails?.teachSubject?.subName;
 
     const handleAddSubject = () => {
-        navigate(`/Admin/teachers/choosesubject/${teacherDetails?.teachSclass?._id}/${teacherDetails?._id}`);
+        navigate(`/Admin/faculty/choosesubject/${facultyDetails?.teachSclass?._id}/${facultyDetails?._id}`);
     };
 
     return (
@@ -42,14 +43,14 @@ const TeacherDetails = () => {
             ) : (
                 <div className="max-w-7xl mx-auto px-6 py-8 w-full animate-fade-in">
                     <PageHeader
-                        title={teacherDetails?.name}
+                        title={facultyDetails?.name}
                         subtitle="Faculty Member Details"
                         actions={[
                             {
                                 label: 'Go Back',
                                 variant: 'secondary',
-                                onClick: () => navigate(-1)
-                            }
+                                onClick: () => navigate(-1),
+                            },
                         ]}
                     />
 
@@ -59,31 +60,31 @@ const TeacherDetails = () => {
                                 <div className="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mb-4 text-blue-600 shadow-inner">
                                     <BadgeIcon style={{ fontSize: 40 }} />
                                 </div>
-                                <h3 className="text-2xl font-black text-textDark mb-1">{teacherDetails?.name}</h3>
+                                <h3 className="text-2xl font-black text-textDark mb-1">{facultyDetails?.name}</h3>
                                 <p className="text-blue-600 font-bold uppercase tracking-widest text-xs mb-6">Faculty Staff</p>
                             </ContentCard>
                         </div>
                         <div className="lg:col-span-2">
-                            <ContentCard title="Academic Assignment" subtitle="Current class and subject allocations">
+                            <ContentCard title="Academic Assignment" subtitle="Current class and course allocations">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <DetailBlock label="Assigned Class" value={teacherDetails?.teachSclass?.sclassName} icon={<ClassIcon className="text-blue-400" />} />
+                                    <DetailBlock label="Assigned Department" value={facultyDetails?.teachSclass?.sclassName} icon={<ClassIcon className="text-blue-400" />} />
 
                                     {isSubjectNamePresent ? (
                                         <>
-                                            <DetailBlock label="Subject Name" value={teacherDetails?.teachSubject?.subName} icon={<MenuBookIcon className="text-blue-400" />} />
-                                            <DetailBlock label="Subject Sessions" value={teacherDetails?.teachSubject?.sessions} icon={<AccessTimeIcon className="text-blue-400" />} />
+                                            <DetailBlock label="Course Name" value={facultyDetails?.teachSubject?.subName} icon={<MenuBookIcon className="text-blue-400" />} />
+                                            <DetailBlock label="Course Sessions" value={facultyDetails?.teachSubject?.sessions} icon={<AccessTimeIcon className="text-blue-400" />} />
                                         </>
                                     ) : (
                                         <div className="col-span-1 md:col-span-2 p-6 bg-slate-50 border border-black/5 rounded-2xl flex items-center justify-between">
                                             <div>
-                                                <h4 className="font-bold text-textDark">No Subject Assigned</h4>
-                                                <p className="text-sm text-textDark/60">This teacher requires a course allocation.</p>
+                                                <h4 className="font-bold text-textDark">No Course Assigned</h4>
+                                                <p className="text-sm text-textDark/60">This faculty member requires a course allocation.</p>
                                             </div>
                                             <button
                                                 onClick={handleAddSubject}
                                                 className="px-6 py-2 bg-blue-600 text-white font-bold rounded-xl shadow-md hover:brightness-110 transition-all"
                                             >
-                                                Assign Subject
+                                                Assign Course
                                             </button>
                                         </div>
                                     )}
@@ -97,5 +98,14 @@ const TeacherDetails = () => {
     );
 };
 
-export default TeacherDetails;
-export const DetailBlock = ({ label, value, icon }) => (<div className="p-4 bg-slate-50 rounded-2xl border border-black/5 group hover:bg-white hover:shadow-md transition-all"> <div className="flex items-center gap-2 mb-2"> {icon} <p className="text-[10px] uppercase font-black text-textDark/30 group-hover:text-blue-600 transition-colors">{label}</p> </div> <p className="text-lg font-extrabold text-textDark pl-7">{value || 'N/A'}</p> </div>);
+export default FacultyDetails;
+
+export const DetailBlock = ({ label, value, icon }) => (
+    <div className="p-4 bg-slate-50 rounded-2xl border border-black/5 group hover:bg-white hover:shadow-md transition-all">
+        <div className="flex items-center gap-2 mb-2">
+            {icon}
+            <p className="text-[10px] uppercase font-black text-textDark/30 group-hover:text-blue-600 transition-colors">{label}</p>
+        </div>
+        <p className="text-lg font-extrabold text-textDark pl-7">{value || 'N/A'}</p>
+    </div>
+);

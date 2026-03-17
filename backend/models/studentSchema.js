@@ -54,6 +54,11 @@ const studentSchema = new mongoose.Schema({
         type: String,
         default: null,
     },
+    createdBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'faculty',
+        default: null,
+    },
     examResult: [
         {
             subName: {

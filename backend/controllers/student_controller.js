@@ -2,7 +2,9 @@ const bcrypt = require('bcrypt');
 const Student = require('../models/studentSchema.js');
 const Subject = require('../models/subjectSchema.js');
 const Sclass = require('../models/sclassSchema.js');
+const Faculty = require('../models/facultySchema.js');
 const { parseTabularFile } = require('../utils/bulkUploadParser.js');
+const { signAuthToken } = require('../utils/authToken');
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const DEFAULT_BULK_PASSWORD = process.env.BULK_UPLOAD_DEFAULT_PASSWORD || 'ChangeMe@123';
@@ -21,6 +23,7 @@ const studentRegister = async (req, res) => {
         const courseId = normalizeText(req.body.courseId);
         const courseName = normalizeText(req.body.courseName || req.body.course);
         const skipCourseValidation = Boolean(req.body.skipCourseValidation);
+        const createdBy = normalizeText(req.body.createdBy);
 
         if (!name || !email || !registerNumber || !password || !adminID || !requestedDepartmentId) {
             return res.status(400).json({ message: 'name, email, registerNumber, password, and department are required' });
@@ -79,6 +82,7 @@ const studentRegister = async (req, res) => {
             departmentName: normalizeText(req.body.departmentName) || mappedDepartment.sclassName,
             courseId: courseId || null,
             courseName: courseName || null,
+            createdBy: createdBy || null,
         });
 
         let result = await student.save();
@@ -101,7 +105,12 @@ const studentLogIn = async (req, res) => {
                 student.password = undefined;
                 student.examResult = undefined;
                 student.attendance = undefined;
-                res.send(student);
+                const token = signAuthToken({
+                    sub: student._id.toString(),
+                    role: student.role || 'Student',
+                    school: student.school?._id?.toString() || student.school?.toString(),
+                });
+                res.send({ user: student, token });
             } else {
                 res.send({ message: "Invalid password" });
             }
@@ -199,6 +208,111 @@ const updateStudent = async (req, res) => {
         res.status(500).json(error);
     }
 }
+
+const createStudentByFaculty = async (req, res) => {
+    try {
+        const facultyId = req.auth?.sub;
+
+        if (!facultyId) {
+            return res.status(401).json({ message: 'Unauthorized' });
+        }
+
+        const faculty = await Faculty.findById(facultyId)
+            .populate('teachSclass', 'sclassName')
+            .populate('school', 'schoolName');
+
+        if (!faculty) {
+            return res.status(403).json({ message: 'Faculty access denied' });
+        }
+
+        const name = normalizeText(req.body.name);
+        const email = normalizeEmail(req.body.email);
+        const registerNumber = normalizeText(req.body.registerNumber || req.body.rollNum);
+        const departmentId = normalizeText(req.body.departmentId || req.body.sclassName || req.body.department);
+        const courseId = normalizeText(req.body.courseId);
+        const courseName = normalizeText(req.body.courseName || req.body.course);
+        const rawPassword = normalizeText(req.body.password) || DEFAULT_BULK_PASSWORD;
+
+        if (!name || !email || !registerNumber) {
+            return res.status(400).json({ message: 'name, email, and registerNumber are required' });
+        }
+
+        if (!EMAIL_REGEX.test(email)) {
+            return res.status(400).json({ message: 'Invalid email format' });
+        }
+
+        if (!courseId && !courseName) {
+            return res.status(400).json({ message: 'Course assignment is required' });
+        }
+
+        const mappedDepartment = faculty.teachSclass;
+        if (!mappedDepartment?._id) {
+            return res.status(400).json({ message: 'Faculty department mapping is missing' });
+        }
+
+        if (departmentId && departmentId !== String(mappedDepartment._id)) {
+            return res.status(403).json({ message: 'Faculty can only add students to their department' });
+        }
+
+        let mappedCourse = null;
+        if (courseId) {
+            mappedCourse = await Subject.findOne({
+                _id: courseId,
+                sclassName: mappedDepartment._id,
+                school: faculty.school,
+            });
+
+            if (!mappedCourse) {
+                return res.status(400).json({ message: 'Selected course mapping is invalid' });
+            }
+        }
+
+        const existingStudentByRegisterNumber = await Student.findOne({
+            rollNum: registerNumber,
+            school: faculty.school,
+        });
+
+        if (existingStudentByRegisterNumber) {
+            return res.send({ message: 'Register Number already exists' });
+        }
+
+        const existingStudentByEmail = await Student.findOne({
+            email,
+            school: faculty.school,
+        });
+
+        if (existingStudentByEmail) {
+            return res.send({ message: 'Email already exists' });
+        }
+
+        const salt = await bcrypt.genSalt(10);
+        const hashedPass = await bcrypt.hash(rawPassword, salt);
+
+        const student = new Student({
+            name,
+            email,
+            rollNum: registerNumber,
+            registerNumber,
+            password: hashedPass,
+            school: faculty.school,
+            sclassName: mappedDepartment._id,
+            role: 'Student',
+            attendance: [],
+            examResult: [],
+            departmentId: String(mappedDepartment._id),
+            departmentName: mappedDepartment.sclassName,
+            courseId: courseId || mappedCourse?._id || null,
+            courseName: courseName || mappedCourse?.subName || null,
+            createdBy: faculty._id,
+        });
+
+        const result = await student.save();
+        result.password = undefined;
+        return res.status(201).json(result);
+    } catch (error) {
+        return res.status(500).json({ message: 'Unable to create student', error: error.message });
+    }
+};
 
 const updateExamResult = async (req, res) => {
     const { subName, marksObtained } = req.body;
@@ -494,6 +608,7 @@ const bulkUploadStudents = async (req, res) => {
 module.exports = {
     studentRegister,
     studentLogIn,
+    createStudentByFaculty,
     getStudents,
     getStudentDetail,
     deleteStudents,

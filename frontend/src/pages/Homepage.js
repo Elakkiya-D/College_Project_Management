@@ -62,7 +62,7 @@ const Homepage = () => {
             </h1>
 
             <p className="text-lg sm:text-xl text-textDark/80 max-w-lg leading-relaxed animate-slide-up-delayed opacity-0 font-medium" style={{ animationFillMode: 'forwards', animationDelay: '0.3s' }}>
-              Streamline your campus administration, manage students, teachers, classes, and fees seamlessly all in one modern, accessible platform.
+              Streamline your campus administration, manage students, faculty, classes, and fees seamlessly all in one modern, accessible platform.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto animate-slide-up-delayed-2 opacity-0" style={{ animationFillMode: 'forwards' }}>
@@ -126,7 +126,7 @@ const Homepage = () => {
                 <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
               </div>
               <h3 className="text-2xl font-bold text-textDark mb-3">Faculty Sync</h3>
-              <p className="text-textDark/80 leading-relaxed font-medium">Teachers monitor class rosters, track daily attendance sheets seamlessly, and grade students effortlessly on any device.</p>
+              <p className="text-textDark/80 leading-relaxed font-medium">Faculty monitor class rosters, track daily attendance sheets seamlessly, and grade students effortlessly on any device.</p>
             </div>
           </div>
         </div>

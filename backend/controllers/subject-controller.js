@@ -1,5 +1,5 @@
 const Subject = require('../models/subjectSchema.js');
-const Teacher = require('../models/teacherSchema.js');
+const Faculty = require('../models/facultySchema.js');
 const Student = require('../models/studentSchema.js');
 
 const subjectCreate = async (req, res) => {
@@ -61,7 +61,7 @@ const classSubjects = async (req, res) => {
 
 const freeSubjectList = async (req, res) => {
     try {
-        let subjects = await Subject.find({ sclassName: req.params.id, teacher: { $exists: false } });
+        let subjects = await Subject.find({ sclassName: req.params.id, faculty: { $exists: false } });
         if (subjects.length > 0) {
             res.send(subjects);
         } else {
@@ -77,7 +77,7 @@ const getSubjectDetail = async (req, res) => {
         let subject = await Subject.findById(req.params.id);
         if (subject) {
             subject = await subject.populate("sclassName", "sclassName")
-            subject = await subject.populate("teacher", "name")
+            subject = await subject.populate("faculty", "name")
             res.send(subject);
         }
         else {
@@ -92,8 +92,8 @@ const deleteSubject = async (req, res) => {
     try {
         const deletedSubject = await Subject.findByIdAndDelete(req.params.id);
 
-        // Set the teachSubject field to null in teachers
-        await Teacher.updateOne(
+        // Clear the teachSubject field for the assigned faculty
+        await Faculty.updateOne(
             { teachSubject: deletedSubject._id },
             { $unset: { teachSubject: "" }, $unset: { teachSubject: null } }
         );
@@ -120,8 +120,8 @@ const deleteSubjects = async (req, res) => {
     try {
         const deletedSubjects = await Subject.deleteMany({ school: req.params.id });
 
-        // Set the teachSubject field to null in teachers
-        await Teacher.updateMany(
+        // Clear the teachSubject field for assigned faculty
+        await Faculty.updateMany(
             { teachSubject: { $in: deletedSubjects.map(subject => subject._id) } },
             { $unset: { teachSubject: "" }, $unset: { teachSubject: null } }
         );
@@ -142,8 +142,8 @@ const deleteSubjectsByClass = async (req, res) => {
     try {
         const deletedSubjects = await Subject.deleteMany({ sclassName: req.params.id });
 
-        // Set the teachSubject field to null in teachers
-        await Teacher.updateMany(
+        // Clear the teachSubject field for assigned faculty
+        await Faculty.updateMany(
             { teachSubject: { $in: deletedSubjects.map(subject => subject._id) } },
             { $unset: { teachSubject: "" }, $unset: { teachSubject: null } }
         );

@@ -70,8 +70,8 @@ const LoginPage = ({ role }) => {
                 navigate('/Admin/dashboard');
             } else if (currentRole === 'Student') {
                 navigate('/Student/dashboard');
-            } else if (currentRole === 'Teacher') {
-                navigate('/Teacher/dashboard');
+            } else if (currentRole === 'Faculty') {
+                navigate('/Faculty/dashboard');
             }
         } else if (status === 'failed') {
             setMessage(response);
@@ -111,7 +111,7 @@ const LoginPage = ({ role }) => {
                 sideTextColor: "text-brand",
                 icon: <School style={{ fontSize: 36 }} className="text-accent" />
             };
-            case "Teacher": return {
+            case "Faculty": return {
                 primaryBtn: "bg-brandDark text-white hover:bg-brand focus:ring-brand/40 shadow-brand/20",
                 textClass: "text-brandDark",
                 iconContainer: "bg-brand/10",
