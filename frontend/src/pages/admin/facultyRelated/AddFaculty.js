@@ -19,7 +19,7 @@ const AddFaculty = () => {
 
   const subjectID = params.id;
 
-  const { status, response, error } = useSelector(state => state.user);
+  const { status, response, error, authToken } = useSelector(state => state.user);
   const { subjectDetails } = useSelector((state) => state.sclass);
 
   useEffect(() => {
@@ -72,6 +72,12 @@ const AddFaculty = () => {
       return;
     }
 
+    if (!authToken) {
+      setMessage('Session expired. Please log out and sign in again.');
+      setShowPopup(true);
+      return;
+    }
+
     setLoader(true);
     dispatch(registerUser(fields, role));
   };
@@ -95,7 +101,7 @@ const AddFaculty = () => {
       setLoader(false);
     }
     if (status === 'error') {
-      setMessage('Network Error');
+      setMessage(error || 'Network Error');
       setShowPopup(true);
       setLoader(false);
     }

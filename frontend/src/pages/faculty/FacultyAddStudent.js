@@ -15,7 +15,7 @@ const FacultyAddStudent = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const { currentUser } = useSelector((state) => state.user);
+    const { currentUser, authToken } = useSelector((state) => state.user);
     const { subjectsList } = useSelector((state) => state.sclass);
 
     const [name, setName] = useState('');
@@ -70,6 +70,12 @@ const FacultyAddStudent = () => {
 
         if (!departmentId) {
             setMessage('Your department mapping is missing. Contact an administrator.');
+            setShowPopup(true);
+            return;
+        }
+
+        if (!authToken) {
+            setMessage('Session expired. Please log out and sign in again.');
             setShowPopup(true);
             return;
         }

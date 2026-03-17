@@ -20,7 +20,7 @@ const AddStudent = ({ situation }) => {
     const params = useParams();
 
     const userState = useSelector(state => state.user);
-    const { status, currentUser, response } = userState;
+    const { status, currentUser, response, authToken, error } = userState;
     const { sclassesList } = useSelector((state) => state.sclass);
 
     const [name, setName] = useState('');
@@ -264,6 +264,12 @@ const AddStudent = ({ situation }) => {
             return;
         }
 
+        if (!authToken) {
+            setMessage('Session expired. Please log out and sign in again.');
+            setShowPopup(true);
+            return;
+        }
+
         setLoader(true);
         dispatch(registerUser(fields, role));
     };
@@ -285,11 +291,11 @@ const AddStudent = ({ situation }) => {
             setShowPopup(true);
             setLoader(false);
         } else if (status === 'error') {
-            setMessage('Network error encountered while saving student data.');
+            setMessage(error || 'Network error encountered while saving student data.');
             setShowPopup(true);
             setLoader(false);
         }
-    }, [status, navigate, response, dispatch]);
+    }, [status, navigate, response, error, dispatch]);
 
     return (
         <div className="max-w-7xl mx-auto px-6 py-8 w-full animate-fade-in">
