@@ -19,6 +19,7 @@ import ShowNotices from './noticeRelated/ShowNotices';
 
 import ShowFees from './feeRelated/ShowFees';
 import AddFee from './feeRelated/AddFee';
+import FeeReceipt from '../fees/FeeReceipt';
 
 import ShowSubjects from './subjectRelated/ShowSubjects';
 import SubjectForm from './subjectRelated/SubjectForm';
@@ -154,6 +155,7 @@ const AdminDashboard = () => {
                         {/* Fees */}
                         <Route path="/Admin/fees" element={<ShowFees />} />
                         <Route path="/Admin/addfee" element={<AddFee />} />
+                        <Route path="/Admin/fees/receipt/:receiptId" element={<FeeReceipt />} />
 
                         <Route path="/logout" element={<Logout />} />
                     </Routes>

@@ -1,9 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import AddCardIcon from '@mui/icons-material/AddCard';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import CurrencyRupeeIcon from '@mui/icons-material/CurrencyRupee';
+import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
+import TaskAltIcon from '@mui/icons-material/TaskAlt';
+import CloseIcon from '@mui/icons-material/Close';
 import ModuleLayout from '../../../components/ModuleLayout';
 import { getApiErrorMessage, getApiUrl } from '../../../utils/api';
 
@@ -12,26 +15,32 @@ const ShowFees = () => {
     const [fees, setFees] = useState([]);
     const [loading, setLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState('');
+    const [showReceiptModal, setShowReceiptModal] = useState(false);
+    const [selectedFee, setSelectedFee] = useState(null);
+    const [paymentType, setPaymentType] = useState('cash');
+    const [paymentReference, setPaymentReference] = useState('');
+    const [submittingReceipt, setSubmittingReceipt] = useState(false);
+
+    const loadFees = useCallback(async () => {
+        try {
+            const result = await axios.get(getApiUrl('/api/admin/fees/list'));
+            if (result.data.message) {
+                setFees([]);
+                setErrorMessage(result.data.message);
+            } else {
+                setFees(result.data);
+                setErrorMessage('');
+            }
+            setLoading(false);
+        } catch (error) {
+            setErrorMessage(getApiErrorMessage(error, 'Unable to load the fee registry.'));
+            setLoading(false);
+        }
+    }, []);
 
     useEffect(() => {
-        const fetchFees = async () => {
-            try {
-                const result = await axios.get(getApiUrl('/api/admin/fees/list'));
-                if (result.data.message) {
-                    setFees([]);
-                    setErrorMessage(result.data.message);
-                } else {
-                    setFees(result.data);
-                    setErrorMessage('');
-                }
-                setLoading(false);
-            } catch (error) {
-                setErrorMessage(getApiErrorMessage(error, 'Unable to load the fee registry.'));
-                setLoading(false);
-            }
-        };
-        fetchFees();
-    }, []);
+        loadFees();
+    }, [loadFees]);
 
     const handleDelete = async (id) => {
         if (!window.confirm("Are you sure you want to delete this fee record?")) return;
@@ -41,6 +50,37 @@ const ShowFees = () => {
             setErrorMessage('');
         } catch (error) {
             setErrorMessage(getApiErrorMessage(error, 'Unable to delete the fee record.'));
+        }
+    };
+
+    const openReceiptModal = (fee) => {
+        setSelectedFee(fee);
+        setPaymentType('cash');
+        setPaymentReference('');
+        setShowReceiptModal(true);
+    };
+
+    const handleCreateReceipt = async () => {
+        if (!selectedFee) return;
+
+        setSubmittingReceipt(true);
+        try {
+            const result = await axios.post(getApiUrl('/api/fees/create'), {
+                studentFeeId: selectedFee._id,
+                paymentType,
+                paymentReference: paymentReference.trim() || undefined,
+            });
+
+            if (result.data?.receipt?._id) {
+                await loadFees();
+                setShowReceiptModal(false);
+                setSelectedFee(null);
+            }
+            setErrorMessage('');
+        } catch (error) {
+            setErrorMessage(getApiErrorMessage(error, 'Unable to generate the receipt.'));
+        } finally {
+            setSubmittingReceipt(false);
         }
     };
 
@@ -110,18 +150,106 @@ const ShowFees = () => {
                                     </p>
                                 </td>
                                 <td className="px-8 py-4 whitespace-nowrap text-right">
-                                    <button
-                                        onClick={() => handleDelete(fee._id)}
-                                        className="p-2 text-gray-400 hover:text-red-600 bg-white hover:bg-red-50 rounded-xl border border-gray-100 hover:border-red-100 transition-all shadow-sm"
-                                    >
-                                        <DeleteForeverIcon fontSize="small" />
-                                    </button>
+                                    <div className="flex items-center justify-end gap-2">
+                                        {fee.receiptId ? (
+                                            <button
+                                                onClick={() => navigate(`/Admin/fees/receipt/${fee.receiptId?._id || fee.receiptId}`)}
+                                                className="px-3 h-9 rounded-lg border border-blue-100 bg-blue-50 text-blue-700 text-[10px] font-bold uppercase tracking-widest hover:bg-blue-100 transition-all flex items-center gap-2"
+                                            >
+                                                <ReceiptLongIcon sx={{ fontSize: 16 }} /> Receipt
+                                            </button>
+                                        ) : (
+                                            <button
+                                                onClick={() => openReceiptModal(fee)}
+                                                className="px-3 h-9 rounded-lg border border-gray-200 bg-white text-gray-700 text-[10px] font-bold uppercase tracking-widest hover:bg-gray-50 transition-all flex items-center gap-2"
+                                            >
+                                                {fee.status === 'paid' ? (
+                                                    <>
+                                                        <TaskAltIcon sx={{ fontSize: 16 }} /> Generate
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <ReceiptLongIcon sx={{ fontSize: 16 }} /> Record
+                                                    </>
+                                                )}
+                                            </button>
+                                        )}
+                                        <button
+                                            onClick={() => handleDelete(fee._id)}
+                                            className="p-2 text-gray-400 hover:text-red-600 bg-white hover:bg-red-50 rounded-xl border border-gray-100 hover:border-red-100 transition-all shadow-sm"
+                                        >
+                                            <DeleteForeverIcon fontSize="small" />
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
             </div>
+            {showReceiptModal && selectedFee && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 backdrop-blur-sm p-6">
+                    <div className="w-full max-w-lg rounded-3xl bg-white shadow-2xl border border-gray-100 overflow-hidden">
+                        <div className="px-8 py-6 border-b border-gray-100 flex items-center justify-between">
+                            <div>
+                                <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-400">Payment Capture</p>
+                                <h3 className="text-lg font-bold text-gray-900">Generate Receipt</h3>
+                            </div>
+                            <button
+                                onClick={() => setShowReceiptModal(false)}
+                                className="w-10 h-10 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-all"
+                            >
+                                <CloseIcon fontSize="small" />
+                            </button>
+                        </div>
+                        <div className="px-8 py-6 space-y-6">
+                            <div className="rounded-2xl border border-gray-100 bg-gray-50/50 p-4">
+                                <p className="text-xs font-semibold text-gray-800">{selectedFee.studentId?.name}</p>
+                                <p className="text-[10px] uppercase tracking-widest text-gray-400">{selectedFee.feeId?.title}</p>
+                                <p className="text-xs font-bold text-gray-600">₹{selectedFee.amount}</p>
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Payment Method</label>
+                                <select
+                                    value={paymentType}
+                                    onChange={(event) => setPaymentType(event.target.value)}
+                                    className="w-full h-12 rounded-2xl border border-gray-200 px-4 text-sm font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                >
+                                    <option value="cash">Cash</option>
+                                    <option value="upi">UPI</option>
+                                    <option value="bank">Bank Transfer</option>
+                                    <option value="card">Card</option>
+                                    <option value="online">Online</option>
+                                </select>
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Reference (Optional)</label>
+                                <input
+                                    value={paymentReference}
+                                    onChange={(event) => setPaymentReference(event.target.value)}
+                                    placeholder="Transaction ID / Reference"
+                                    className="w-full h-12 rounded-2xl border border-gray-200 px-4 text-sm font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+                        </div>
+                        <div className="px-8 py-6 border-t border-gray-100 flex flex-col sm:flex-row gap-3 justify-end">
+                            <button
+                                onClick={() => setShowReceiptModal(false)}
+                                className="h-12 px-6 rounded-2xl border border-gray-200 text-xs font-bold uppercase tracking-widest text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-all"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleCreateReceipt}
+                                disabled={submittingReceipt}
+                                className="h-12 px-6 rounded-2xl bg-gray-900 text-white text-xs font-bold uppercase tracking-widest hover:bg-blue-600 transition-all disabled:opacity-60"
+                            >
+                                {submittingReceipt ? 'Generating...' : 'Generate Receipt'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </ModuleLayout>
     );
 

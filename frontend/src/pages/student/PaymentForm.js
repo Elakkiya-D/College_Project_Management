@@ -48,6 +48,15 @@ const PaymentForm = ({ studentFeeId, onSuccess, onClose }) => {
                         studentFeeId: studentFeeId.toString(),
                         paymentIntentId: result.paymentIntent.id,
                     });
+                    try {
+                        await axios.post(getApiUrl('/api/fees/create'), {
+                            studentFeeId: studentFeeId.toString(),
+                            paymentType: 'online',
+                            paymentReference: result.paymentIntent.id,
+                        });
+                    } catch (receiptError) {
+                        console.warn('Receipt generation failed:', receiptError?.message || receiptError);
+                    }
                     setLoading(false);
                     onSuccess();
                 }

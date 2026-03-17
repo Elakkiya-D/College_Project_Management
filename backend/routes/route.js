@@ -135,7 +135,15 @@ router.delete("/Subjects/:id", deleteSubjects)
 router.delete("/SubjectsClass/:id", deleteSubjectsByClass)
 
 // Fee Management
-const { feeCreate, feeList, getStudentFees, deleteFee } = require('../controllers/fee-controller.js');
+const {
+    feeCreate,
+    feeList,
+    getStudentFees,
+    deleteFee,
+    createFeeReceipt,
+    getStudentReceipts,
+    getReceiptById,
+} = require('../controllers/fee-controller.js');
 
 // Admin Fee Routes
 router.post('/api/admin/fees/create', feeCreate);
@@ -145,6 +153,11 @@ router.delete('/api/admin/fees/delete/:id', deleteFee);
 
 // Student Fee Routes
 router.get('/api/student/fees/:id', getStudentFees);
+
+// Fee Receipt Routes
+router.post('/api/fees/create', createFeeReceipt);
+router.get('/api/fees/receipt/:receiptId', getReceiptById);
+router.get('/api/fees/:studentId', getStudentReceipts);
 
 // Payment & Billing Routes
 const { createPaymentIntent, confirmPaymentIntent, handleStripeWebhook } = require('../controllers/payment-controller.js');

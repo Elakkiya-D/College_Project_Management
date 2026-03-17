@@ -23,6 +23,11 @@ const studentFeeSchema = new mongoose.Schema({
     stripePaymentIntentId: {
         type: String
     },
+    receiptId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'feeReceipt',
+        default: null,
+    },
     paidAt: {
         type: Date
     }

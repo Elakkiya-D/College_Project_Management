@@ -1,5 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import { getStudentFees } from '../../redux/feeRelated/feeHandle';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
@@ -7,25 +9,64 @@ import PaymentForm from './PaymentForm';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import HistoryIcon from '@mui/icons-material/History';
 import PaymentIcon from '@mui/icons-material/Payment';
+import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
+import { getApiErrorMessage, getApiUrl } from '../../utils/api';
 
 const STRIPE_PUBLIC_KEY = process.env.REACT_APP_STRIPE_PUBLIC_KEY;
 const stripePromise = STRIPE_PUBLIC_KEY ? loadStripe(STRIPE_PUBLIC_KEY) : null;
 
 const StudentFees = () => {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const { currentUser } = useSelector(state => state.user);
     const { feesList, loading } = useSelector(state => state.fee);
 
     const [selectedFee, setSelectedFee] = useState(null);
     const [showPayment, setShowPayment] = useState(false);
+    const [receipts, setReceipts] = useState([]);
+    const [receiptError, setReceiptError] = useState('');
+    const [receiptsLoading, setReceiptsLoading] = useState(true);
+
+    const loadReceipts = useCallback(async () => {
+        setReceiptsLoading(true);
+        try {
+            const result = await axios.get(getApiUrl(`/api/fees/${currentUser._id}`));
+            if (result.data?.empty) {
+                setReceipts([]);
+            } else {
+                setReceipts(result.data || []);
+            }
+            setReceiptError('');
+        } catch (error) {
+            setReceiptError(getApiErrorMessage(error, 'Unable to load receipts.'));
+        } finally {
+            setReceiptsLoading(false);
+        }
+    }, [currentUser._id]);
 
     useEffect(() => {
         dispatch(getStudentFees(currentUser._id));
-    }, [dispatch, currentUser._id]);
+        loadReceipts();
+    }, [dispatch, currentUser._id, loadReceipts]);
+
+    const receiptLookup = useMemo(() => {
+        return receipts.reduce((acc, receipt) => {
+            const feeKey = receipt.studentFeeId?._id || receipt.studentFeeId;
+            if (feeKey) {
+                acc[feeKey] = receipt;
+            }
+            return acc;
+        }, {});
+    }, [receipts]);
 
     const handlePayNow = (fee) => {
         setSelectedFee(fee);
         setShowPayment(true);
+    };
+
+    const handleViewReceipt = (receiptId) => {
+        if (!receiptId) return;
+        navigate(`/Student/fees/receipt/${receiptId}`);
     };
 
     const outstandingBalance = feesList && !feesList.empty
@@ -61,6 +102,8 @@ const StudentFees = () => {
                                             key={index}
                                             fee={item}
                                             onPay={() => handlePayNow(item)}
+                                            receipt={receiptLookup[item._id]}
+                                            onViewReceipt={handleViewReceipt}
                                         />
                                     ))
                                 ) : (
@@ -102,7 +145,11 @@ const StudentFees = () => {
                             <div className="space-y-4">
                                 <TimelineItem label="Invoices Staged" value={feesList && !feesList.empty ? feesList.length : 0} />
                                 <TimelineItem label="Settlements Validated" value={feesList && !feesList.empty ? feesList.filter(f => f.status === 'paid').length : 0} />
+                                <TimelineItem label="Receipts Issued" value={receiptsLoading ? '...' : receipts.length} />
                             </div>
+                            {receiptError && (
+                                <div className="text-[10px] font-bold text-red-500 uppercase tracking-widest">{receiptError}</div>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -138,6 +185,7 @@ const StudentFees = () => {
                                         onSuccess={() => {
                                             setShowPayment(false);
                                             dispatch(getStudentFees(currentUser._id));
+                                            loadReceipts();
                                         }}
                                         onClose={() => setShowPayment(false)}
                                     />
@@ -155,7 +203,7 @@ const StudentFees = () => {
     );
 };
 
-const FeeRow = ({ fee, onPay }) => {
+const FeeRow = ({ fee, onPay, receipt, onViewReceipt }) => {
     const isPaid = fee.status === 'paid';
     return (
         <div className={`p-6 rounded-2xl border transition-all duration-300 flex flex-col sm:flex-row sm:items-center gap-6 group ${isPaid ? 'bg-gray-50/50 border-gray-100 opacity-60' : 'bg-white border-gray-50 hover:border-blue-100 hover:shadow-md'}`}>
@@ -184,9 +232,18 @@ const FeeRow = ({ fee, onPay }) => {
                             Authorize
                         </button>
                     ) : (
-                        <div className="h-11 px-6 bg-green-50 text-green-700 rounded-xl font-bold text-[10px] uppercase tracking-widest flex items-center gap-2 border border-green-100 cursor-default shadow-sm italic">
-                            Validated
-                        </div>
+                        receipt ? (
+                            <button
+                                onClick={() => onViewReceipt(receipt._id)}
+                                className="h-11 px-6 bg-blue-50 text-blue-700 rounded-xl font-bold text-[10px] uppercase tracking-widest flex items-center gap-2 border border-blue-100 hover:bg-blue-100 transition-all shadow-sm"
+                            >
+                                <ReceiptLongIcon sx={{ fontSize: 16 }} /> Receipt
+                            </button>
+                        ) : (
+                            <div className="h-11 px-6 bg-green-50 text-green-700 rounded-xl font-bold text-[10px] uppercase tracking-widest flex items-center gap-2 border border-green-100 cursor-default shadow-sm italic">
+                                Validated
+                            </div>
+                        )
                     )}
                 </div>
             </div>
