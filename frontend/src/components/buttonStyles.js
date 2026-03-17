@@ -1,14 +1,22 @@
 import styled from 'styled-components';
 import { Button } from '@mui/material';
 
+const palette = {
+  primary: '#2F8C56',
+  primaryDark: '#256F45',
+  secondary: '#E6A23A',
+  secondaryDark: '#CC861E',
+  neutralDark: '#1F2933',
+};
+
 export const RedButton = styled(Button)`
   && {
-    background-color: #f00;
+    background-color: ${palette.secondary};
     color: white;
     margin-left: 4px;
     &:hover {
-      background-color: #eb7979;
-      border-color: #f26767;
+      background-color: ${palette.secondaryDark};
+      border-color: ${palette.secondaryDark};
       box-shadow: none;
     }
   }
@@ -16,12 +24,12 @@ export const RedButton = styled(Button)`
 
 export const BlackButton = styled(Button)`
   && {
-    background-color: #cc0000;
+    background-color: ${palette.primary};
     color: white;
     margin-left: 4px;
     &:hover {
-      background-color: #212020;
-      border-color: #212020;
+      background-color: ${palette.primaryDark};
+      border-color: ${palette.primaryDark};
       box-shadow: none;
     }
   }
@@ -29,11 +37,11 @@ export const BlackButton = styled(Button)`
 
 export const DarkRedButton = styled(Button)`
   && {
-    background-color: #650909;
+    background-color: ${palette.primaryDark};
     color: white;
     &:hover {
-      background-color: #eb7979;
-      border-color: #f26767;
+      background-color: ${palette.primary};
+      border-color: ${palette.primary};
       box-shadow: none;
     }
   }
@@ -41,51 +49,51 @@ export const DarkRedButton = styled(Button)`
 
 export const BlueButton = styled(Button)`
   && {
-    background-color: #080a43;
+    background-color: ${palette.primary};
     color: #fff;
     &:hover {
-      background-color: #0a1e82;
+      background-color: ${palette.primaryDark};
     }
   }
 `;
 
 export const PurpleButton = styled(Button)`
   && {
-    background-color: purple;
+    background-color: ${palette.secondary};
     color: #fff;
     &:hover {
-      background-color: cc0000;
+      background-color: ${palette.secondaryDark};
     }
   }
 `;
 
 export const LightPurpleButton = styled(Button)`
   && {
-    background-color: #e7c69e;
+    background-color: ${palette.secondary};
     color: #fff;
     &:hover {
-      background-color: #A3876A;
+      background-color: ${palette.secondaryDark};
     }
   }
 `;
 
 export const GreenButton = styled(Button)`
   && {
-    background-color: #133104;
+    background-color: ${palette.primary};
     color: #fff;
     &:hover {
-      background-color: #266810;
+      background-color: ${palette.primaryDark};
     }
   }
 `;
 
 export const BrownButton = styled(Button)`
   && {
-    background-color: #2c1006;
+    background-color: ${palette.neutralDark};
     color: white;
     &:hover {
-      background-color: #40220c;
-      border-color: #40220c;
+      background-color: #111827;
+      border-color: #111827;
       box-shadow: none;
     }
   }
@@ -93,11 +101,11 @@ export const BrownButton = styled(Button)`
 
 export const IndigoButton = styled(Button)`
   && {
-    background-color: #2f2b80;
+    background-color: ${palette.primary};
     color: white;
     &:hover {
-      background-color: #534ea6;
-      border-color: #473d90;
+      background-color: ${palette.primaryDark};
+      border-color: ${palette.primaryDark};
       box-shadow: none;
     }
   }

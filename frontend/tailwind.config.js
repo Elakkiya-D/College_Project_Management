@@ -5,17 +5,25 @@ module.exports = {
     theme: {
         extend: {
             colors: {
-                brand: '#2563EB',
-                background: '#f8fafc',
-                surface: '#ffffff',
-                accent: '#4f46e5',
+                brand: '#2F8C56',
+                brandDark: '#256F45',
+                brandSoft: '#EAF4EE',
+                background: '#F6F8F5',
+                surface: '#FFFFFF',
+                accent: '#E6A23A',
+                accentDark: '#CC861E',
+                accentSoft: '#FDF3E2',
 
                 // Keeping text defaults to avoid complete illegibility
-                textDark: '#1E1E1E',
-                textLight: '#F5F5F5',
+                textDark: '#1F2933',
+                textMedium: '#5F6B7A',
+                textLight: '#F7FAF8',
             },
             fontFamily: {
                 'sans': ['Inter', 'Poppins', 'sans-serif'],
+            },
+            boxShadow: {
+                soft: '0 10px 28px rgba(31, 41, 51, 0.10)',
             },
             animation: {
                 'fade-in': 'fadeIn 0.8s ease-out forwards',

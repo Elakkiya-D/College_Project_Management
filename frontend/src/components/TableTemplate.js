@@ -14,37 +14,37 @@ const TableTemplate = ({ buttonHaver: ButtonHaver, columns, rows }) => {
     const paginatedRows = safeRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
     return (
-        <div className="w-full bg-white rounded-xl border border-slate-100 overflow-hidden">
+        <div className="w-full bg-white rounded-xl border border-textDark/10 overflow-hidden">
             <div className="overflow-x-auto w-full">
                 <table className="table-auto w-full min-w-[820px] text-left border-collapse whitespace-nowrap">
                     <thead>
-                        <tr className="border-b border-gray-200 bg-slate-50 sticky top-0 z-10">
+                        <tr className="border-b border-textDark/10 bg-brand/10 sticky top-0 z-10">
                             {safeColumns.map((column) => (
                                 <th
                                     key={column.id}
-                                    className={`py-3.5 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wide ${column.align === 'center' ? 'text-center' : column.align === 'right' ? 'text-right' : 'text-left'}`}
+                                    className={`py-3.5 px-6 text-xs font-semibold text-brand uppercase tracking-wide ${column.align === 'center' ? 'text-center' : column.align === 'right' ? 'text-right' : 'text-left'}`}
                                     style={{ minWidth: column.minWidth }}
                                 >
                                     {column.label}
                                 </th>
                             ))}
                             {ButtonHaver && (
-                                <th className="py-3.5 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wide text-right min-w-[170px]">
+                                <th className="py-3.5 px-6 text-xs font-semibold text-brand uppercase tracking-wide text-right min-w-[170px]">
                                     Actions
                                 </th>
                             )}
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-100 bg-white">
+                    <tbody className="divide-y divide-textDark/10 bg-white">
                         {paginatedRows.length > 0 ? (
                             paginatedRows.map((row) => (
-                                <tr key={row.id || JSON.stringify(row)} className="hover:bg-gray-50 transition-colors duration-200">
+                                <tr key={row.id || JSON.stringify(row)} className="hover:bg-brand/5 transition-colors duration-200">
                                     {safeColumns.map((column) => {
                                         const value = row[column.id];
                                         return (
                                             <td
                                                 key={column.id}
-                                                className={`py-3.5 px-6 text-sm text-gray-800 ${column.align === 'center' ? 'text-center' : column.align === 'right' ? 'text-right' : 'text-left'}`}
+                                                className={`py-3.5 px-6 text-sm text-textDark ${column.align === 'center' ? 'text-center' : column.align === 'right' ? 'text-right' : 'text-left'}`}
                                             >
                                                 {column.format && typeof value === 'number'
                                                     ? column.format(value)
@@ -61,7 +61,7 @@ const TableTemplate = ({ buttonHaver: ButtonHaver, columns, rows }) => {
                             ))
                         ) : (
                             <tr>
-                                <td colSpan={safeColumns.length + (ButtonHaver ? 1 : 0)} className="py-12 text-center text-sm text-gray-500">
+                                <td colSpan={safeColumns.length + (ButtonHaver ? 1 : 0)} className="py-12 text-center text-sm text-textMedium">
                                     No data available
                                 </td>
                             </tr>
@@ -72,8 +72,8 @@ const TableTemplate = ({ buttonHaver: ButtonHaver, columns, rows }) => {
 
             {/* Premium Pagination Footer */}
             {safeRows.length > 0 && (
-                <div className="flex items-center justify-between px-4 sm:px-6 py-4 bg-white border-t border-gray-100">
-                    <div className="flex items-center gap-2 text-sm text-gray-500">
+                <div className="flex items-center justify-between px-4 sm:px-6 py-4 bg-white border-t border-textDark/10">
+                    <div className="flex items-center gap-2 text-sm text-textMedium">
                         <span>Rows per page:</span>
                         <select
                             value={rowsPerPage}
@@ -81,7 +81,7 @@ const TableTemplate = ({ buttonHaver: ButtonHaver, columns, rows }) => {
                                 setRowsPerPage(Number(e.target.value));
                                 setPage(0);
                             }}
-                            className="bg-transparent border border-gray-200 rounded-md py-1 px-2 focus:ring-2 focus:ring-blue-500 outline-none text-gray-700 font-medium"
+                            className="bg-transparent border border-textDark/20 rounded-md py-1 px-2 focus:ring-2 focus:ring-brand/40 outline-none text-textDark font-medium"
                         >
                             <option value={5}>5</option>
                             <option value={10}>10</option>
@@ -91,7 +91,7 @@ const TableTemplate = ({ buttonHaver: ButtonHaver, columns, rows }) => {
                     </div>
 
                     <div className="flex items-center gap-4">
-                        <span className="text-sm text-gray-700">
+                        <span className="text-sm text-textDark">
                             {page * rowsPerPage + 1}-{Math.min((page + 1) * rowsPerPage, safeRows.length)} of {safeRows.length}
                         </span>
 
@@ -99,14 +99,14 @@ const TableTemplate = ({ buttonHaver: ButtonHaver, columns, rows }) => {
                             <button
                                 onClick={() => setPage(page - 1)}
                                 disabled={page === 0}
-                                className={`p-1.5 rounded-md transition-colors ${page === 0 ? 'text-gray-300 cursor-not-allowed' : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900'}`}
+                                className={`p-1.5 rounded-md transition-colors ${page === 0 ? 'text-textDark/30 cursor-not-allowed' : 'text-textMedium hover:bg-background hover:text-brand'}`}
                             >
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path></svg>
                             </button>
                             <button
                                 onClick={() => setPage(page + 1)}
                                 disabled={page >= totalPages - 1}
-                                className={`p-1.5 rounded-md transition-colors ${page >= totalPages - 1 ? 'text-gray-300 cursor-not-allowed' : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900'}`}
+                                className={`p-1.5 rounded-md transition-colors ${page >= totalPages - 1 ? 'text-textDark/30 cursor-not-allowed' : 'text-textMedium hover:bg-background hover:text-brand'}`}
                             >
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
                             </button>

@@ -132,7 +132,7 @@ const AdminHomePage = () => {
                         subtitle="Review and manage department structures, ownership, and enrollment routing."
                     >
                         <div className="flex items-center justify-between gap-4 flex-wrap">
-                            <p className="text-sm text-slate-500">Keep department records updated and consistent.</p>
+                            <p className="text-sm text-textMedium">Keep department records updated and consistent.</p>
                             <ActionButton
                                 label="Open Departments"
                                 icon={<ArrowOutwardRoundedIcon sx={{ fontSize: 16 }} />}
@@ -146,7 +146,7 @@ const AdminHomePage = () => {
                         subtitle="Navigate directly to faculty assignment and course mapping workflows."
                     >
                         <div className="flex items-center justify-between gap-4 flex-wrap">
-                            <p className="text-sm text-slate-500">Track teaching ownership and course availability.</p>
+                            <p className="text-sm text-textMedium">Track teaching ownership and course availability.</p>
                             <ActionButton
                                 label="Open Faculty"
                                 icon={<ArrowOutwardRoundedIcon sx={{ fontSize: 16 }} />}
@@ -198,9 +198,9 @@ const AdminHomePage = () => {
                         title="Activity"
                         subtitle="Operational timeline for recent admin actions."
                     >
-                        <div className="h-64 rounded-xl border border-dashed border-slate-200 bg-slate-50 flex flex-col items-center justify-center text-center px-5">
-                            <AccessTimeRoundedIcon className="text-slate-300" sx={{ fontSize: 28 }} />
-                            <p className="text-sm font-medium text-slate-500 mt-3">No tracked activity available yet.</p>
+                        <div className="h-64 rounded-xl border border-dashed border-textDark/15 bg-background flex flex-col items-center justify-center text-center px-5">
+                            <AccessTimeRoundedIcon className="text-textMedium/60" sx={{ fontSize: 28 }} />
+                            <p className="text-sm font-medium text-textMedium mt-3">No tracked activity available yet.</p>
                         </div>
                     </SectionCard>
                 </section>
@@ -211,8 +211,8 @@ const AdminHomePage = () => {
 
 const SectionHeading = ({ title, subtitle }) => (
     <div className="space-y-1 px-1">
-        <h2 className="text-lg sm:text-xl font-semibold text-slate-900">{title}</h2>
-        <p className="text-sm text-slate-500">{subtitle}</p>
+        <h2 className="text-lg sm:text-xl font-semibold text-textDark">{title}</h2>
+        <p className="text-sm text-textMedium">{subtitle}</p>
     </div>
 );
 
@@ -223,7 +223,7 @@ const ActionButton = ({ label, icon, onClick, fullWidth = false }) => (
         whileTap={{ scale: 0.96 }}
         transition={{ duration: 0.22, ease: 'easeOut' }}
         onClick={onClick}
-        className={`h-11 px-5 rounded-xl border border-slate-200 bg-white text-slate-700 text-sm font-semibold shadow-sm hover:shadow-md hover:border-blue-200 hover:text-blue-700 transition-colors flex items-center justify-center gap-2 ${fullWidth ? 'w-full' : ''}`}
+        className={`h-11 px-5 rounded-xl border border-textDark/10 bg-white text-textDark text-sm font-semibold shadow-sm hover:shadow-md hover:border-brand/30 hover:text-brand transition-colors flex items-center justify-center gap-2 ${fullWidth ? 'w-full' : ''}`}
     >
         {icon}
         {label}

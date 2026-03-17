@@ -49,14 +49,14 @@ const AdminDashboard = () => {
     };
 
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', bgcolor: '#f8fafc' }} className="font-poppins">
+        <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', bgcolor: '#f6f8f5' }} className="font-poppins">
             <CssBaseline />
             <Navbar onMenuToggle={handleSidebarToggle} />
 
             <Box sx={{ display: 'flex', flexGrow: 1, minHeight: 0 }}>
                 <Box
                     component="aside"
-                    className="hidden lg:block border-r border-slate-200 bg-slate-900"
+                    className="hidden lg:block border-r border-textDark/10 bg-brandDark"
                     sx={{
                         width: sidebarWidth,
                         flexShrink: 0,
@@ -79,12 +79,12 @@ const AdminDashboard = () => {
                             width: sidebarWidth,
                             top: 64,
                             height: 'calc(100vh - 64px)',
-                            borderRight: '1px solid #e2e8f0',
+                            borderRight: '1px solid rgba(31, 41, 51, 0.12)',
                             boxSizing: 'border-box',
                         },
                     }}
                 >
-                    <div className="h-full bg-slate-900">
+                    <div className="h-full bg-brandDark">
                         <Sidebar />
                     </div>
                 </Drawer>
@@ -97,7 +97,7 @@ const AdminDashboard = () => {
                         overflowY: 'auto',
                         maxHeight: 'calc(100vh - 64px)',
                     }}
-                    className="bg-slate-50"
+                    className="bg-background"
                 >
                     <Routes>
                         <Route path="/" element={<AdminHomePage />} />

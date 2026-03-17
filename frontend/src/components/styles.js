@@ -11,7 +11,7 @@ const drawerWidth = 240
 
 export const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
-        backgroundColor: theme.palette.common.black,
+        backgroundColor: theme.palette.primary.main,
         color: theme.palette.common.white,
     },
     [`&.${tableCellClasses.body}`]: {
@@ -50,8 +50,8 @@ export const AppBar = styled(MuiAppBar, {
 export const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
     ({ theme, open }) => ({
         '& .MuiDrawer-paper': {
-            backgroundColor:"#CC0000",
-            color:"#ffffff",
+            backgroundColor: theme.palette.primary.main,
+            color: '#ffffff',
             position: 'relative',
             whiteSpace: 'nowrap',
             width: drawerWidth,

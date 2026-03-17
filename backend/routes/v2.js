@@ -5,6 +5,7 @@ const { validateObjectIdParam, validateObjectIdBody } = require("../middleware/v
 const { requireFields, validateEmailField, validateNumberField, validateArrayField } = require("../middleware/v2/requestValidation");
 
 const { signup, login, me } = require("../controllers/v2/authController");
+const { forgotPassword, resetPassword } = require("../controllers/auth-password-controller");
 const { listDepartments, createDepartment, updateDepartment, deleteDepartment } = require("../controllers/v2/departmentController");
 const { createFaculty, listFaculty, getFaculty, updateFaculty, deleteFaculty } = require("../controllers/v2/facultyController");
 const { listCourses, listCoursesByDepartment, getCourse, createCourse, updateCourse, deleteCourse } = require("../controllers/v2/courseController");
@@ -15,6 +16,8 @@ const { upsertResult, listStudentResults } = require("../controllers/v2/resultCo
 // Auth (public)
 router.post("/auth/signup", requireFields(["name", "email", "password", "role"]), validateEmailField("email"), signup);
 router.post("/auth/login", requireFields(["email", "password"]), validateEmailField("email"), login);
+router.post("/auth/forgot-password", requireFields(["email"]), validateEmailField("email"), forgotPassword);
+router.post("/auth/reset-password", requireFields(["email", "newPassword"]), validateEmailField("email"), resetPassword);
 
 // Auth (protected)
 router.get("/auth/me", requireAuth, requireRole("ADMIN", "FACULTY", "STUDENT"), me);

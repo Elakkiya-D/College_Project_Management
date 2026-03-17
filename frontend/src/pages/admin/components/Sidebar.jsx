@@ -30,8 +30,8 @@ const accountItems = [
 
 const Sidebar = () => {
     return (
-        <div className="flex flex-col h-full overflow-y-auto bg-gradient-to-b from-slate-900 via-slate-900 to-slate-800 text-slate-100 px-4 py-6">
-            <p className="text-[11px] tracking-[0.2em] uppercase text-slate-400 px-3 mb-4">Navigation</p>
+        <div className="flex flex-col h-full overflow-y-auto bg-gradient-to-b from-brandDark via-brandDark to-brand text-white/90 px-4 py-6">
+            <p className="text-[11px] tracking-[0.2em] uppercase text-white/60 px-3 mb-4">Navigation</p>
 
             <div className="space-y-2">
                 {navigationItems.map((item) => (
@@ -39,9 +39,9 @@ const Sidebar = () => {
                 ))}
             </div>
 
-            <div className="h-px bg-slate-700/60 my-6" />
+            <div className="h-px bg-white/20 my-6" />
 
-            <p className="text-[11px] tracking-[0.2em] uppercase text-slate-400 px-3 mb-4">Account</p>
+            <p className="text-[11px] tracking-[0.2em] uppercase text-white/60 px-3 mb-4">Account</p>
             <div className="space-y-2">
                 {accountItems.map((item) => (
                     <NavigationItem key={item.to} {...item} />
@@ -62,11 +62,11 @@ const NavigationItem = ({ to, pathMatchPattern, label, icon }) => {
                 whileTap={{ scale: 0.98 }}
                 transition={{ duration: 0.2, ease: 'easeOut' }}
                 className={`h-11 rounded-xl px-3 flex items-center gap-3 border ${isActive
-                    ? 'bg-slate-100 text-slate-900 border-slate-100 shadow-md'
-                    : 'bg-transparent text-slate-200 border-transparent hover:bg-slate-800/70'
+                    ? 'bg-white text-brand border-white shadow-md'
+                    : 'bg-transparent text-white/90 border-transparent hover:bg-white/10'
                     }`}
             >
-                <span className={`${isActive ? 'text-slate-900' : 'text-slate-300'}`}>
+                <span className={`${isActive ? 'text-brand' : 'text-white/80'}`}>
                     {React.cloneElement(icon, { sx: { fontSize: 20 } })}
                 </span>
                 <span className="text-sm font-medium">{label}</span>

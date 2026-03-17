@@ -1,18 +1,18 @@
 {
   "files": {
-    "main.css": "/static/css/main.e4b3083f.css",
-    "main.js": "/static/js/main.32afe406.js",
+    "main.css": "/static/css/main.adf8c8cf.css",
+    "main.js": "/static/js/main.9d5aa2f9.js",
     "static/media/subjects.svg": "/static/media/subjects.ef81f0bbea2b9a3231edcf49d00d7ad5.svg",
     "static/media/bg-education.jpg": "/static/media/bg-education.e115a03d8dabb17f2ef4.jpg",
     "static/media/assignment.svg": "/static/media/assignment.4def021ac61723cb0479c69bf8efa1ab.svg",
     "static/media/time.svg": "/static/media/time.0e9d36f6356c032a523d5cc2fb081da2.svg",
     "static/media/students.jpg": "/static/media/students.0826d8c9a63a09a53ac4.jpg",
     "index.html": "/index.html",
-    "main.e4b3083f.css.map": "/static/css/main.e4b3083f.css.map",
-    "main.32afe406.js.map": "/static/js/main.32afe406.js.map"
+    "main.adf8c8cf.css.map": "/static/css/main.adf8c8cf.css.map",
+    "main.9d5aa2f9.js.map": "/static/js/main.9d5aa2f9.js.map"
   },
   "entrypoints": [
-    "static/css/main.e4b3083f.css",
-    "static/js/main.32afe406.js"
+    "static/css/main.adf8c8cf.css",
+    "static/js/main.9d5aa2f9.js"
   ]
 }

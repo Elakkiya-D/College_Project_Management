@@ -6,11 +6,11 @@ import React from 'react';
  */
 const ContentCard = ({ title, children, subtitle, className = "" }) => {
     return (
-        <div className={`bg-white rounded-xl shadow-sm border border-gray-100 p-6 space-y-6 animate-fade-in ${className}`}>
+        <div className={`bg-white rounded-xl shadow-sm border border-textDark/10 p-6 space-y-6 animate-fade-in ${className}`}>
             {(title || subtitle) && (
                 <div className="flex flex-col space-y-1">
-                    {title && <h3 className="text-xl font-semibold text-gray-900 tracking-tight">{title}</h3>}
-                    {subtitle && <p className="text-sm font-medium text-gray-500">{subtitle}</p>}
+                    {title && <h3 className="text-xl font-semibold text-textDark tracking-tight">{title}</h3>}
+                    {subtitle && <p className="text-sm font-medium text-textMedium">{subtitle}</p>}
                 </div>
             )}
             <div className="w-full">

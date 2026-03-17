@@ -22,7 +22,15 @@ const adminSchema = new mongoose.Schema({
         type: String,
         unique: true,
         required: true
-    }
+    },
+    resetPasswordToken: {
+        type: String,
+        default: null,
+    },
+    resetPasswordExpires: {
+        type: Date,
+        default: null,
+    },
 });
 
 module.exports = mongoose.model("admin", adminSchema)

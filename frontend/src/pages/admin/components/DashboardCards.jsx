@@ -4,10 +4,10 @@ import { motion } from 'framer-motion';
 import TrendingUpRoundedIcon from '@mui/icons-material/TrendingUpRounded';
 
 const colorStyles = {
-    blue: 'text-blue-700 bg-blue-50 border-blue-100',
-    indigo: 'text-indigo-700 bg-indigo-50 border-indigo-100',
-    emerald: 'text-emerald-700 bg-emerald-50 border-emerald-100',
-    amber: 'text-amber-700 bg-amber-50 border-amber-100',
+    blue: 'text-brand bg-brand/10 border-brand/20',
+    indigo: 'text-brand bg-brand/10 border-brand/20',
+    emerald: 'text-brand bg-brand/10 border-brand/20',
+    amber: 'text-accent bg-accent/10 border-accent/20',
 };
 
 const gridVariants = {
@@ -45,10 +45,10 @@ const DashboardCards = ({ items = [] }) => {
                     whileHover={{ scale: 1.02, boxShadow: '0 18px 45px -18px rgba(15, 23, 42, 0.35)' }}
                     whileTap={{ scale: 0.99 }}
                     transition={{ duration: 0.22, ease: 'easeOut' }}
-                    className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm min-h-[168px] flex flex-col justify-between"
+                    className="rounded-2xl border border-textDark/10 bg-white p-6 shadow-sm min-h-[168px] flex flex-col justify-between"
                 >
                     <div className="flex items-start justify-between">
-                        <h3 className="text-[15px] font-medium text-slate-600">{item.title}</h3>
+                        <h3 className="text-[15px] font-medium text-textMedium">{item.title}</h3>
                         <div className={`h-10 w-10 rounded-xl border flex items-center justify-center ${colorStyles[item.color] || colorStyles.blue}`}>
                             {item.icon}
                         </div>
@@ -60,9 +60,9 @@ const DashboardCards = ({ items = [] }) => {
                             end={item.count || 0}
                             duration={1.8}
                             prefix={item.prefix || ''}
-                            className="text-3xl font-extrabold text-slate-900"
+                            className="text-3xl font-extrabold text-textDark"
                         />
-                        <p className="text-xs font-medium text-slate-400 flex items-center gap-1.5">
+                        <p className="text-xs font-medium text-textMedium flex items-center gap-1.5">
                             <TrendingUpRoundedIcon sx={{ fontSize: 15 }} />
                             {item.subtext}
                         </p>

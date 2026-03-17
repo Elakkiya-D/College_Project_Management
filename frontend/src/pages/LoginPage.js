@@ -112,16 +112,16 @@ const LoginPage = ({ role }) => {
                 icon: <School style={{ fontSize: 36 }} className="text-accent" />
             };
             case "Teacher": return {
-                primaryBtn: "bg-slate-800 text-white hover:bg-slate-700 focus:ring-slate-500/40 shadow-slate-800/20",
-                textClass: "text-slate-800",
-                iconContainer: "bg-slate-100",
-                rightBg: "bg-slate-800",
+                primaryBtn: "bg-brandDark text-white hover:bg-brand focus:ring-brand/40 shadow-brand/20",
+                textClass: "text-brandDark",
+                iconContainer: "bg-brand/10",
+                rightBg: "bg-brandDark",
                 illustrationSrc: bgEducation,
                 illustrationBlend: "opacity-20 mix-blend-overlay",
                 sideTitle: "Faculty Workspace",
                 sideSubtitle: "Manage your classes, grade students, and seamlessly organize your daily academic schedule.",
                 sideTextColor: "text-white",
-                icon: <Group style={{ fontSize: 36 }} className="text-slate-800" />
+                icon: <Group style={{ fontSize: 36 }} className="text-brandDark" />
             };
             default: return {};
         }
@@ -194,7 +194,7 @@ const LoginPage = ({ role }) => {
                                             name="email"
                                             type="email"
                                             placeholder="name@institution.edu"
-                                            className={`w-full px-4 py-3.5 rounded-xl border ${emailError ? 'border-red-500 bg-red-50' : 'border-black/10'} focus:outline-none focus:ring-4 ${role === 'Admin' ? 'focus:ring-brand/30' : 'focus:ring-slate-400'} transition-all font-bold text-textDark shadow-sm`}
+                                            className={`w-full px-4 py-3.5 rounded-xl border ${emailError ? 'border-red-500 bg-red-50' : 'border-black/10'} focus:outline-none focus:ring-4 ${role === 'Admin' ? 'focus:ring-brand/30' : role === 'Student' ? 'focus:ring-accent/30' : 'focus:ring-brand/30'} transition-all font-bold text-textDark shadow-sm`}
                                             onChange={handleInputChange}
                                         />
                                         {emailError && <span className="text-xs text-red-500 font-bold">Email is required</span>}
@@ -209,7 +209,7 @@ const LoginPage = ({ role }) => {
                                             name="password"
                                             type={toggle ? 'text' : 'password'}
                                             placeholder="Enter your password"
-                                            className={`w-full pl-4 pr-12 py-3.5 rounded-xl border ${passwordError ? 'border-red-500 bg-red-50' : 'border-black/10'} focus:outline-none focus:ring-4 ${role === 'Admin' ? 'focus:ring-brand/30' : role === 'Student' ? 'focus:ring-accent/30' : 'focus:ring-slate-400'} transition-all font-bold text-textDark shadow-sm`}
+                                            className={`w-full pl-4 pr-12 py-3.5 rounded-xl border ${passwordError ? 'border-red-500 bg-red-50' : 'border-black/10'} focus:outline-none focus:ring-4 ${role === 'Admin' ? 'focus:ring-brand/30' : role === 'Student' ? 'focus:ring-accent/30' : 'focus:ring-brand/30'} transition-all font-bold text-textDark shadow-sm`}
                                             onChange={handleInputChange}
                                         />
                                         <button
@@ -235,7 +235,11 @@ const LoginPage = ({ role }) => {
                                         Remember me
                                     </span>
                                 </label>
-                                <button type="button" className={`text-sm font-bold hover:underline transition-colors ${theme.textClass}`}>
+                                <button
+                                    type="button"
+                                    onClick={() => navigate(`/forgot-password?role=${encodeURIComponent(role)}`)}
+                                    className={`text-sm font-bold hover:underline transition-colors ${theme.textClass}`}
+                                >
                                     Forgot password?
                                 </button>
                             </div>
