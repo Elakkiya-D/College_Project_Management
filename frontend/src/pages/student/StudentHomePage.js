@@ -43,71 +43,66 @@ const StudentHomePage = () => {
     return (
         <DashboardContainer>
             {/* 1. Page Header */}
-            <div className="flex justify-between items-center mb-8">
-                <div>
-                    <h1 className="text-3xl font-semibold text-gray-900 tracking-tight">Academic Overview</h1>
-                    <p className="text-sm text-gray-500">Welcome back, {currentUser.name}. Here is your progress report.</p>
+            <div className="flex justify-between items-center mb-10">
+                <div className="space-y-1">
+                    <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Academic Overview</h1>
+                    <p className="text-sm text-gray-500 font-medium italic">Welcome back, {currentUser.name}. Your semester metrics are up to date.</p>
                 </div>
             </div>
 
             {/* 2. Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
-                <div className="col-span-1 md:col-span-1 xl:col-span-1">
-                    <StatCard
-                        label="Enrolled Subjects"
-                        count={numberOfSubjects}
-                        icon={<SubjectIcon className="text-blue-600 w-5 h-5" />}
-                        helper="Courses registered"
-                    />
-                </div>
-                <div className="col-span-1 md:col-span-1 xl:col-span-1">
-                    <StatCard
-                        label="Upcoming Assignments"
-                        count={12}
-                        icon={<AssignmentIcon className="text-blue-600 w-5 h-5" />}
-                        helper="Submission pending"
-                    />
-                </div>
-                <div className="col-span-1 md:col-span-1 xl:col-span-1">
-                    <StatCard
-                        label="Attendance Score"
-                        count={Math.round(overallAttendancePercentage)}
-                        icon={<AttendanceIcon className="text-emerald-600 w-5 h-5" />}
-                        helper="Percentage avg."
-                        suffix="%"
-                    />
-                </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+                <StatCard
+                    label="Registrations"
+                    count={numberOfSubjects}
+                    icon={<SubjectIcon className="text-blue-500" fontSize="small" />}
+                    helper="Active modules"
+                />
+                <StatCard
+                    label="Tasks & Labs"
+                    count={12}
+                    icon={<AssignmentIcon className="text-blue-500" fontSize="small" />}
+                    helper="Critical deadlines"
+                />
+                <StatCard
+                    label="Attendance"
+                    count={Math.round(overallAttendancePercentage)}
+                    icon={<AttendanceIcon className="text-green-500" fontSize="small" />}
+                    helper="Presence Index"
+                    suffix="%"
+                />
             </div>
 
             {/* 3. Main Content: Attendance & Notices */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-                {/* Left: Attendance Pie Chart (5 cols) */}
-                <div className="col-span-12 lg:col-span-5">
-                    <DashboardCard title="Attendance Analysis" subtitle="Overview of your presence across all sessions.">
-                        <div className="flex flex-col items-center justify-center min-h-[300px]">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                <div className="lg:col-span-5 h-full">
+                    <ContentCard title="Presence Analysis" subtitle="Session attendance distribution.">
+                        <div className="flex flex-col items-center justify-center min-h-[350px]">
                             {loading ? (
-                                <div className="animate-pulse text-blue-600 font-bold">Analyzing data...</div>
+                                <div className="flex flex-col items-center gap-3">
+                                    <div className="w-8 h-8 border-4 border-gray-100 border-t-blue-500 rounded-full animate-spin"></div>
+                                    <p className="text-xs font-bold text-gray-400">Syncing charts...</p>
+                                </div>
                             ) : subjectAttendance.length > 0 ? (
-                                <div className="w-full h-[300px]">
+                                <div className="w-full h-[320px]">
                                     <CustomPieChart data={chartData} />
                                 </div>
                             ) : (
                                 <div className="flex flex-col items-center text-center p-8 space-y-4">
-                                    <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center border border-slate-100 shadow-inner">
-                                        <AttendanceIcon className="text-slate-300" fontSize="large" />
+                                    <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center border border-gray-100 shadow-inner">
+                                        <AttendanceIcon className="text-gray-300" fontSize="large" />
                                     </div>
                                     <div className="space-y-1">
-                                        <h4 className="text-lg font-black text-slate-700 leading-tight">No Attendance Found</h4>
-                                        <p className="text-sm font-medium text-slate-400">Records for the current month will appear here once faculty updates the registry.</p>
+                                        <h4 className="text-lg font-bold text-gray-900 leading-tight">Board Empty</h4>
+                                        <p className="text-xs text-gray-500 font-medium">No session data available for visualization.</p>
                                     </div>
                                 </div>
                             )}
                         </div>
-                    </DashboardCard>
+                    </ContentCard>
                 </div>
 
-                {/* Right: Institutional Notices (7 cols) */}
-                <div className="col-span-12 lg:col-span-7">
+                <div className="lg:col-span-7 h-full">
                     <SeeNotice inDashboardWidget={true} />
                 </div>
             </div>
@@ -115,36 +110,34 @@ const StudentHomePage = () => {
     )
 }
 
-/* Internal Dashboard Components */
-
 const StatCard = ({ label, count, icon, helper, suffix = "" }) => (
-    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center gap-6 group hover:shadow-md transition-all duration-200">
-        <div className="w-12 h-12 bg-gray-50 rounded-xl flex items-center justify-center border border-gray-100 group-hover:scale-105 transition-transform duration-200 shrink-0">
+    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-6 group hover:shadow-md transition-all duration-300">
+        <div className="w-12 h-12 bg-gray-50 rounded-xl flex items-center justify-center border border-gray-100 group-hover:bg-blue-50 group-hover:text-blue-600 transition-all shrink-0 shadow-inner">
             {icon}
         </div>
-        <div className="space-y-1">
-            <p className="text-sm font-semibold text-gray-500 uppercase tracking-wide">{label}</p>
+        <div className="space-y-0.5">
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none">{label}</p>
             <div className="flex items-baseline gap-1">
                 <CountUp
                     start={0}
                     end={count}
-                    duration={2.5}
-                    className="text-2xl font-bold text-gray-900 tracking-tight"
+                    duration={2}
+                    className="text-2xl font-bold text-gray-900"
                 />
-                {suffix && <span className="text-lg font-bold text-gray-500">{suffix}</span>}
+                {suffix && <span className="text-sm font-bold text-gray-400">{suffix}</span>}
             </div>
-            <p className="text-sm text-gray-500">{helper}</p>
+            <p className="text-xs text-gray-500 font-medium italic">{helper}</p>
         </div>
     </div>
 );
 
-const DashboardCard = ({ title, subtitle, children }) => (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col h-full hover:shadow-md transition-all duration-200">
-        <div className="mb-6 space-y-1">
-            <h3 className="text-lg font-semibold text-gray-800 tracking-tight">{title}</h3>
-            {subtitle && <p className="text-sm text-gray-500">{subtitle}</p>}
+const ContentCard = ({ title, subtitle, children }) => (
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col h-full hover:shadow-md transition-all duration-300 overflow-hidden">
+        <div className="p-6 border-b border-gray-50 bg-gray-50/20">
+            <h3 className="text-base font-bold text-gray-900 tracking-tight">{title}</h3>
+            {subtitle && <p className="text-xs text-gray-500 mt-1 font-medium">{subtitle}</p>}
         </div>
-        <div className="flex-1 flex flex-col">
+        <div className="p-6 flex-1 flex flex-col">
             {children}
         </div>
     </div>

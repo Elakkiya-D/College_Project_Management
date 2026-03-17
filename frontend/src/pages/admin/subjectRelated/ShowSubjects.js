@@ -24,15 +24,15 @@ const ShowSubjects = () => {
     const [message, setMessage] = useState("");
 
     const deleteHandler = (deleteID, address) => {
-        if (!window.confirm("Are you sure you want to remove this subject?")) return;
+        if (!window.confirm("Are you sure you want to remove this course?")) return;
         setMessage("The delete function is currently being audited for data safety.")
         setShowPopup(true)
     }
 
     const subjectColumns = [
-        { id: 'subName', label: 'Subject Name', minWidth: 170 },
+        { id: 'subName', label: 'Course Name', minWidth: 170 },
         { id: 'sessions', label: 'Allocated Sessions', minWidth: 140 },
-        { id: 'sclassName', label: 'Class / Grade', minWidth: 150 },
+        { id: 'sclassName', label: 'Dept', minWidth: 150 },
     ]
 
     const subjectRows = Array.isArray(subjectsList) && subjectsList.length > 0 ? subjectsList.map((subject) => {
@@ -64,11 +64,11 @@ const ShowSubjects = () => {
 
     return (
         <ModuleLayout
-            title="Subjects Inventory"
+            title="Courses Inventory"
             subtitle="Central curriculum database managing courses and academic resource allocation."
             actions={[
                 {
-                    label: 'Register New Subject',
+                    label: 'Register New Course',
                     variant: 'primary',
                     icon: <PostAddIcon fontSize="small" />,
                     onClick: () => navigate("/Admin/subjects/chooseclass")
@@ -77,7 +77,7 @@ const ShowSubjects = () => {
             loading={loading}
             isEmpty={response}
             emptyTitle="Curriculum Inventory Empty"
-            emptySubtitle="Your academic subject registry is currently empty. Define and assign subjects to classes to begin session tracking."
+            emptySubtitle="Your course registry is currently empty. Define and assign courses to departments to begin session tracking."
             emptyIcon={<PostAddIcon />}
             emptyAction={() => navigate("/Admin/subjects/chooseclass")}
             emptyActionLabel="Register First Course"

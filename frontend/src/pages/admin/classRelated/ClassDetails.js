@@ -57,17 +57,17 @@ const ClassDetails = () => {
     }
 
     const subjectColumns = [
-        { id: 'name', label: 'Subject Name', minWidth: 170 },
-        { id: 'code', label: 'Subject Code', minWidth: 100 },
+        { id: 'name', label: 'Course Name', minWidth: 170 },
+        { id: 'code', label: 'Course Code', minWidth: 100 },
     ]
 
-    const subjectRows = subjectsList && subjectsList.length > 0 && subjectsList.map((subject) => {
-        return {
+    const subjectRows = Array.isArray(subjectsList)
+        ? subjectsList.map((subject) => ({
             name: subject.subName,
             code: subject.subCode,
             id: subject._id,
-        };
-    })
+        }))
+        : [];
 
     const SubjectsButtonHaver = ({ row }) => {
         return (
@@ -76,7 +76,7 @@ const ClassDetails = () => {
                     onClick={() => navigate(`/Admin/class/subject/${classID}/${row.id}`)}
                     className="px-3 py-1.5 bg-blue-50 text-blue-600 font-bold text-sm rounded-lg hover:bg-blue-600 hover:text-white transition-all shadow-sm"
                 >
-                    View Subject
+                    View Course
                 </button>
                 <button
                     onClick={() => deleteHandler(row.id, "Subject")}
@@ -115,18 +115,18 @@ const ClassDetails = () => {
                             onClick={() => navigate("/Admin/addsubject/" + classID)}
                             className="mt-4 px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-sm hover:bg-blue-700 hover:shadow-md transition-all flex items-center gap-2"
                         >
-                            <PostAddIcon fontSize="small" /> Register Subject
+                            <PostAddIcon fontSize="small" /> Register Course
                         </button>
                     </div>
                     :
                     <div className="space-y-6 pb-20">
                         <div className="flex items-center justify-between">
-                            <h2 className="text-lg font-semibold text-gray-800 tracking-tight">Assigned Subjects</h2>
+                            <h2 className="text-lg font-semibold text-gray-800 tracking-tight">Assigned Courses</h2>
                             <button
                                 onClick={() => navigate("/Admin/addsubject/" + classID)}
                                 className="px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg text-sm shadow-sm hover:bg-blue-700 transition-all flex items-center gap-2"
                             >
-                                <PostAddIcon fontSize="small" /> Add Subject
+                                <PostAddIcon fontSize="small" /> Add Course
                             </button>
                         </div>
                         <div className="rounded-xl overflow-hidden border border-gray-200 shadow-sm bg-white">
@@ -240,12 +240,12 @@ const ClassDetails = () => {
 
         return (
             <div className="space-y-8 animate-fade-in">
-                <h2 className="text-lg font-semibold text-gray-800 tracking-tight">Class Overview</h2>
+                <h2 className="text-lg font-semibold text-gray-800 tracking-tight">Department Overview</h2>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <InfoCard
                         icon={<ClassIcon fontSize="small" />}
-                        label="Class Name"
+                        label="Department (Dept)"
                         value={sclassDetails?.sclassName}
                     />
                     <div className="grid grid-cols-2 gap-6">
@@ -256,7 +256,7 @@ const ClassDetails = () => {
                         />
                         <InfoCard
                             icon={<MenuBookIcon fontSize="small" />}
-                            label="Subjects Count"
+                            label="Courses Count"
                             value={String(numberOfSubjects)}
                         />
                     </div>
@@ -281,14 +281,14 @@ const ClassDetails = () => {
                         {response && (
                             <div className="col-span-1 p-6 bg-slate-50 border border-black/5 rounded-2xl flex items-center justify-between">
                                 <div>
-                                    <h4 className="font-bold text-textDark">Subject Missing</h4>
-                                    <p className="text-sm text-textDark/60">No subjects assigned for this class.</p>
+                                    <h4 className="font-bold text-textDark">Course Missing</h4>
+                                    <p className="text-sm text-textDark/60">No courses assigned for this department.</p>
                                 </div>
                                 <button
                                     onClick={() => navigate("/Admin/addsubject/" + classID)}
                                     className="px-6 py-2 bg-blue-600 text-white font-bold rounded-xl shadow-md hover:brightness-110 transition-all"
                                 >
-                                    Add Subject
+                                    Add Course
                                 </button>
                             </div>
                         )}
@@ -328,7 +328,7 @@ const ClassDetails = () => {
                             <TabButton
                                 isActive={value === '2'}
                                 onClick={() => setValue('2')}
-                                label="SUBJECTS"
+                                label="COURSES"
                             />
                             <TabButton
                                 isActive={value === '3'}

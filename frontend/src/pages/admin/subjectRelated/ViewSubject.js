@@ -158,12 +158,12 @@ const ViewSubject = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <InfoCard
             icon={<MenuBookIcon fontSize="small" />}
-            label="Subject Name"
+            label="Course Name"
             value={subjectDetails?.subName}
           />
           <InfoCard
             icon={<VpnKeyOutlinedIcon fontSize="small" />}
-            label="Subject Code"
+            label="Course Code"
             value={subjectDetails?.subCode}
           />
           <InfoCard
@@ -173,7 +173,7 @@ const ViewSubject = () => {
           />
           <InfoCard
             icon={<ClassOutlinedIcon fontSize="small" />}
-            label="Parent Class"
+            label="Department (Dept)"
             value={subjectDetails?.sclassName?.sclassName}
           />
           <InfoCard
@@ -185,7 +185,7 @@ const ViewSubject = () => {
           {subjectDetails?.teacher ? (
             <InfoCard
               icon={<PersonOutlineOutlinedIcon fontSize="small" />}
-              label="Assigned Lecturer"
+              label="Assigned Faculty"
               value={subjectDetails.teacher.name}
               highlight
             />
@@ -201,7 +201,7 @@ const ViewSubject = () => {
                 onClick={() => navigate("/Admin/teachers/addteacher/" + subjectDetails._id)}
                 className="w-full mt-3 px-4 py-2 bg-white text-orange-600 text-sm font-bold rounded-lg border border-orange-200 hover:bg-orange-600 hover:text-white transition-all shadow-sm"
               >
-                Assign Subject Teacher
+                Assign Course Faculty
               </button>
             </div>
           )}
@@ -221,8 +221,8 @@ const ViewSubject = () => {
           {/* TOP SECTION - Header & Actions */}
           <div className="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-8">
             <div>
-              <h1 className="text-2xl font-bold text-gray-800 tracking-tight">Subject Details</h1>
-              <p className="text-sm text-gray-500 mt-1 font-medium">Dashboard / Subjects / <span className="text-gray-900">{subjectDetails?.subName}</span></p>
+              <h1 className="text-2xl font-bold text-gray-800 tracking-tight">Course Details</h1>
+              <p className="text-sm text-gray-500 mt-1 font-medium">Dashboard / Courses / <span className="text-gray-900">{subjectDetails?.subName}</span></p>
             </div>
             <div className="flex items-center gap-3">
               <button

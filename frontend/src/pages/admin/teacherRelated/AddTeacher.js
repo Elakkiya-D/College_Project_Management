@@ -66,7 +66,7 @@ const AddTeacher = () => {
     <div className="max-w-7xl mx-auto px-6 py-8 w-full animate-fade-in">
       <PageHeader
         title="Register Faculty Member"
-        subtitle="Create a new teacher account and assign them to the selected subject."
+        subtitle="Create a new faculty account and assign them to the selected course."
         actions={[
           {
             label: 'Go Back',

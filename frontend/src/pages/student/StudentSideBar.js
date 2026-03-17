@@ -90,27 +90,35 @@ const StudentSideBar = () => {
 const MenuItem = ({ to, icon, label, pathMatchPattern, exact }) => {
     const location = useLocation();
 
+    // Check if active based on path. Handles both the link "to" and the pattern.
     const isActive = exact
         ? location.pathname === to || location.pathname === pathMatchPattern
-        : location.pathname.startsWith(pathMatchPattern) || location.pathname === to;
+        : location.pathname.startsWith(pathMatchPattern) || location.pathname === to || (to === "/" && location.pathname === "/Student/dashboard");
 
     return (
         <Link
             to={to}
             className={`
                 relative flex items-center gap-3 px-4 py-3 rounded-lg
-                transition duration-200 group overflow-hidden mb-1
-                ${isActive ? 'bg-white/20 text-white font-medium' : 'text-white/80 hover:bg-white/10 hover:text-white'}
+                transition-all duration-300 group overflow-hidden mb-1
+                ${isActive
+                    ? 'bg-white text-blue-700 shadow-md font-bold border-l-4 border-white'
+                    : 'text-white/80 hover:bg-white/10 hover:text-white border-l-4 border-transparent'}
             `}
             style={{ textDecoration: 'none' }}
         >
-            <div className={`w-5 h-5 flex-shrink-0 flex items-center justify-center transition-transform duration-200 group-hover:scale-105`}>
+            <div className={`w-5 h-5 flex-shrink-0 flex items-center justify-center transition-transform duration-300 group-hover:scale-110`}>
                 {React.cloneElement(icon, { style: { fontSize: 20 } })}
             </div>
 
             <span className="truncate text-sm tracking-wide whitespace-nowrap">
                 {label}
             </span>
+
+            {/* Subtle glow effect for active item */}
+            {isActive && (
+                <div className="absolute inset-0 bg-white/5 animate-pulse pointer-events-none" />
+            )}
         </Link>
     );
 };

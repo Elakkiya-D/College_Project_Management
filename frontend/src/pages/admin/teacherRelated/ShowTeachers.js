@@ -7,6 +7,7 @@ import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import TableTemplate from '../../../components/TableTemplate';
 import Popup from '../../../components/Popup';
 import PageHeader from '../../../components/PageHeader';
+import ModuleLayout from '../../../components/ModuleLayout';
 
 const ShowTeachers = () => {
     const navigate = useNavigate();
@@ -32,8 +33,8 @@ const ShowTeachers = () => {
 
     const columns = [
         { id: 'name', label: 'Name', minWidth: 170 },
-        { id: 'teachSubject', label: 'Subject', minWidth: 100 },
-        { id: 'teachSclass', label: 'Class', minWidth: 170 },
+        { id: 'teachSubject', label: 'Course', minWidth: 100 },
+        { id: 'teachSclass', label: 'Dept', minWidth: 170 },
     ];
 
     const rows = Array.isArray(teachersList) ? teachersList.map((teacher) => {
@@ -44,7 +45,7 @@ const ShowTeachers = () => {
                     onClick={() => navigate(`/Admin/teachers/choosesubject/${teacher.teachSclass._id}/${teacher._id}`)}
                     className="px-3 py-1 bg-blue-600 text-white text-xs font-bold rounded shadow-sm hover:brightness-110 transition-all"
                 >
-                    Assign Subject
+                    Assign Course
                 </button>
             ),
             teachSclass: teacher.teachSclass.sclassName,
@@ -72,59 +73,28 @@ const ShowTeachers = () => {
     );
 
     return (
-        <div className="max-w-7xl mx-auto px-6 py-8 w-full animate-fade-in">
-
-            {/* Header Section */}
-            <PageHeader
-                title="Faculty Registry"
-                subtitle="Manage all teaching staff, assignments, and class allocations."
-                actions={[
-                    {
-                        label: 'Clear All',
-                        variant: 'danger',
-                        onClick: () => deleteHandler(currentUser._id, "Teachers")
-                    },
-                    {
-                        label: 'Add Teacher',
-                        variant: 'primary',
-                        icon: <PersonAddAlt1Icon fontSize="small" />,
-                        onClick: () => navigate("/Admin/teachers/chooseclass")
-                    }
-                ]}
-            />
-
-            {/* Content Cards / Tables */}
-            {loading ? (
-                <div className="flex justify-center items-center py-20">
-                    <svg className="animate-spin h-10 w-10 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                </div>
-            ) : response ? (
-                <div className="bg-surface rounded-xl border border-black/5 p-12 text-center flex flex-col items-center justify-center">
-                    <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm mb-4">
-                        <PersonAddAlt1Icon className="text-blue-600" style={{ fontSize: 32 }} />
-                    </div>
-                    <h3 className="text-xl font-bold text-textDark mb-2">No Faculty Found</h3>
-                    <p className="text-textDark/70 max-w-sm mb-6">Your teaching staff registry is currently empty. Add your first teacher to begin allocating courses.</p>
-                    <button
-                        onClick={() => navigate("/Admin/teachers/chooseclass")}
-                        className="px-6 py-3 bg-blue-600 text-white font-bold rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all"
-                    >
-                        Add First Teacher
-                    </button>
-                </div>
-            ) : (
-                <div className="bg-white rounded-2xl shadow-md border border-textDark/5 overflow-hidden">
-                    {Array.isArray(teachersList) && teachersList.length > 0 &&
-                        <TableTemplate buttonHaver={TeacherActions} columns={columns} rows={rows} />
-                    }
-                </div>
-            )}
-
+        <ModuleLayout
+            title="Faculty Registry"
+            subtitle="Manage all teaching staff, assignments, and class allocations."
+            actions={[
+                {
+                    label: 'Add Teacher',
+                    variant: 'primary',
+                    icon: <PersonAddAlt1Icon fontSize="small" />,
+                    onClick: () => navigate("/Admin/teachers/chooseclass")
+                }
+            ]}
+            loading={loading}
+            isEmpty={response}
+            emptyTitle="No Faculty Members"
+            emptySubtitle="The teaching staff directory is currently empty. Onboard your first faculty member to begin assigning courses."
+            emptyIcon={<PersonAddAlt1Icon />}
+            emptyAction={() => navigate("/Admin/teachers/chooseclass")}
+            emptyActionLabel="Onboard Teacher"
+        >
+            <TableTemplate buttonHaver={TeacherActions} columns={columns} rows={rows} />
             <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} />
-        </div>
+        </ModuleLayout>
     );
 };
 

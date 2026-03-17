@@ -13,14 +13,20 @@ import {
     getError,
 } from './userSlice';
 
+const getAuthHeaders = () => {
+    const token = localStorage.getItem('authToken');
+    return token ? { Authorization: `Bearer ${token}` } : {};
+};
+
 export const loginUser = (fields, role) => async (dispatch) => {
     dispatch(authRequest());
 
     try {
         const result = await axios.post(`${process.env.REACT_APP_BASE_URL}/${role}Login`, fields, {
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
         });
-        if (result.data.role) {
+
+        if (result.data?.role || result.data?.user?.role) {
             dispatch(authSuccess(result.data));
         } else {
             dispatch(authFailed(result.data.message));
@@ -35,12 +41,13 @@ export const registerUser = (fields, role) => async (dispatch) => {
 
     try {
         const result = await axios.post(`${process.env.REACT_APP_BASE_URL}/${role}Reg`, fields, {
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
         });
-        if (result.data.schoolName) {
+
+        if (result.data?.schoolName || result.data?.role || result.data?.user?.role) {
             dispatch(authSuccess(result.data));
         }
-        else if (result.data.school) {
+        else if (result.data?.school) {
             dispatch(stuffAdded());
         }
         else {
@@ -59,7 +66,9 @@ export const getUserDetails = (id, address) => async (dispatch) => {
     dispatch(getRequest());
 
     try {
-        const result = await axios.get(`${process.env.REACT_APP_BASE_URL}/${address}/${id}`);
+        const result = await axios.get(`${process.env.REACT_APP_BASE_URL}/${address}/${id}`, {
+            headers: { ...getAuthHeaders() },
+        });
         if (result.data) {
             dispatch(doneSuccess(result.data));
         }
@@ -71,7 +80,9 @@ export const getUserDetails = (id, address) => async (dispatch) => {
 export const deleteUser = (id, address) => async (dispatch) => {
     dispatch(getRequest());
     try {
-        const result = await axios.delete(`${process.env.REACT_APP_BASE_URL}/${address}/${id}`);
+        const result = await axios.delete(`${process.env.REACT_APP_BASE_URL}/${address}/${id}`, {
+            headers: { ...getAuthHeaders() },
+        });
         if (result.data.message) {
             dispatch(getFailed(result.data.message));
             throw new Error(result.data.message);
@@ -90,9 +101,9 @@ export const updateUser = (fields, id, address) => async (dispatch) => {
 
     try {
         const result = await axios.put(`${process.env.REACT_APP_BASE_URL}/${address}/${id}`, fields, {
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
         });
-        if (result.data.schoolName) {
+        if (result.data?.schoolName || result.data?.role || result.data?.user?.role) {
             dispatch(authSuccess(result.data));
         }
         else {
@@ -108,7 +119,7 @@ export const addStuff = (fields, address) => async (dispatch) => {
 
     try {
         const result = await axios.post(`${process.env.REACT_APP_BASE_URL}/${address}Create`, fields, {
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
         });
 
         if (result.data.message) {

@@ -1,84 +1,70 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import SearchIcon from '@mui/icons-material/Search';
+import MenuIcon from '@mui/icons-material/Menu';
 import AccountMenu from '../../components/AccountMenu';
 import { useSelector } from 'react-redux';
 
-const TopNavbar = () => {
+const sectionTitles = [
+    { path: '/Admin/dashboard', label: 'Admin Overview' },
+    { path: '/Admin/classes', label: 'Department Management' },
+    { path: '/Admin/subjects', label: 'Course Management' },
+    { path: '/Admin/teachers', label: 'Faculty Management' },
+    { path: '/Admin/students', label: 'Student Management' },
+    { path: '/Admin/fees', label: 'Fees and Billing' },
+    { path: '/Admin/notices', label: 'Announcements' },
+    { path: '/Admin/complains', label: 'Grievances' },
+    { path: '/Admin/profile', label: 'Admin Profile' },
+];
+
+const TopNavbar = ({ onMenuToggle }) => {
     const { currentUser } = useSelector(state => state.user);
+    const location = useLocation();
+
+    const activeSection = sectionTitles.find((item) => location.pathname.startsWith(item.path))?.label || 'Admin Overview';
 
     return (
-        <header className="h-16 sticky top-0 z-50 bg-gradient-to-r from-blue-600 to-indigo-600 shadow-md flex items-center justify-between px-8 text-white">
-            {/* Left: Logo / Brand */}
-            <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center font-bold text-white shadow-sm backdrop-blur-sm border border-white/30">
-                    {currentUser?.schoolName ? currentUser.schoolName.charAt(0) : 'E'}
+        <header className="h-16 sticky top-0 z-50 bg-white border-b border-slate-200 shadow-sm flex items-center justify-between px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center gap-3 min-w-0">
+                <button
+                    type="button"
+                    onClick={onMenuToggle}
+                    className="lg:hidden h-9 w-9 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors flex items-center justify-center"
+                    aria-label="Open navigation"
+                >
+                    <MenuIcon fontSize="small" />
+                </button>
+
+                <div className="w-9 h-9 bg-slate-900 rounded-lg flex items-center justify-center font-bold text-white shadow-sm">
+                    {currentUser?.schoolName ? currentUser.schoolName.charAt(0) : 'C'}
                 </div>
-                <span className="font-bold tracking-tight ml-2 md:block">
-                    {currentUser?.schoolName || 'EduManage Pro'}
-                </span>
+                <div className="min-w-0">
+                    <p className="text-xs uppercase tracking-[0.2em] text-slate-400 font-semibold">Control Center</p>
+                    <h1 className="text-sm sm:text-base font-semibold text-slate-800 truncate">{activeSection}</h1>
+                </div>
             </div>
 
-            {/* Center: Navigation Menu */}
-            <nav className="hidden lg:flex items-center h-full gap-1">
-                <NavItem to="/Admin/dashboard" label="Home" pathMatchPattern="/Admin/dashboard" exact={true} />
-                <NavItem to="/Admin/classes" label="Classes" pathMatchPattern="/Admin/classes" />
-                <NavItem to="/Admin/subjects" label="Subjects" pathMatchPattern="/Admin/subjects" />
-                <NavItem to="/Admin/teachers" label="Teachers" pathMatchPattern="/Admin/teachers" />
-                <NavItem to="/Admin/students" label="Students" pathMatchPattern="/Admin/students" />
-                <NavItem to="/Admin/fees" label="Fees" pathMatchPattern="/Admin/fees" />
-                <NavItem to="/Admin/notices" label="Notices" pathMatchPattern="/Admin/notices" />
-                <NavItem to="/Admin/complains" label="Complaints" pathMatchPattern="/Admin/complains" />
-            </nav>
-
-            {/* Right: Actions */}
-            <div className="flex items-center gap-4">
-                <div className="hidden md:flex items-center bg-white/10 px-3 py-1.5 rounded-full border border-white/20 focus-within:border-white focus-within:bg-white/20 transition-all backdrop-blur-sm">
-                    <SearchIcon className="text-white/70" sx={{ fontSize: 18 }} />
+            <div className="flex items-center gap-3 sm:gap-4">
+                <div className="hidden md:flex items-center bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200 focus-within:border-blue-500 focus-within:bg-white transition-all">
+                    <SearchIcon className="text-slate-400" sx={{ fontSize: 18 }} />
                     <input
                         type="text"
-                        placeholder="Quick search..."
-                        className="bg-transparent border-none outline-none text-sm ml-2 w-48 text-white placeholder-white/60"
+                        placeholder="Search departments, faculty, courses..."
+                        className="bg-transparent border-none outline-none text-sm ml-2 w-48 lg:w-64 text-slate-700 placeholder-slate-400"
                     />
                 </div>
-                <button className="p-2 relative text-white/80 hover:text-white transition-colors rounded-full hover:bg-white/10 hidden sm:block">
+
+                <button className="p-2 relative text-slate-500 hover:text-slate-700 transition-colors rounded-lg hover:bg-slate-100 hidden sm:block" aria-label="Notifications">
                     <NotificationsNoneIcon />
-                    <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-400 rounded-full border-2 border-indigo-600 shadow-sm"></span>
+                    <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white shadow-sm"></span>
                 </button>
-                <div className="pl-2 border-l border-white/20 ml-1 opacity-90">
+
+                <div className="pl-2 border-l border-slate-200 ml-1">
                     <AccountMenu />
                 </div>
             </div>
         </header>
-    );
-};
-
-const NavItem = ({ to, label, pathMatchPattern, exact }) => {
-    const location = useLocation();
-    const isActive = exact
-        ? location.pathname === to || location.pathname === '/'
-        : location.pathname.startsWith(pathMatchPattern) || location.pathname === to;
-
-    return (
-        <Link
-            to={to}
-            className={`
-                h-full flex items-center px-4 text-sm font-semibold transition-all duration-200 relative
-                ${isActive ? 'text-white' : 'text-white/70 hover:text-white hover:bg-white/5'}
-            `}
-            style={{ textDecoration: 'none' }}
-        >
-            {label}
-            {/* Active Indicator Bar - Absolute pinned to the bottom of the sticky header */}
-            {isActive && (
-                <span className="absolute bottom-0 left-0 w-full h-[3px] bg-white rounded-t-sm shadow-[0_-2px_8px_rgba(255,255,255,0.4)]"></span>
-            )}
-            {/* Hover Indicator Bar */}
-            {!isActive && (
-                <span className="absolute bottom-0 left-0 w-full h-[3px] bg-white/30 rounded-t-sm scale-x-0 group-hover:scale-x-100 origin-center transition-transform duration-200"></span>
-            )}
-        </Link>
     );
 };
 

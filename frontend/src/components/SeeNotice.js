@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAllNotices } from '../redux/noticeRelated/noticeHandle';
 import CampaignIcon from '@mui/icons-material/Campaign';
-import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import InfoIcon from '@mui/icons-material/Info';
 
 const SeeNotice = ({ inDashboardWidget = false }) => {
@@ -15,101 +14,97 @@ const SeeNotice = ({ inDashboardWidget = false }) => {
         if (currentRole === "Admin") {
             dispatch(getAllNotices(currentUser._id, "Notice"));
         } else {
-            dispatch(getAllNotices(currentUser.school._id, "Notice"));
+            dispatch(getAllNotices(currentUser.school?._id || currentUser.school, "Notice"));
         }
     }, [dispatch, currentRole, currentUser]);
 
+    // Data Sanitization: De-duplicate notices based on title and details to prevent UI clutter
+    const sanitizedNotices = noticesList ? Array.from(
+        new Map(noticesList.map(notice => [`${notice.title}-${notice.details}`, notice])).values()
+    ) : [];
+
     return (
-        <div className="space-y-8 animate-fade-in">
-            {/* Header */}
+        <div className={`space-y-6 ${!inDashboardWidget && 'animate-fade-in'}`}>
+            {/* Page Header (Only for full page view) */}
             {!inDashboardWidget && (
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
                     <div className="space-y-1">
-                        <h1 className="text-2xl font-black text-slate-800 tracking-tight">Institutional Bulletin</h1>
-                        <p className="text-sm font-medium text-slate-500 tracking-wide">
-                            Real-time updates and official announcements from university administration.
+                        <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Institutional Bulletin</h1>
+                        <p className="text-sm font-medium text-gray-500">
+                            Real-time synchronization with official campus announcements.
                         </p>
-                    </div>
-                    <div className="flex items-center gap-2 px-4 py-2 bg-indigo-50 border border-indigo-100 rounded-xl">
-                        <CampaignIcon className="text-indigo-600" fontSize="small" />
-                        <span className="text-[10px] font-black uppercase tracking-widest text-indigo-600">Sync Active</span>
                     </div>
                 </div>
             )}
 
             {loading ? (
-                <div className="py-20 flex justify-center flex-col items-center gap-4">
-                    <div className="w-12 h-12 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin"></div>
-                    <p className="text-sm font-black text-indigo-600 uppercase tracking-widest">Fetching Bulletin...</p>
+                <div className="py-20 flex justify-center flex-col items-center gap-4 bg-white rounded-2xl border border-gray-100 shadow-sm">
+                    <div className="w-10 h-10 border-4 border-gray-100 border-t-blue-600 rounded-full animate-spin"></div>
+                    <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Synchronizing Board...</p>
                 </div>
-            ) : (!noticesList || noticesList.length === 0 || response) ? (
-                <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-20 flex flex-col items-center text-center space-y-6">
-                    <div className="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center border border-slate-100 shadow-inner group hover:scale-110 transition-transform duration-500">
-                        <CampaignIcon className="text-indigo-200 group-hover:text-indigo-400 transition-colors" style={{ fontSize: 40 }} />
+            ) : (!sanitizedNotices || sanitizedNotices.length === 0 || response) ? (
+                <div className="bg-white rounded-2xl border border-gray-100 p-20 flex flex-col items-center text-center space-y-5 shadow-sm">
+                    <div className="w-20 h-20 bg-gray-50 rounded-2xl flex items-center justify-center border border-gray-100 shadow-inner group">
+                        <CampaignIcon className="text-gray-300 group-hover:text-blue-400 transition-colors" style={{ fontSize: 32 }} />
                     </div>
                     <div className="space-y-2">
-                        <h2 className="text-xl font-black text-slate-800">No Active Notices</h2>
-                        <p className="text-sm font-medium text-slate-400 max-w-sm">There are no official institutional notices to display at this time. Future announcements will appear here synchronized with the university board.</p>
+                        <h2 className="text-xl font-bold text-gray-900">No Active Notices</h2>
+                        <p className="text-sm text-gray-500 font-medium max-w-sm">Official announcements from administration will appear here once broadcasted.</p>
                     </div>
                 </div>
             ) : (
-                <DashboardCard
-                    title={inDashboardWidget ? "Institutional Notices" : "Active Announcements"}
-                    subtitle={inDashboardWidget ? "Stay updated with the latest campus announcements." : `Total Registered Notices: ${noticesList.length}`}
-                    noPadding={inDashboardWidget}
+                <ContentCard
+                    title={inDashboardWidget ? "Institutional Board" : "Active Announcements"}
+                    subtitle={inDashboardWidget ? "Official campus broadcast stream." : `Registry: ${sanitizedNotices.length} Records`}
                 >
-                    <div className="space-y-6">
-                        {noticesList.map((notice, index) => {
+                    <div className="space-y-8">
+                        {sanitizedNotices.map((notice, index) => {
                             const date = new Date(notice.date);
                             const day = date.getDate();
                             const month = date.toLocaleString('en-US', { month: 'short' });
-                            const year = date.getFullYear();
 
                             return (
-                                <div key={index} className="flex gap-6 group transition-all">
-                                    {/* Date Column */}
-                                    <div className="flex flex-col items-center pt-1 group-last:after:hidden relative after:content-[''] after:absolute after:top-14 after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:w-px after:bg-slate-100">
-                                        <div className="w-14 h-14 rounded-2xl bg-indigo-50 border border-indigo-100 flex flex-col items-center justify-center text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-300">
-                                            <span className="text-lg font-black leading-none">{day}</span>
-                                            <span className="text-[10px] font-black uppercase tracking-tighter">{month}</span>
+                                <div key={index} className="flex gap-6 group relative">
+                                    {/* Timeline Date Marker */}
+                                    <div className="flex flex-col items-center shrink-0 pt-1 group-last:after:hidden relative after:content-[''] after:absolute after:top-14 after:bottom-[-20px] after:left-1/2 after:-translate-x-1/2 after:w-px after:bg-gray-100">
+                                        <div className="w-14 h-14 rounded-2xl bg-gray-50 border border-gray-100 flex flex-col items-center justify-center text-gray-400 group-hover:bg-blue-600 group-hover:text-white group-hover:border-blue-700 transition-all duration-300 shadow-sm">
+                                            <span className="text-lg font-bold leading-none">{day}</span>
+                                            <span className="text-[10px] font-bold uppercase tracking-widest">{month}</span>
                                         </div>
                                     </div>
 
-                                    {/* Content Column */}
-                                    <div className="flex-1 pb-10 border-b border-slate-50 last:border-none last:pb-0">
+                                    {/* Notice Body */}
+                                    <div className="flex-1 pb-8 border-b border-gray-50 group-last:border-none group-last:pb-0">
                                         <div className="space-y-3">
-                                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
-                                                <h4 className="text-lg font-black text-slate-800 tracking-tight group-hover:text-indigo-600 transition-colors">{notice.title}</h4>
-                                                <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-50 text-slate-400 text-[9px] font-black uppercase tracking-widest rounded-full border border-slate-100">
-                                                    <CalendarMonthIcon sx={{ fontSize: 10 }} /> Published in {year}
+                                            <div className="flex flex-col md:flex-row md:items-start justify-between gap-3">
+                                                <h4 className="text-base font-bold text-gray-900 leading-tight group-hover:text-blue-600 transition-colors">{notice.title}</h4>
+                                                <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-gray-50 text-gray-400 text-[9px] font-bold uppercase tracking-widest rounded-lg border border-gray-100 whitespace-nowrap">
+                                                    Official Release
                                                 </span>
                                             </div>
-                                            <p className="text-sm font-medium text-slate-500 leading-relaxed italic">
+                                            <p className="text-sm text-gray-500 font-medium leading-relaxed">
                                                 {notice.details}
                                             </p>
-                                            <div className="pt-4 flex items-center gap-4">
-                                                <div className="h-0.5 w-12 bg-indigo-100 rounded-full"></div>
-                                                <div className="flex items-center gap-1.5 text-[10px] font-black text-indigo-400 uppercase tracking-[0.2em]">
-                                                    <InfoIcon sx={{ fontSize: 12 }} /> Formal Update
-                                                </div>
-                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             );
                         })}
                     </div>
-                </DashboardCard>
+                </ContentCard>
             )}
         </div>
     );
 };
 
-const DashboardCard = ({ title, subtitle, children }) => (
-    <div className="bg-white rounded-xl shadow-sm border border-slate-200/60 flex flex-col h-full overflow-hidden">
-        <div className="p-6 border-b border-slate-100 bg-slate-50/30">
-            <h3 className="text-base font-semibold text-slate-800 tracking-tight">{title}</h3>
-            {subtitle && <p className="text-sm font-medium text-slate-500">{subtitle}</p>}
+const ContentCard = ({ title, subtitle, children }) => (
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col h-full overflow-hidden hover:shadow-md transition-all duration-300">
+        <div className="p-6 border-b border-gray-50 bg-gray-50/20 flex justify-between items-center">
+            <div>
+                <h3 className="text-base font-bold text-gray-900 tracking-tight">{title}</h3>
+                {subtitle && <p className="text-xs text-gray-500 mt-1 font-medium">{subtitle}</p>}
+            </div>
+            <CampaignIcon className="text-gray-200" fontSize="small" />
         </div>
         <div className="p-6 flex-1 flex flex-col">
             {children}

@@ -32,15 +32,15 @@ const ChooseClass = ({ situation }) => {
     }
 
     const sclassColumns = [
-        { id: 'name', label: 'Class Name', minWidth: 170 },
+        { id: 'name', label: 'Department (Dept)', minWidth: 170 },
     ]
 
-    const sclassRows = sclassesList && sclassesList.length > 0 && sclassesList.map((sclass) => {
-        return {
+    const sclassRows = Array.isArray(sclassesList)
+        ? sclassesList.map((sclass) => ({
             name: sclass.sclassName,
             id: sclass._id,
-        };
-    })
+        }))
+        : [];
 
     const SclassButtonHaver = ({ row }) => {
         return (
@@ -58,8 +58,8 @@ const ChooseClass = ({ situation }) => {
     return (
         <div className="max-w-7xl mx-auto px-6 py-8 w-full animate-fade-in">
             <PageHeader
-                title="Select Deployment Class"
-                subtitle={`Assign to a specific student group for ${situation === 'Teacher' ? 'Teaching' : 'Subject'} allocation.`}
+                title="Select Department"
+                subtitle={`Assign to a specific department for ${situation === 'Teacher' ? 'Faculty' : 'Course'} allocation.`}
                 actions={[
                     {
                         label: 'Go Back',
@@ -82,17 +82,17 @@ const ChooseClass = ({ situation }) => {
                             <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mb-6">
                                 <ClassIcon className="text-blue-400" style={{ fontSize: 40 }} />
                             </div>
-                            <h3 className="text-2xl font-black text-textDark mb-2">No Classes Configured</h3>
-                            <p className="text-textDark/60 max-w-sm mb-8 font-medium">Create a class structurally before allocating staff to it.</p>
+                            <h3 className="text-2xl font-black text-textDark mb-2">No Departments Configured</h3>
+                            <p className="text-textDark/60 max-w-sm mb-8 font-medium">Create a department before allocating faculty to it.</p>
                             <button
                                 onClick={() => navigate("/Admin/addclass")}
                                 className="px-8 py-3 bg-blue-600 text-white font-bold rounded-xl shadow-md hover:brightness-110 transition-all"
                             >
-                                Setup First Class
+                                Setup First Department
                             </button>
                         </ContentCard>
                     ) : (
-                        <ContentCard title="Available Classes" subtitle="Select a target class to proceed with assignment.">
+                        <ContentCard title="Available Departments" subtitle="Select a target department to proceed with assignment.">
                             <div className="border border-black/5 rounded-2xl overflow-hidden mt-4 shadow-sm">
                                 {Array.isArray(sclassesList) && sclassesList.length > 0 &&
                                     <TableTemplate buttonHaver={SclassButtonHaver} columns={sclassColumns} rows={sclassRows} />

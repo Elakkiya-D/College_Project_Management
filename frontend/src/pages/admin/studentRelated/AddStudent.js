@@ -105,14 +105,14 @@ const AddStudent = ({ situation }) => {
 
                                 {situation === "Student" && (
                                     <div className="flex flex-col space-y-2 group">
-                                        <label className="text-sm font-medium text-gray-700 group-focus-within:text-blue-600 transition-colors">Assign to Class</label>
+                                        <label className="text-sm font-medium text-gray-700 group-focus-within:text-blue-600 transition-colors">Assign to Dept</label>
                                         <select
                                             className="w-full px-4 py-3 bg-white rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800 transition-all appearance-none"
                                             value={className}
                                             onChange={changeHandler}
                                             required
                                         >
-                                            <option value='Select Class'>Select a Class...</option>
+                                            <option value='Select Class'>Select a Department...</option>
                                             {sclassesList.map((classItem, index) => (
                                                 <option key={index} value={classItem.sclassName}>{classItem.sclassName}</option>
                                             ))}

@@ -45,8 +45,8 @@ const ChooseSubject = ({ situation }) => {
         return (
             <div className="max-w-7xl mx-auto px-6 py-8 w-full animate-fade-in">
                 <PageHeader
-                    title="Assign Subject"
-                    subtitle="All subjects for this class are currently staffed."
+                    title="Assign Course"
+                    subtitle="All courses for this department are currently assigned."
                     actions={[{ label: 'Go Back', variant: 'secondary', onClick: () => navigate(-1) }]}
                 />
                 <div className="mt-8 animate-slide-up">
@@ -54,13 +54,13 @@ const ChooseSubject = ({ situation }) => {
                         <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mb-6">
                             <MenuBookIcon className="text-blue-400" style={{ fontSize: 40 }} />
                         </div>
-                        <h3 className="text-2xl font-black text-textDark mb-2">No Free Subjects Available</h3>
-                        <p className="text-textDark/60 max-w-sm mb-8 font-medium">All subjects assigned to the selected class already have a designated teacher.</p>
+                        <h3 className="text-2xl font-black text-textDark mb-2">No Free Courses Available</h3>
+                        <p className="text-textDark/60 max-w-sm mb-8 font-medium">All courses assigned to the selected department already have a designated faculty member.</p>
                         <button
                             onClick={() => navigate("/Admin/addsubject/" + classID)}
                             className="px-8 py-3 bg-blue-600 text-white font-bold rounded-xl shadow-md hover:brightness-110 transition-all"
                         >
-                            Create New Subject
+                            Create New Course
                         </button>
                     </ContentCard>
                 </div>
@@ -79,8 +79,8 @@ const ChooseSubject = ({ situation }) => {
     return (
         <div className="max-w-7xl mx-auto px-6 py-8 w-full animate-fade-in">
             <PageHeader
-                title="Select Academic Subject"
-                subtitle="Assign an available subject to the designated faculty member."
+                title="Select Course"
+                subtitle="Assign an available course to the designated faculty member."
                 actions={[
                     {
                         label: 'Go Back',
@@ -90,14 +90,14 @@ const ChooseSubject = ({ situation }) => {
                 ]}
             />
             <div className="mt-8 animate-slide-up">
-                <ContentCard title="Available Course Catalog" subtitle="Select an unassigned subject from the list below.">
+                <ContentCard title="Available Course Catalog" subtitle="Select an unassigned course from the list below.">
                     <div className="border border-black/5 rounded-2xl overflow-hidden mt-4 shadow-sm bg-white">
                         <table className="w-full text-left border-collapse">
                             <thead>
                                 <tr className="bg-slate-50 border-b border-black/5">
                                     <th className="px-6 py-4 text-xs font-black uppercase tracking-wider text-textDark/40">#</th>
-                                    <th className="px-6 py-4 text-xs font-black uppercase tracking-wider text-textDark/40">Subject Name</th>
-                                    <th className="px-6 py-4 text-xs font-black uppercase tracking-wider text-textDark/40">Subject Code</th>
+                                    <th className="px-6 py-4 text-xs font-black uppercase tracking-wider text-textDark/40">Course Name</th>
+                                    <th className="px-6 py-4 text-xs font-black uppercase tracking-wider text-textDark/40">Course Code</th>
                                     <th className="px-6 py-4 text-xs font-black uppercase tracking-wider text-textDark/40 text-right">Actions</th>
                                 </tr>
                             </thead>

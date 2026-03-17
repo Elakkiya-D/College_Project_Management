@@ -4,29 +4,32 @@ const TableTemplate = ({ buttonHaver: ButtonHaver, columns, rows }) => {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
+    const safeColumns = Array.isArray(columns) ? columns : [];
+    const safeRows = Array.isArray(rows) ? rows : [];
+
     // Pagination logic
-    const totalPages = Math.ceil(rows.length / rowsPerPage);
+    const totalPages = Math.ceil(safeRows.length / rowsPerPage);
 
     // Slice data for pagination
-    const paginatedRows = rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+    const paginatedRows = safeRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
     return (
-        <div className="w-full">
+        <div className="w-full bg-white rounded-xl border border-slate-100 overflow-hidden">
             <div className="overflow-x-auto w-full">
-                <table className="table-auto w-full text-left border-collapse whitespace-nowrap">
+                <table className="table-auto w-full min-w-[820px] text-left border-collapse whitespace-nowrap">
                     <thead>
-                        <tr className="border-b border-gray-200 bg-gray-50/50">
-                            {columns.map((column) => (
+                        <tr className="border-b border-gray-200 bg-slate-50 sticky top-0 z-10">
+                            {safeColumns.map((column) => (
                                 <th
                                     key={column.id}
-                                    className={`py-4 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wide ${column.align === 'center' ? 'text-center' : column.align === 'right' ? 'text-right' : 'text-left'}`}
+                                    className={`py-3.5 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wide ${column.align === 'center' ? 'text-center' : column.align === 'right' ? 'text-right' : 'text-left'}`}
                                     style={{ minWidth: column.minWidth }}
                                 >
                                     {column.label}
                                 </th>
                             ))}
                             {ButtonHaver && (
-                                <th className="py-4 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wide text-right">
+                                <th className="py-3.5 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wide text-right min-w-[170px]">
                                     Actions
                                 </th>
                             )}
@@ -35,13 +38,13 @@ const TableTemplate = ({ buttonHaver: ButtonHaver, columns, rows }) => {
                     <tbody className="divide-y divide-gray-100 bg-white">
                         {paginatedRows.length > 0 ? (
                             paginatedRows.map((row) => (
-                                <tr key={row.id} className="hover:bg-gray-50 transition-colors duration-200">
-                                    {columns.map((column) => {
+                                <tr key={row.id || JSON.stringify(row)} className="hover:bg-gray-50 transition-colors duration-200">
+                                    {safeColumns.map((column) => {
                                         const value = row[column.id];
                                         return (
                                             <td
                                                 key={column.id}
-                                                className={`py-4 px-6 text-sm text-gray-800 ${column.align === 'center' ? 'text-center' : column.align === 'right' ? 'text-right' : 'text-left'}`}
+                                                className={`py-3.5 px-6 text-sm text-gray-800 ${column.align === 'center' ? 'text-center' : column.align === 'right' ? 'text-right' : 'text-left'}`}
                                             >
                                                 {column.format && typeof value === 'number'
                                                     ? column.format(value)
@@ -50,7 +53,7 @@ const TableTemplate = ({ buttonHaver: ButtonHaver, columns, rows }) => {
                                         );
                                     })}
                                     {ButtonHaver && (
-                                        <td className="py-4 px-6 text-right">
+                                        <td className="py-3.5 px-6 text-right">
                                             <ButtonHaver row={row} />
                                         </td>
                                     )}
@@ -58,7 +61,7 @@ const TableTemplate = ({ buttonHaver: ButtonHaver, columns, rows }) => {
                             ))
                         ) : (
                             <tr>
-                                <td colSpan={columns.length + (ButtonHaver ? 1 : 0)} className="py-8 text-center text-sm text-gray-500">
+                                <td colSpan={safeColumns.length + (ButtonHaver ? 1 : 0)} className="py-12 text-center text-sm text-gray-500">
                                     No data available
                                 </td>
                             </tr>
@@ -68,8 +71,8 @@ const TableTemplate = ({ buttonHaver: ButtonHaver, columns, rows }) => {
             </div>
 
             {/* Premium Pagination Footer */}
-            {rows.length > 0 && (
-                <div className="flex items-center justify-between px-6 py-4 bg-white border-t border-gray-100">
+            {safeRows.length > 0 && (
+                <div className="flex items-center justify-between px-4 sm:px-6 py-4 bg-white border-t border-gray-100">
                     <div className="flex items-center gap-2 text-sm text-gray-500">
                         <span>Rows per page:</span>
                         <select
@@ -89,7 +92,7 @@ const TableTemplate = ({ buttonHaver: ButtonHaver, columns, rows }) => {
 
                     <div className="flex items-center gap-4">
                         <span className="text-sm text-gray-700">
-                            {page * rowsPerPage + 1}-{Math.min((page + 1) * rowsPerPage, rows.length)} of {rows.length}
+                            {page * rowsPerPage + 1}-{Math.min((page + 1) * rowsPerPage, safeRows.length)} of {safeRows.length}
                         </span>
 
                         <div className="flex items-center gap-2">

@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Box, Button, CircularProgress, Stack, TextField } from "@mui/material";
+import React, { useEffect, useMemo, useState } from "react";
+import { CircularProgress } from "@mui/material";
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { addStuff } from '../../../redux/userRelated/userHandle';
@@ -8,6 +8,7 @@ import PageHeader from "../../../components/PageHeader";
 import ContentCard from "../../../components/ContentCard";
 import AddCardIcon from '@mui/icons-material/AddCard';
 import Popup from "../../../components/Popup";
+import { DEPARTMENTS } from "../../../constants/academics";
 
 const AddClass = () => {
     const [sclassName, setSclassName] = useState("");
@@ -24,6 +25,16 @@ const AddClass = () => {
     const [loader, setLoader] = useState(false)
     const [message, setMessage] = useState("");
     const [showPopup, setShowPopup] = useState(false);
+
+    const departmentOptions = useMemo(() => {
+        const seen = new Set();
+        return DEPARTMENTS.filter(d => {
+            const key = (d?.value || "").trim();
+            if (!key || seen.has(key)) return false;
+            seen.add(key);
+            return true;
+        });
+    }, []);
 
     const fields = {
         sclassName,
@@ -56,8 +67,8 @@ const AddClass = () => {
     return (
         <div className="max-w-7xl mx-auto px-6 py-8 w-full animate-fade-in">
             <PageHeader
-                title="Create New Class"
-                subtitle="Establish a new academic class to begin enrolling students and assigning subjects."
+                title="Create New Department"
+                subtitle="Create a new department to begin enrolling students and assigning courses."
                 actions={[
                     {
                         label: 'Cancel',
@@ -74,7 +85,7 @@ const AddClass = () => {
                             <AddCardIcon />
                         </div>
                         <div>
-                            <h3 className="text-xl font-black text-textDark">Class Identification</h3>
+                            <h3 className="text-xl font-black text-textDark">Department Identification</h3>
                             <p className="text-sm font-medium text-textDark/60">Names must be unique throughout the system.</p>
                         </div>
                     </div>
@@ -82,15 +93,20 @@ const AddClass = () => {
                     <form onSubmit={submitHandler} className="space-y-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-2">
-                                <label className="text-sm font-medium text-gray-700 block">Class Name</label>
-                                <input
-                                    type="text"
-                                    placeholder="e.g. Computer Science - Year 1"
+                                <label className="text-sm font-medium text-gray-700 block">Department (Dept)</label>
+                                <select
                                     value={sclassName}
                                     onChange={(event) => setSclassName(event.target.value)}
                                     required
                                     className="w-full px-4 py-3 bg-white rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-gray-800"
-                                />
+                                >
+                                    <option value="" disabled>Select a department...</option>
+                                    {departmentOptions.map((dept) => (
+                                        <option key={dept.value} value={dept.value}>
+                                            {dept.label}
+                                        </option>
+                                    ))}
+                                </select>
                             </div>
                         </div>
 
@@ -100,7 +116,7 @@ const AddClass = () => {
                                 disabled={loader}
                                 className="px-5 py-2.5 bg-blue-600 text-white rounded-lg shadow-sm font-semibold hover:bg-blue-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[120px]"
                             >
-                                {loader ? <CircularProgress size={20} color="inherit" /> : 'Create Class'}
+                                {loader ? <CircularProgress size={20} color="inherit" /> : 'Create Department'}
                             </button>
                         </div>
                     </form>

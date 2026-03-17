@@ -1,16 +1,19 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAllSclasses } from '../../redux/sclassRelated/sclassHandle';
+import { getSubjectList } from '../../redux/sclassRelated/sclassHandle';
 import { getAllStudents } from '../../redux/studentRelated/studentHandle';
 import { getAllTeachers } from '../../redux/teacherRelated/teacherHandle';
 import CountUp from 'react-countup';
 import SeeNotice from '../../components/SeeNotice';
 import DashboardContainer from '../../components/DashboardContainer';
-
-import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined';
+import PageHeader from '../../components/PageHeader';
+import ContentCard from '../../components/ContentCard';
 import ClassOutlinedIcon from '@mui/icons-material/ClassOutlined';
 import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
 import AccountBalanceWalletOutlinedIcon from '@mui/icons-material/AccountBalanceWalletOutlined';
+import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined';
+import MenuBookOutlinedIcon from '@mui/icons-material/MenuBookOutlined';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 import DomainAddIcon from '@mui/icons-material/DomainAdd';
@@ -23,7 +26,7 @@ const AdminHomePage = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { studentsList } = useSelector((state) => state.student);
-    const { sclassesList } = useSelector((state) => state.sclass);
+    const { sclassesList, subjectsList } = useSelector((state) => state.sclass);
     const { teachersList } = useSelector((state) => state.teacher);
     const { currentUser } = useSelector(state => state.user);
 
@@ -32,46 +35,60 @@ const AdminHomePage = () => {
     useEffect(() => {
         dispatch(getAllStudents(adminID));
         dispatch(getAllSclasses(adminID, "Sclass"));
+        dispatch(getSubjectList(adminID, "AllSubjects"));
         dispatch(getAllTeachers(adminID));
     }, [adminID, dispatch]);
 
     const numberOfStudents = Array.isArray(studentsList) ? studentsList.length : 0;
     const numberOfClasses = Array.isArray(sclassesList) ? sclassesList.length : 0;
     const numberOfTeachers = Array.isArray(teachersList) ? teachersList.length : 0;
+    const numberOfCourses = Array.isArray(subjectsList) ? subjectsList.length : 0;
 
     const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
 
     return (
         <DashboardContainer>
-            {/* SECTION 1 - Welcome Header */}
-            <div className="space-y-1">
-                <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Welcome back, {currentUser.name} 👋</h1>
-                <p className="text-sm text-gray-500 font-medium">It's {today}. Here's what's happening in your institution today.</p>
-            </div>
+            <PageHeader
+                title={`Welcome back, ${currentUser.name}`}
+                subtitle={`Today is ${today}. Here's the performance of your institution.`}
+                actions={[
+                    { label: 'Add Student', icon: <PersonAddAltIcon />, onClick: () => navigate("/Admin/addstudents") },
+                    { label: 'Add Department', icon: <DomainAddIcon />, onClick: () => navigate("/Admin/addclass") },
+                ]}
+            />
 
-            {/* SECTION 2 - Statistics Cards Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
                 <ModernStatCard
-                    title="Total Students"
-                    count={numberOfStudents}
-                    icon={<PeopleAltOutlinedIcon fontSize="small" />}
-                    trend="+12% from last month"
-                    color="blue"
-                />
-                <ModernStatCard
-                    title="Active Classes"
+                    title="Departments"
                     count={numberOfClasses}
                     icon={<ClassOutlinedIcon fontSize="small" />}
-                    trend="Steady"
+                    trend="Structure is up to date"
                     color="indigo"
                 />
                 <ModernStatCard
-                    title="Faculty Members"
+                    title="Faculty"
                     count={numberOfTeachers}
                     icon={<PersonOutlineOutlinedIcon fontSize="small" />}
-                    trend="+2 new hires"
+                    trend="Teaching team status"
                     color="emerald"
                 />
+                <ModernStatCard
+                    title="Courses"
+                    count={numberOfCourses}
+                    icon={<MenuBookOutlinedIcon fontSize="small" />}
+                    trend="Curriculum availability"
+                    color="blue"
+                />
+                <ModernStatCard
+                    title="Students"
+                    count={numberOfStudents}
+                    icon={<PeopleAltOutlinedIcon fontSize="small" />}
+                    trend="Enrollment overview"
+                    color="amber"
+                />
+            </div>
+
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
                 <ModernStatCard
                     title="Fees Collection"
                     count={0}
@@ -80,30 +97,37 @@ const AdminHomePage = () => {
                     trend="Pending calculation"
                     color="amber"
                 />
+                <ContentCard title="Department Directory" subtitle="Create and manage every department with clear ownership.">
+                    <button
+                        onClick={() => navigate("/Admin/classes")}
+                        className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors"
+                    >
+                        View Departments
+                    </button>
+                </ContentCard>
+                <ContentCard title="Faculty and Courses" subtitle="Assign faculty to courses with strong visibility across modules.">
+                    <button
+                        onClick={() => navigate("/Admin/teachers")}
+                        className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-900 text-white rounded-lg text-sm font-semibold hover:bg-slate-700 transition-colors"
+                    >
+                        Open Faculty Registry
+                    </button>
+                </ContentCard>
             </div>
 
-            {/* SECTION 3 - Quick Action Panel */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col md:flex-row items-center gap-4 justify-between">
-                <div>
-                    <h3 className="text-lg font-semibold text-slate-800">Quick Actions</h3>
-                    <p className="text-sm text-gray-500">Frequently used administrative tasks.</p>
+            <ContentCard title="Administrative Commands" subtitle="Execution dashboard for frequent management tasks.">
+                <div className="flex flex-wrap gap-4">
+                    <ActionButton icon={<CampaignIcon />} label="Dispatch Notice" onClick={() => navigate("/Admin/addnotice")} />
+                    <ActionButton icon={<ReceiptLongIcon />} label="Ledger Entry (Fees)" onClick={() => navigate("/Admin/addfee")} />
+                    <ActionButton icon={<PersonAddAltIcon />} label="Faculty Onboarding" onClick={() => navigate("/Admin/teachers")} />
                 </div>
-                <div className="flex flex-wrap gap-3">
-                    <ActionButton icon={<PersonAddAltIcon />} label="Add Student" onClick={() => navigate("/Admin/addstudents")} />
-                    <ActionButton icon={<DomainAddIcon />} label="Add Class" onClick={() => navigate("/Admin/addclass")} />
-                    <ActionButton icon={<CampaignIcon />} label="Create Notice" onClick={() => navigate("/Admin/addnotice")} />
-                    <ActionButton icon={<ReceiptLongIcon />} label="Assign Fees" onClick={() => navigate("/Admin/addfee")} />
-                </div>
-            </div>
+            </ContentCard>
 
-            {/* SECTION 4 - Live Activity / Notices */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-                {/* LEFT: Recent Notices */}
                 <div className="lg:col-span-8">
                     <SeeNotice inDashboardWidget={true} />
                 </div>
 
-                {/* RIGHT: Recent Activities / Logs */}
                 <div className="lg:col-span-4 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden h-full">
                     <div className="p-6 border-b border-gray-50 bg-gray-50/50 flex items-center gap-2">
                         <HistoryIcon className="text-gray-400" fontSize="small" />

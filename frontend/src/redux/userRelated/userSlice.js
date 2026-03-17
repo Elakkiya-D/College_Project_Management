@@ -7,6 +7,7 @@ const initialState = {
     loading: false,
     currentUser: JSON.parse(localStorage.getItem('user')) || null,
     currentRole: (JSON.parse(localStorage.getItem('user')) || {}).role || null,
+    authToken: localStorage.getItem('authToken') || null,
     error: null,
     response: null,
     darkMode: true
@@ -30,10 +31,21 @@ const userSlice = createSlice({
             state.tempDetails = action.payload;
         },
         authSuccess: (state, action) => {
+            const payload = action.payload || {};
+            const resolvedUser = payload.user || payload;
+            const resolvedRole = resolvedUser?.role || null;
+            const resolvedToken = payload.token || null;
+
             state.status = 'success';
-            state.currentUser = action.payload;
-            state.currentRole = action.payload.role;
-            localStorage.setItem('user', JSON.stringify(action.payload));
+            state.currentUser = resolvedUser;
+            state.currentRole = resolvedRole;
+            state.authToken = resolvedToken;
+
+            localStorage.setItem('user', JSON.stringify(resolvedUser));
+            if (resolvedToken) {
+                localStorage.setItem('authToken', resolvedToken);
+            }
+
             state.response = null;
             state.error = null;
         },
@@ -47,9 +59,11 @@ const userSlice = createSlice({
         },
         authLogout: (state) => {
             localStorage.removeItem('user');
+            localStorage.removeItem('authToken');
             state.currentUser = null;
             state.status = 'idle';
             state.error = null;
+            state.authToken = null;
             state.currentRole = null
         },
 

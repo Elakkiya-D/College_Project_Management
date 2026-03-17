@@ -92,8 +92,8 @@ const SubjectForm = () => {
 
     return (
         <FormLayout
-            title="Create New Subjects"
-            subtitle="Register academic modules. You can add multiple subjects simultaneously."
+            title="Create New Courses"
+            subtitle="Register course modules. You can add multiple courses simultaneously."
             headerActions={[
                 {
                     label: 'Back to List',
@@ -109,7 +109,7 @@ const SubjectForm = () => {
                             {/* Entry Header */}
                             <div className="flex items-center justify-between mb-6">
                                 <h4 className="text-xs font-black uppercase tracking-[0.2em] text-blue-600 bg-blue-50 px-3 py-1 rounded-md">
-                                    Subject Entry #{index + 1}
+                                    Course Entry #{index + 1}
                                 </h4>
                                 {subjects.length > 1 && (
                                     <button
@@ -126,14 +126,14 @@ const SubjectForm = () => {
                             {/* Form Grid */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                                 <FormInput
-                                    label="Subject Name"
+                                    label="Course Name"
                                     placeholder="e.g. Advanced Mathematics"
                                     value={subject.subName}
                                     onChange={handleSubjectNameChange(index)}
                                     required
                                 />
                                 <FormInput
-                                    label="Subject Code"
+                                    label="Course Code"
                                     placeholder="e.g. MATH-401"
                                     value={subject.subCode}
                                     onChange={handleSubjectCodeChange(index)}
@@ -163,7 +163,7 @@ const SubjectForm = () => {
                         onClick={handleAddSubject}
                         className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-6 py-3 rounded-xl transition-all hover:scale-[1.02] shadow-sm"
                     >
-                        <AddIcon fontSize="small" /> Add Another Subject
+                        <AddIcon fontSize="small" /> Add Another Course
                     </button>
                 </div>
 

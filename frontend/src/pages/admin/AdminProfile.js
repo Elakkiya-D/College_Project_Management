@@ -7,11 +7,13 @@ import SchoolIcon from '@mui/icons-material/School';
 import EmailIcon from '@mui/icons-material/Email';
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 
+import DashboardContainer from '../../components/DashboardContainer';
+
 const AdminProfile = () => {
     const { currentUser } = useSelector((state) => state.user);
 
     return (
-        <div className="max-w-7xl mx-auto px-6 py-8 w-full animate-fade-in space-y-8">
+        <DashboardContainer className="space-y-8">
             {/* 1. Page Header */}
             <PageHeader
                 title="Account Settings"
@@ -37,27 +39,27 @@ const AdminProfile = () => {
                 <div className="lg:col-span-4 space-y-8">
                     <ContentCard className="flex flex-col items-center py-10 text-center">
                         <div className="relative mb-6">
-                            <div className="w-32 h-32 rounded-full border-4 border-accent/10 p-1 flex items-center justify-center">
+                            <div className="w-32 h-32 rounded-full border-4 border-blue-600/10 p-1 flex items-center justify-center">
                                 <Avatar
                                     sx={{ width: '100%', height: '100%', bgcolor: '#2563EB', fontSize: '2.5rem', fontWeight: 900 }}
                                 >
                                     {currentUser.name?.charAt(0)}
                                 </Avatar>
                             </div>
-                            <div className="absolute bottom-1 right-1 w-10 h-10 bg-blue-600 rounded-full border-4 border-surface flex items-center justify-center shadow-lg">
+                            <div className="absolute bottom-1 right-1 w-10 h-10 bg-blue-600 rounded-full border-4 border-white flex items-center justify-center shadow-lg">
                                 <VerifiedUserIcon className="text-white" fontSize="small" />
                             </div>
                         </div>
 
                         <div className="space-y-1">
-                            <h2 className="text-2xl font-black text-textDark leading-tight">{currentUser.name}</h2>
-                            <p className="text-blue-600 font-black uppercase tracking-widest text-[10px]">Super Administrator</p>
+                            <h2 className="text-2xl font-bold text-gray-900 leading-tight">{currentUser.name}</h2>
+                            <p className="text-blue-600 font-bold uppercase tracking-widest text-xs">Super Administrator</p>
                         </div>
 
-                        <div className="w-full mt-10 pt-8 border-t border-black/5 flex flex-col items-center gap-4">
-                            <div className="flex items-center gap-2 px-4 py-2 bg-background rounded-xl border border-black/5 shadow-inner">
+                        <div className="w-full mt-10 pt-8 border-t border-gray-100 flex flex-col items-center gap-4">
+                            <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-xl border border-gray-100 shadow-inner">
                                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                                <span className="text-[11px] font-black text-textDark/60 uppercase tracking-wider italic">System Authenticated</span>
+                                <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider italic">System Authenticated</span>
                             </div>
                         </div>
                     </ContentCard>
@@ -77,34 +79,34 @@ const AdminProfile = () => {
                     </ContentCard>
 
                     {/* Branding Preview */}
-                    <div className="bg-surface rounded-xl border border-black/5 p-8 flex flex-col md:flex-row items-center gap-8 shadow-md">
-                        <div className="w-20 h-20 bg-blue-600 rounded-2xl flex items-center justify-center text-3xl font-black text-white shadow-xl rotate-3">
+                    <div className="bg-white rounded-xl border border-gray-100 p-8 flex flex-col md:flex-row items-center gap-8 shadow-sm">
+                        <div className="w-20 h-20 bg-blue-600 rounded-2xl flex items-center justify-center text-3xl font-bold text-white shadow-xl rotate-3">
                             {currentUser.schoolName?.charAt(0)}
                         </div>
                         <div className="flex-1 text-center md:text-left space-y-1">
-                            <h4 className="text-xl font-black text-textDark">{currentUser.schoolName}</h4>
-                            <p className="text-sm text-textDark/40 font-medium tracking-wide">Authorized Academic Management Infrastructure | Instance ID: {currentUser._id?.substring(0, 8)}</p>
+                            <h4 className="text-xl font-bold text-gray-900">{currentUser.schoolName}</h4>
+                            <p className="text-sm text-gray-500 font-medium tracking-wide">Authorized Academic Management Infrastructure | Instance ID: {currentUser._id?.substring(0, 8)}</p>
                         </div>
-                        <button className="px-5 py-2.5 bg-background border border-black/5 text-textDark/60 font-black text-[10px] uppercase tracking-widest rounded-xl hover:bg-white hover:text-blue-600 transition-all">
+                        <button className="px-5 py-2.5 bg-gray-50 border border-gray-100 text-gray-700 font-semibold text-xs uppercase tracking-widest rounded-xl hover:bg-white hover:text-blue-600 transition-all">
                             View Branding
                         </button>
                     </div>
 
                 </div>
             </div>
-        </div>
+        </DashboardContainer>
     );
 };
 
 /* Internal Row Component following the Label (small muted) / Value (bold) rule */
 const ProfileInfoRow = ({ label, value, icon }) => (
     <div className="flex items-start gap-4 group">
-        <div className="w-10 h-10 bg-background rounded-xl flex items-center justify-center text-textDark/20 group-hover:bg-blue-50 group-hover:text-blue-600 transition-all shadow-inner border border-black/5">
+        <div className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center text-gray-400 group-hover:bg-blue-50 group-hover:text-blue-600 transition-all shadow-inner border border-gray-100">
             {icon}
         </div>
         <div className="space-y-1">
-            <p className="text-[10px] font-black uppercase tracking-widest text-textDark/30 group-hover:text-blue-600 transition-colors">{label}</p>
-            <p className="text-base font-black text-textDark leading-snug">{value}</p>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 group-hover:text-blue-600 transition-colors">{label}</p>
+            <p className="text-base font-bold text-gray-900 leading-snug">{value}</p>
         </div>
     </div>
 );

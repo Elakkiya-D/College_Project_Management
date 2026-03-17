@@ -6,9 +6,7 @@ import { useSelector } from 'react-redux';
 
 const AccountMenu = () => {
     const [anchorEl, setAnchorEl] = useState(null);
-
     const open = Boolean(anchorEl);
-
     const { currentRole, currentUser } = useSelector(state => state.user);
 
     const handleClick = (event) => {
@@ -17,19 +15,35 @@ const AccountMenu = () => {
     const handleClose = () => {
         setAnchorEl(null);
     };
+
     return (
         <>
             <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
-                <Tooltip title="Account settings">
+                <Tooltip title="Institutional Controls">
                     <IconButton
                         onClick={handleClick}
                         size="small"
-                        sx={{ ml: 2 }}
+                        sx={{
+                            ml: 2,
+                            p: 0.5,
+                            transition: 'all 0.2s',
+                            '&:hover': {
+                                backgroundColor: 'rgba(0,0,0,0.04)',
+                                transform: 'scale(1.05)'
+                            }
+                        }}
                         aria-controls={open ? 'account-menu' : undefined}
                         aria-haspopup="true"
                         aria-expanded={open ? 'true' : undefined}
                     >
-                        <Avatar sx={{ width: 32, height: 32 }}>
+                        <Avatar sx={{
+                            width: 32,
+                            height: 32,
+                            backgroundColor: '#111827',
+                            fontSize: '0.75rem',
+                            fontWeight: 'bold',
+                            letterSpacing: '0.05em'
+                        }}>
                             {String(currentUser.name).charAt(0)}
                         </Avatar>
                     </IconButton>
@@ -46,48 +60,44 @@ const AccountMenu = () => {
                     sx: {
                         backgroundColor: '#ffffff',
                         overflow: 'visible',
-                        filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.15))',
+                        filter: 'drop-shadow(0px 10px 30px rgba(0,0,0,0.1))',
                         mt: 1.5,
-                        borderRadius: '12px',
+                        minWidth: 200,
+                        borderRadius: '24px',
                         border: '1px solid rgba(0,0,0,0.05)',
-                        '& .MuiAvatar-root': {
-                            width: 32,
-                            height: 32,
-                            ml: -0.5,
-                            mr: 1,
-                        },
-                        '&:before': {
-                            content: '""',
-                            display: 'block',
-                            position: 'absolute',
-                            top: 0,
-                            right: 14,
-                            width: 10,
-                            height: 10,
-                            bgcolor: 'background.paper',
-                            transform: 'translateY(-50%) rotate(45deg)',
-                            zIndex: 0,
-                        },
+                        padding: '8px',
+                        '& .MuiMenuItem-root': {
+                            borderRadius: '16px',
+                            margin: '4px 0',
+                            padding: '10px 16px',
+                            transition: 'all 0.2s',
+                            '&:hover': {
+                                backgroundColor: '#f9fafb'
+                            }
+                        }
                     }
                 }}
                 transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
             >
-                <MenuItem>
-                    <Avatar />
-                    <Link to={`/${currentRole}/profile`} style={{ color: '#1e293b', textDecoration: 'none', fontWeight: 600 }}>
-                        Profile
-                    </Link>
-                </MenuItem>
-                <Divider />
+                <div className="px-4 py-3 mb-2 border-b border-gray-50">
+                    <p className="text-xs font-bold text-gray-400 uppercase tracking-widest leading-none mb-1">Authenticated as</p>
+                    <p className="text-sm font-bold text-gray-900 truncate">{currentUser.name}</p>
+                    <p className="text-[10px] font-medium text-gray-500 truncate opacity-60 uppercase tracking-wider mt-1">{currentRole} ID: {currentUser._id.slice(-6)}</p>
+                </div>
 
-                <MenuItem>
-                    <ListItemIcon>
-                        <Logout fontSize="small" sx={{ color: '#ef4444' }} />
+                <MenuItem component={Link} to={`/${currentRole}/profile`} sx={{ gap: 2 }}>
+                    <Avatar sx={{ width: 20, height: 20, fontSize: '0.6rem', backgroundColor: '#f3f4f6', color: '#374151' }} />
+                    <span className="text-xs font-bold text-gray-700 tracking-tight">Identity Profile</span>
+                </MenuItem>
+
+                <Divider sx={{ my: 1, borderColor: '#f3f4f6' }} />
+
+                <MenuItem component={Link} to="/logout" sx={{ gap: 2 }}>
+                    <ListItemIcon sx={{ minWidth: 'auto !important' }}>
+                        <Logout fontSize="inherit" sx={{ color: '#ef4444' }} />
                     </ListItemIcon>
-                    <Link to="/logout" style={{ color: '#ef4444', textDecoration: 'none', fontWeight: 600 }}>
-                        Logout
-                    </Link>
+                    <span className="text-xs font-bold text-red-500 tracking-tight">Terminate Session</span>
                 </MenuItem>
             </Menu>
         </>

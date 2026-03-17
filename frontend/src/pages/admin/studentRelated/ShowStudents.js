@@ -9,6 +9,7 @@ import Popup from '../../../components/Popup';
 import * as React from 'react';
 import PageHeader from '../../../components/PageHeader';
 import ContentCard from '../../../components/ContentCard';
+import ModuleLayout from '../../../components/ModuleLayout';
 
 const ShowStudents = () => {
     const navigate = useNavigate();
@@ -35,19 +36,17 @@ const ShowStudents = () => {
     const studentColumns = [
         { id: 'name', label: 'Name', minWidth: 170 },
         { id: 'rollNum', label: 'Roll Number', minWidth: 100 },
-        { id: 'sclassName', label: 'Class', minWidth: 170 },
+        { id: 'sclassName', label: 'Dept', minWidth: 170 },
     ];
 
     const uniqueStudents = Array.isArray(studentsList) ? Array.from(new Map(studentsList.map(item => [item._id, item])).values()) : [];
 
-    const studentRows = uniqueStudents.length > 0 && uniqueStudents.map((student) => {
-        return {
-            name: student.name,
-            rollNum: student.rollNum,
-            sclassName: student.sclassName.sclassName,
-            id: student._id,
-        };
-    });
+    const studentRows = uniqueStudents.map((student) => ({
+        name: student.name,
+        rollNum: student.rollNum,
+        sclassName: student.sclassName?.sclassName ?? '—',
+        id: student._id,
+    }));
 
     // Custom Button Component following the SaaS theme rules
     const StudentActions = ({ row }) => {
@@ -111,62 +110,28 @@ const ShowStudents = () => {
     };
 
     return (
-        <div className="max-w-7xl mx-auto px-6 py-8 w-full animate-fade-in">
-
-            {/* Header Section */}
-            <PageHeader
-                title="Student Register"
-                subtitle="Manage all enrolled students, records, and performance."
-                actions={[
-                    {
-                        label: 'Clear All',
-                        variant: 'danger',
-                        onClick: () => deleteHandler(currentUser._id, "Students")
-                    },
-                    {
-                        label: 'Add Student',
-                        variant: 'primary',
-                        icon: <PersonAddAlt1Icon fontSize="small" />,
-                        onClick: () => navigate("/Admin/addstudents")
-                    }
-                ]}
-            />
-
-            {/* Content Cards / Tables */}
-            {loading ? (
-                <div className="flex justify-center items-center py-20">
-                    <svg className="animate-spin h-10 w-10 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                </div>
-            ) : response ? (
-                <ContentCard className="flex flex-col items-center justify-center py-16 text-center">
-                    <div className="w-20 h-20 bg-background rounded-full flex items-center justify-center mb-6 border border-black/5 shadow-inner">
-                        <PersonAddAlt1Icon className="text-blue-400" style={{ fontSize: 40 }} />
-                    </div>
-                    <h3 className="text-2xl font-black text-textDark mb-2">No Students Found</h3>
-                    <p className="text-textDark/60 max-w-sm mb-8 font-medium">Your student registry is currently empty. Add your first student to begin managing classes and records.</p>
-                    <button
-                        onClick={() => navigate("/Admin/addstudents")}
-                        className="px-8 py-3 bg-blue-600 text-white font-extrabold rounded-xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all"
-                    >
-                        Add First Student
-                    </button>
-                </ContentCard>
-            ) : (
-                <div className="space-y-6">
-                    {/* Data List Card */}
-                    <div className="bg-white rounded-2xl shadow-md border border-textDark/5 overflow-hidden">
-                        {uniqueStudents.length > 0 &&
-                            <TableTemplate buttonHaver={StudentActions} columns={studentColumns} rows={studentRows} />
-                        }
-                    </div>
-                </div>
-            )}
-
+        <ModuleLayout
+            title="Student Register"
+            subtitle="Manage all enrolled students, records, and performance tracking."
+            actions={[
+                {
+                    label: 'Add Student',
+                    variant: 'primary',
+                    icon: <PersonAddAlt1Icon fontSize="small" />,
+                    onClick: () => navigate("/Admin/addstudents")
+                }
+            ]}
+            loading={loading}
+            isEmpty={response}
+            emptyTitle="Registry is Empty"
+            emptySubtitle="No students have been enrolled in the institution yet. Securely register your first student to begin."
+            emptyIcon={<PersonAddAlt1Icon />}
+            emptyAction={() => navigate("/Admin/addstudents")}
+            emptyActionLabel="Enroll Student"
+        >
+            <TableTemplate buttonHaver={StudentActions} columns={studentColumns} rows={studentRows} />
             <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} />
-        </div>
+        </ModuleLayout>
     );
 };
 

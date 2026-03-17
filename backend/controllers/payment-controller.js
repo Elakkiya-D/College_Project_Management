@@ -109,4 +109,40 @@ const createPaymentIntent = async (req, res) => {
     }
 };
 
-module.exports = { createPaymentIntent, handleStripeWebhook };
+/**
+ * CONFIRM PAYMENT FLOW - /api/payment/confirm
+ * Verifies the PaymentIntent server-side and updates the institutional record.
+ * Useful for local/dev where webhooks are not configured.
+ */
+const confirmPaymentIntent = async (req, res) => {
+    try {
+        const { studentFeeId, paymentIntentId } = req.body;
+
+        if (!studentFeeId || !paymentIntentId) {
+            return res.status(400).json({ message: "studentFeeId and paymentIntentId are required" });
+        }
+
+        const studentFee = await StudentFee.findById(studentFeeId).populate('feeId');
+        if (!studentFee) return res.status(404).json({ message: "Record not found" });
+
+        const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+
+        // Basic ownership/metadata check to reduce accidental mismatches
+        if (paymentIntent?.metadata?.studentFeeId && paymentIntent.metadata.studentFeeId !== studentFeeId.toString()) {
+            return res.status(400).json({ message: "Payment metadata mismatch" });
+        }
+
+        if (paymentIntent.status !== 'succeeded') {
+            return res.status(400).json({ message: `Payment not succeeded (status: ${paymentIntent.status})` });
+        }
+
+        await finalizeInstitutionalPayment(studentFeeId, paymentIntent.id);
+
+        return res.status(200).json({ ok: true });
+    } catch (error) {
+        console.error(`[Payment Confirm Error]: ${error.message}`);
+        return res.status(500).json({ message: "Server Gateway Error", error: error.message });
+    }
+};
+
+module.exports = { createPaymentIntent, confirmPaymentIntent, handleStripeWebhook };
