@@ -1,4 +1,5 @@
 const router = require('express').Router();
+const multer = require('multer');
 
 // const { adminRegister, adminLogIn, deleteAdmin, getAdminDetail, updateAdmin } = require('../controllers/admin-controller.js');
 
@@ -21,14 +22,24 @@ const {
     clearAllStudentsAttendanceBySubject,
     clearAllStudentsAttendance,
     removeStudentAttendanceBySubject,
-    removeStudentAttendance } = require('../controllers/student_controller.js');
+    removeStudentAttendance,
+    bulkUploadStudents } = require('../controllers/student_controller.js');
 const { subjectCreate, classSubjects, deleteSubjectsByClass, getSubjectDetail, deleteSubject, freeSubjectList, allSubjects, deleteSubjects } = require('../controllers/subject-controller.js');
-const { teacherRegister, teacherLogIn, getTeachers, getTeacherDetail, deleteTeachers, deleteTeachersByClass, deleteTeacher, updateTeacherSubject, teacherAttendance } = require('../controllers/teacher-controller.js');
+const { teacherRegister, teacherLogIn, getTeachers, getTeacherDetail, deleteTeachers, deleteTeachersByClass, deleteTeacher, updateTeacherSubject, teacherAttendance, bulkUploadFaculty } = require('../controllers/teacher-controller.js');
 const { forgotPassword, resetPassword } = require('../controllers/auth-password-controller.js');
+
+const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 5 * 1024 * 1024 },
+});
 
 // Password recovery
 router.post('/auth/forgot-password', forgotPassword);
 router.post('/auth/reset-password', resetPassword);
+
+// Bulk upload
+router.post('/student/bulk-upload', upload.single('file'), bulkUploadStudents);
+router.post('/faculty/bulk-upload', upload.single('file'), bulkUploadFaculty);
 
 // Admin
 router.post('/AdminReg', adminRegister);

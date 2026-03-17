@@ -1,33 +1,90 @@
 const bcrypt = require('bcrypt');
 const Student = require('../models/studentSchema.js');
 const Subject = require('../models/subjectSchema.js');
+const Sclass = require('../models/sclassSchema.js');
+const { parseTabularFile } = require('../utils/bulkUploadParser.js');
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const DEFAULT_BULK_PASSWORD = process.env.BULK_UPLOAD_DEFAULT_PASSWORD || 'ChangeMe@123';
+
+const normalizeText = (value) => String(value || '').trim();
+const normalizeEmail = (value) => normalizeText(value).toLowerCase();
 
 const studentRegister = async (req, res) => {
     try {
-        const salt = await bcrypt.genSalt(10);
-        const hashedPass = await bcrypt.hash(req.body.password, salt);
+        const name = normalizeText(req.body.name);
+        const email = normalizeEmail(req.body.email);
+        const registerNumber = normalizeText(req.body.registerNumber || req.body.rollNum);
+        const password = normalizeText(req.body.password);
+        const adminID = normalizeText(req.body.adminID || req.body.school);
+        const requestedDepartmentId = normalizeText(req.body.sclassName || req.body.departmentId || req.body.department);
+        const courseId = normalizeText(req.body.courseId);
+        const courseName = normalizeText(req.body.courseName || req.body.course);
+        const skipCourseValidation = Boolean(req.body.skipCourseValidation);
 
-        const existingStudent = await Student.findOne({
-            rollNum: req.body.rollNum,
-            school: req.body.adminID,
-            sclassName: req.body.sclassName,
+        if (!name || !email || !registerNumber || !password || !adminID || !requestedDepartmentId) {
+            return res.status(400).json({ message: 'name, email, registerNumber, password, and department are required' });
+        }
+
+        if (!EMAIL_REGEX.test(email)) {
+            return res.status(400).json({ message: 'Invalid email format' });
+        }
+
+        if (!skipCourseValidation && !courseId && !courseName) {
+            return res.status(400).json({ message: 'Course assignment is required' });
+        }
+
+        const mappedDepartment = await Sclass.findOne({
+            _id: requestedDepartmentId,
+            school: adminID,
         });
 
-        if (existingStudent) {
-            res.send({ message: 'Roll Number already exists' });
+        if (!mappedDepartment) {
+            return res.status(400).json({ message: 'Selected department mapping is invalid' });
         }
-        else {
-            const student = new Student({
-                ...req.body,
-                school: req.body.adminID,
-                password: hashedPass
-            });
 
-            let result = await student.save();
+        const existingStudentByRegisterNumber = await Student.findOne({
+            rollNum: registerNumber,
+            school: adminID,
+        });
 
-            result.password = undefined;
-            res.send(result);
+        if (existingStudentByRegisterNumber) {
+            return res.send({ message: 'Register Number already exists' });
         }
+
+        const existingStudentByEmail = await Student.findOne({
+            email,
+            school: adminID,
+        });
+
+        if (existingStudentByEmail) {
+            return res.send({ message: 'Email already exists' });
+        }
+
+        const salt = await bcrypt.genSalt(10);
+        const hashedPass = await bcrypt.hash(password, salt);
+
+        const student = new Student({
+            name,
+            email,
+            rollNum: registerNumber,
+            registerNumber,
+            password: hashedPass,
+            school: adminID,
+            sclassName: mappedDepartment._id,
+            role: req.body.role || 'Student',
+            attendance: Array.isArray(req.body.attendance) ? req.body.attendance : [],
+            examResult: Array.isArray(req.body.examResult) ? req.body.examResult : [],
+            departmentId: normalizeText(req.body.departmentId) || String(mappedDepartment._id),
+            departmentName: normalizeText(req.body.departmentName) || mappedDepartment.sclassName,
+            courseId: courseId || null,
+            courseName: courseName || null,
+        });
+
+        let result = await student.save();
+
+        result.password = undefined;
+        return res.send(result);
     } catch (err) {
         res.status(500).json(err);
     }
@@ -280,6 +337,159 @@ const removeStudentAttendance = async (req, res) => {
     }
 };
 
+const bulkUploadStudents = async (req, res) => {
+    try {
+        const adminID = normalizeText(req.body.adminID || req.body.school || req.body.adminId);
+        if (!adminID) {
+            return res.status(400).json({ success: false, message: 'adminID is required' });
+        }
+
+        const parsedRows = parseTabularFile(req.file);
+        if (!parsedRows.length) {
+            return res.status(400).json({ success: false, message: 'Uploaded file has no valid data rows' });
+        }
+
+        const departments = await Sclass.find({ school: adminID });
+        if (!departments.length) {
+            return res.status(400).json({ success: false, message: 'No departments found for this admin account' });
+        }
+
+        const departmentMap = new Map(
+            departments.map((department) => [
+                normalizeText(department.sclassName).toLowerCase(),
+                department,
+            ])
+        );
+
+        const report = {
+            totalRows: parsedRows.length,
+            insertedCount: 0,
+            failedCount: 0,
+            errors: [],
+        };
+
+        const seenEmails = new Set();
+        const seenRegisterNumbers = new Set();
+
+        const defaultPasswordHash = await bcrypt.hash(DEFAULT_BULK_PASSWORD, 10);
+
+        for (const row of parsedRows) {
+            const name = normalizeText(row.values.name);
+            const email = normalizeEmail(row.values.email);
+            const registerNumber = normalizeText(row.values.registernumber || row.values.rollnum);
+            const departmentName = normalizeText(row.values.department);
+            const courseName = normalizeText(row.values.course);
+
+            if (!name || !email || !registerNumber || !departmentName || !courseName) {
+                report.failedCount += 1;
+                report.errors.push({
+                    row: row.rowNumber,
+                    message: 'Missing required columns: name, email, registerNumber, department, course',
+                });
+                continue;
+            }
+
+            if (!EMAIL_REGEX.test(email)) {
+                report.failedCount += 1;
+                report.errors.push({
+                    row: row.rowNumber,
+                    message: 'Invalid email format',
+                });
+                continue;
+            }
+
+            const mappedDepartment = departmentMap.get(departmentName.toLowerCase());
+            if (!mappedDepartment) {
+                report.failedCount += 1;
+                report.errors.push({
+                    row: row.rowNumber,
+                    message: `Department not found: ${departmentName}`,
+                });
+                continue;
+            }
+
+            const emailKey = `${adminID}:${email}`;
+            const registerNumberKey = `${adminID}:${registerNumber}`;
+
+            if (seenEmails.has(emailKey) || seenRegisterNumbers.has(registerNumberKey)) {
+                report.failedCount += 1;
+                report.errors.push({
+                    row: row.rowNumber,
+                    message: 'Duplicate email or registerNumber found in upload file',
+                });
+                continue;
+            }
+
+            const existingByEmail = await Student.findOne({ email, school: adminID });
+            if (existingByEmail) {
+                report.failedCount += 1;
+                report.errors.push({
+                    row: row.rowNumber,
+                    message: `Email already exists: ${email}`,
+                });
+                continue;
+            }
+
+            const existingByRegisterNumber = await Student.findOne({
+                rollNum: registerNumber,
+                school: adminID,
+            });
+
+            if (existingByRegisterNumber) {
+                report.failedCount += 1;
+                report.errors.push({
+                    row: row.rowNumber,
+                    message: `Register number already exists: ${registerNumber}`,
+                });
+                continue;
+            }
+
+            const student = new Student({
+                name,
+                email,
+                rollNum: registerNumber,
+                registerNumber,
+                password: defaultPasswordHash,
+                sclassName: mappedDepartment._id,
+                school: adminID,
+                role: 'Student',
+                attendance: [],
+                departmentId: String(mappedDepartment._id),
+                departmentName: mappedDepartment.sclassName,
+                courseName,
+            });
+
+            try {
+                await student.save();
+                seenEmails.add(emailKey);
+                seenRegisterNumbers.add(registerNumberKey);
+                report.insertedCount += 1;
+            } catch (saveError) {
+                report.failedCount += 1;
+                report.errors.push({
+                    row: row.rowNumber,
+                    message: saveError?.message || 'Unable to save student record',
+                });
+            }
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: 'Student bulk upload completed',
+            data: {
+                ...report,
+                defaultPassword: DEFAULT_BULK_PASSWORD,
+            },
+        });
+    } catch (error) {
+        const isClientError = /required|invalid file format|empty|unable to read/i.test(error.message || '');
+        return res.status(isClientError ? 400 : 500).json({
+            success: false,
+            message: error.message || 'Unable to process student bulk upload',
+        });
+    }
+};
+
 
 module.exports = {
     studentRegister,
@@ -297,4 +507,5 @@ module.exports = {
     clearAllStudentsAttendance,
     removeStudentAttendanceBySubject,
     removeStudentAttendance,
+    bulkUploadStudents,
 };

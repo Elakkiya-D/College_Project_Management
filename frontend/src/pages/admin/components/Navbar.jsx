@@ -11,7 +11,7 @@ const sectionTitles = [
     { path: '/Admin/dashboard', label: 'Dashboard Overview' },
     { path: '/Admin/classes', label: 'Department Directory' },
     { path: '/Admin/subjects', label: 'Course Catalog' },
-    { path: '/Admin/teachers', label: 'Faculty Registry' },
+        { path: '/Admin/faculty', label: 'Faculty Management' },
     { path: '/Admin/students', label: 'Student Records' },
     { path: '/Admin/fees', label: 'Fee Management' },
     { path: '/Admin/notices', label: 'Notices' },

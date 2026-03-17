@@ -1,13 +1,16 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from "react-router-dom";
 import { getAllStudents } from '../../../redux/studentRelated/studentHandle';
 import TableTemplate from '../../../components/TableTemplate';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
+import UploadFileIcon from '@mui/icons-material/UploadFile';
 import Popup from '../../../components/Popup';
 import * as React from 'react';
 import ModuleLayout from '../../../components/ModuleLayout';
+import axios from 'axios';
+import { getApiErrorMessage, getApiUrl, getAuthHeaders } from '../../../utils/api';
 
 const ShowStudents = () => {
     const navigate = useNavigate();
@@ -25,23 +28,69 @@ const ShowStudents = () => {
 
     const [showPopup, setShowPopup] = useState(false);
     const [message, setMessage] = useState("");
+    const [uploadLoading, setUploadLoading] = useState(false);
+    const fileInputRef = useRef(null);
 
     const deleteHandler = (deleteID, address) => {
         setMessage("Sorry the delete function has been disabled for now.");
         setShowPopup(true);
     }
 
+    const handleBulkFileSelection = async (event) => {
+        const file = event.target.files?.[0];
+        event.target.value = '';
+
+        if (!file) return;
+
+        if (!/\.(csv|xlsx)$/i.test(file.name)) {
+            setMessage('Invalid file format. Please upload .csv or .xlsx only.');
+            setShowPopup(true);
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('adminID', currentUser._id);
+
+        try {
+            setUploadLoading(true);
+            const result = await axios.post(getApiUrl('/student/bulk-upload'), formData, {
+                headers: {
+                    ...getAuthHeaders(),
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+
+            const summary = result.data?.data;
+            const inserted = summary?.insertedCount ?? 0;
+            const failed = summary?.failedCount ?? 0;
+
+            const firstError = Array.isArray(summary?.errors) && summary.errors.length
+                ? ` First error: Row ${summary.errors[0].row} - ${summary.errors[0].message}`
+                : '';
+
+            setMessage(`Bulk upload completed. Added: ${inserted}, Failed: ${failed}.${firstError}`);
+            setShowPopup(true);
+            dispatch(getAllStudents(currentUser._id));
+        } catch (error) {
+            setMessage(getApiErrorMessage(error, 'Unable to complete student bulk upload'));
+            setShowPopup(true);
+        } finally {
+            setUploadLoading(false);
+        }
+    };
+
     const studentColumns = [
         { id: 'name', label: 'Name', minWidth: 170 },
-        { id: 'rollNum', label: 'Roll Number', minWidth: 100 },
-        { id: 'sclassName', label: 'Dept', minWidth: 170 },
+        { id: 'rollNum', label: 'Register Number', minWidth: 100 },
+        { id: 'sclassName', label: 'Department', minWidth: 170 },
     ];
 
     const uniqueStudents = Array.isArray(studentsList) ? Array.from(new Map(studentsList.map(item => [item._id, item])).values()) : [];
 
     const studentRows = uniqueStudents.map((student) => ({
         name: student.name,
-        rollNum: student.rollNum,
+        rollNum: student.registerNumber || student.rollNum,
         sclassName: student.sclassName?.sclassName ?? '—',
         id: student._id,
     }));
@@ -117,6 +166,12 @@ const ShowStudents = () => {
                     variant: 'primary',
                     icon: <PersonAddAlt1Icon fontSize="small" />,
                     onClick: () => navigate("/Admin/addstudents")
+                },
+                {
+                    label: uploadLoading ? 'Uploading...' : 'Upload CSV/Excel',
+                    variant: 'secondary',
+                    icon: <UploadFileIcon fontSize="small" />,
+                    onClick: () => fileInputRef.current?.click()
                 }
             ]}
             loading={loading}
@@ -127,6 +182,13 @@ const ShowStudents = () => {
             emptyAction={() => navigate("/Admin/addstudents")}
             emptyActionLabel="Enroll Student"
         >
+            <input
+                ref={fileInputRef}
+                type="file"
+                accept=".csv,.xlsx"
+                onChange={handleBulkFileSelection}
+                className="hidden"
+            />
             <TableTemplate buttonHaver={StudentActions} columns={studentColumns} rows={studentRows} />
             <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} />
         </ModuleLayout>

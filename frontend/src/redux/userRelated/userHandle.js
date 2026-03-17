@@ -40,15 +40,17 @@ export const registerUser = (fields, role) => async (dispatch) => {
             headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
         });
 
-        if (result.data?.schoolName || result.data?.role || result.data?.user?.role) {
-            dispatch(authSuccess(result.data));
-        }
-        else if (result.data?.school) {
-            dispatch(stuffAdded());
-        }
-        else {
+        if (result.data?.message) {
             dispatch(authFailed(result.data.message));
+            return;
         }
+
+        if (String(role || '').toLowerCase() === 'admin') {
+            dispatch(authSuccess(result.data));
+            return;
+        }
+
+        dispatch(stuffAdded(result.data));
     } catch (error) {
         dispatch(authError(getApiErrorMessage(error, 'Unable to complete registration')));
     }

@@ -10,6 +10,8 @@ import { registerUser } from '../../../redux/userRelated/userHandle';
 import { underControl } from '../../../redux/userRelated/userSlice';
 import Popup from '../../../components/Popup';
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 const AddTeacher = () => {
   const params = useParams()
   const dispatch = useDispatch()
@@ -27,6 +29,7 @@ const AddTeacher = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('')
+  const [designation, setDesignation] = useState('Faculty')
 
   const [showPopup, setShowPopup] = useState(false);
   const [message, setMessage] = useState("");
@@ -37,18 +40,54 @@ const AddTeacher = () => {
   const teachSubject = subjectDetails && subjectDetails._id
   const teachSclass = subjectDetails && subjectDetails.sclassName && subjectDetails.sclassName._id
 
-  const fields = { name, email, password, role, school, teachSubject, teachSclass }
+  const fields = {
+    name,
+    email: email.trim().toLowerCase(),
+    password,
+    role,
+    school,
+    teachSubject,
+    teachSclass,
+    designation,
+  }
 
   const submitHandler = (event) => {
     event.preventDefault()
+
+    if (!name.trim() || !email.trim() || !password.trim() || !designation.trim()) {
+      setMessage('Please fill all required fields before submitting.');
+      setShowPopup(true);
+      return;
+    }
+
+    if (!EMAIL_REGEX.test(email.trim().toLowerCase())) {
+      setMessage('Please enter a valid faculty email address.');
+      setShowPopup(true);
+      return;
+    }
+
+    if (!school || !teachSclass || !teachSubject) {
+      setMessage('Department and course mapping is required for faculty registration.');
+      setShowPopup(true);
+      return;
+    }
+
     setLoader(true)
     dispatch(registerUser(fields, role))
   }
 
   useEffect(() => {
     if (status === 'added') {
-      dispatch(underControl())
-      navigate("/Admin/teachers")
+      setLoader(false)
+      setMessage('Done Successfully')
+      setShowPopup(true)
+
+      const redirectTimer = setTimeout(() => {
+        dispatch(underControl())
+        navigate('/faculty')
+      }, 900)
+
+      return () => clearTimeout(redirectTimer)
     }
     else if (status === 'failed') {
       setMessage(response)
@@ -71,7 +110,7 @@ const AddTeacher = () => {
           {
             label: 'Go Back',
             variant: 'secondary',
-            onClick: () => navigate(-1)
+            onClick: () => navigate('/faculty')
           }
         ]}
       />
@@ -96,7 +135,7 @@ const AddTeacher = () => {
                 <label className="text-sm font-medium text-gray-700 block">Full Legal Name</label>
                 <input
                   type="text"
-                  placeholder="Enter teacher's name..."
+                  placeholder="Enter faculty member name..."
                   value={name}
                   onChange={(event) => setName(event.target.value)}
                   autoComplete="name"
@@ -126,6 +165,18 @@ const AddTeacher = () => {
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
                   autoComplete="new-password"
+                  required
+                  className="w-full px-4 py-3 bg-white rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-gray-800"
+                />
+              </div>
+
+              <div className="space-y-2 md:col-span-2">
+                <label className="text-sm font-medium text-gray-700 block">Designation</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Assistant Professor"
+                  value={designation}
+                  onChange={(event) => setDesignation(event.target.value)}
                   required
                   className="w-full px-4 py-3 bg-white rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-gray-800"
                 />

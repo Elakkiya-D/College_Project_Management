@@ -103,6 +103,8 @@ const AdminDashboard = () => {
                         <Route path="/" element={<AdminHomePage />} />
                         <Route path='*' element={<Navigate to="/" />} />
                         <Route path="/Admin/dashboard" element={<AdminHomePage />} />
+                        <Route path="/students" element={<Navigate to="/Admin/students" replace />} />
+                        <Route path="/faculty" element={<Navigate to="/Admin/faculty" replace />} />
                         <Route path="/Admin/profile" element={<AdminProfile />} />
                         <Route path="/Admin/complains" element={<SeeComplains />} />
 
@@ -135,6 +137,13 @@ const AdminDashboard = () => {
                         <Route path="/Admin/students/student/marks/:id" element={<StudentExamMarks situation="Student" />} />
 
                         {/* Faculty */}
+                        <Route path="/Admin/faculty" element={<ShowTeachers />} />
+                        <Route path="/Admin/faculty/teacher/:id" element={<TeacherDetails />} />
+                        <Route path="/Admin/faculty/chooseclass" element={<ChooseClass situation="Teacher" />} />
+                        <Route path="/Admin/faculty/choosesubject/:id" element={<ChooseSubject situation="Norm" />} />
+                        <Route path="/Admin/faculty/choosesubject/:classID/:teacherID" element={<ChooseSubject situation="Teacher" />} />
+                        <Route path="/Admin/faculty/addteacher/:id" element={<AddTeacher />} />
+
                         <Route path="/Admin/teachers" element={<ShowTeachers />} />
                         <Route path="/Admin/teachers/teacher/:id" element={<TeacherDetails />} />
                         <Route path="/Admin/teachers/chooseclass" element={<ChooseClass situation="Teacher" />} />

@@ -12,6 +12,8 @@ import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 import { DEPARTMENT_COURSE_OPTIONS } from '../../../constants/academics';
 import { getApiErrorMessage, getApiUrl, getAuthHeaders } from '../../../utils/api';
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 const AddStudent = ({ situation }) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -22,6 +24,7 @@ const AddStudent = ({ situation }) => {
     const { sclassesList } = useSelector((state) => state.sclass);
 
     const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
     const [rollNum, setRollNum] = useState('');
     const [password, setPassword] = useState('');
 
@@ -206,20 +209,36 @@ const AddStudent = ({ situation }) => {
 
     const fields = {
         name,
+        email: email.trim().toLowerCase(),
         rollNum,
+        registerNumber: rollNum,
         password,
         sclassName: legacyDepartmentId,
         departmentId,
+        departmentName: departmentLabel,
         courseId,
         courseName: courseLabel,
         enrolledCourseIds: courseId && !String(courseId).startsWith('fallback-') ? [courseId] : [],
         adminID,
         role,
         attendance,
+        skipCourseValidation: situation !== 'Student',
     };
 
     const submitHandler = (event) => {
         event.preventDefault();
+
+        if (!name.trim() || !email.trim() || !rollNum.trim() || !password.trim()) {
+            setMessage('Please fill all required fields before submitting.');
+            setShowPopup(true);
+            return;
+        }
+
+        if (!EMAIL_REGEX.test(email.trim().toLowerCase())) {
+            setMessage('Please enter a valid student email address.');
+            setShowPopup(true);
+            return;
+        }
 
         if (situation === 'Student' && !departmentId) {
             setMessage('Please select a department.');
@@ -251,9 +270,16 @@ const AddStudent = ({ situation }) => {
 
     useEffect(() => {
         if (status === 'added') {
-            dispatch(underControl());
             setLoader(false);
-            navigate(-1);
+            setMessage('Done Successfully');
+            setShowPopup(true);
+
+            const redirectTimer = setTimeout(() => {
+                dispatch(underControl());
+                navigate('/students');
+            }, 900);
+
+            return () => clearTimeout(redirectTimer);
         } else if (status === 'failed') {
             setMessage(response);
             setShowPopup(true);
@@ -274,7 +300,7 @@ const AddStudent = ({ situation }) => {
                     {
                         label: 'Cancel',
                         variant: 'secondary',
-                        onClick: () => navigate(-1)
+                        onClick: () => navigate('/students')
                     }
                 ]}
             />
@@ -285,6 +311,7 @@ const AddStudent = ({ situation }) => {
                         <form onSubmit={submitHandler} className="space-y-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <InputField label="Full Student Name" placeholder="e.g. Johnathan Smith" value={name} onChange={setName} type="text" required />
+                                <InputField label="Student Email" placeholder="name@college.edu" value={email} onChange={setEmail} type="email" required />
 
                                 {situation === 'Student' && (
                                     <div className="flex flex-col space-y-2 group">
@@ -336,7 +363,7 @@ const AddStudent = ({ situation }) => {
                                     </div>
                                 )}
 
-                                <InputField label="Roll Number / Student ID" placeholder="e.g. 202401" value={rollNum} onChange={setRollNum} type="number" required />
+                                <InputField label="Register Number" placeholder="e.g. 202401" value={rollNum} onChange={setRollNum} type="text" required />
                                 <InputField label="Create Account Password" placeholder="••••••••" value={password} onChange={setPassword} type="password" required />
                             </div>
 
@@ -366,7 +393,7 @@ const AddStudent = ({ situation }) => {
                 <div className="lg:col-span-5 space-y-6">
                     <ContentCard title="Registration Guide" subtitle="Essential requirements for enrollment.">
                         <ul className="space-y-4">
-                            <GuideItem title="Unique Roll Numbers" detail="Ensure the roll number has not been assigned to another student in the same department and course pipeline." />
+                            <GuideItem title="Unique Register Numbers" detail="Ensure the register number has not been assigned to another student in the same department and course pipeline." />
                             <GuideItem title="Secure Passwords" detail="Passwords must be at least 6 characters long for student security." />
                             <GuideItem title="Department and Course Mapping" detail="Each student must be mapped to a department first, then the course must be selected from that department." />
                         </ul>

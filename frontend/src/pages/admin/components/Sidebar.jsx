@@ -16,7 +16,7 @@ const navigationItems = [
     { to: '/Admin/dashboard', pathMatchPattern: '/Admin/dashboard', label: 'Overview', icon: <HomeRoundedIcon /> },
     { to: '/Admin/classes', pathMatchPattern: '/Admin/classes', label: 'Departments', icon: <AccountBalanceRoundedIcon /> },
     { to: '/Admin/subjects', pathMatchPattern: '/Admin/subjects', label: 'Courses', icon: <MenuBookRoundedIcon /> },
-    { to: '/Admin/teachers', pathMatchPattern: '/Admin/teachers', label: 'Faculty', icon: <SchoolRoundedIcon /> },
+        { to: '/Admin/faculty', pathMatchPattern: '/Admin/faculty', label: 'Faculty', icon: <SchoolRoundedIcon /> },
     { to: '/Admin/students', pathMatchPattern: '/Admin/students', label: 'Students', icon: <GroupsRoundedIcon /> },
     { to: '/Admin/fees', pathMatchPattern: '/Admin/fees', label: 'Fees', icon: <PaymentsRoundedIcon /> },
     { to: '/Admin/notices', pathMatchPattern: '/Admin/notices', label: 'Notices', icon: <CampaignRoundedIcon /> },

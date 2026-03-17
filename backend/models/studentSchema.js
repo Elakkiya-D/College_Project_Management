@@ -5,9 +5,20 @@ const studentSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    email: {
+        type: String,
+        trim: true,
+        lowercase: true,
+        default: null,
+    },
     rollNum: {
-        type: Number,
+        type: String,
         required: true
+    },
+    registerNumber: {
+        type: String,
+        trim: true,
+        default: null,
     },
     password: {
         type: String,
@@ -26,6 +37,22 @@ const studentSchema = new mongoose.Schema({
     role: {
         type: String,
         default: "Student"
+    },
+    departmentId: {
+        type: String,
+        default: null,
+    },
+    departmentName: {
+        type: String,
+        default: null,
+    },
+    courseId: {
+        type: String,
+        default: null,
+    },
+    courseName: {
+        type: String,
+        default: null,
     },
     examResult: [
         {
@@ -59,5 +86,7 @@ const studentSchema = new mongoose.Schema({
 
 // Ensure no identical roll numbers exist inside the same school configuration
 studentSchema.index({ rollNum: 1, school: 1 }, { unique: true });
+// Keep email unique inside a school while allowing missing values for legacy records
+studentSchema.index({ email: 1, school: 1 }, { unique: true, sparse: true });
 
 module.exports = mongoose.model("student", studentSchema);
