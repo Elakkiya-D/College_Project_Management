@@ -11,6 +11,11 @@ const MONGO_URI = process.env.MONGO_URI || process.env.mongo;
 const FRONTEND_URL = process.env.FRONTEND_URL || DEFAULT_FRONTEND_URL;
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 
+// Support legacy env key while standardizing downstream usage.
+if (!process.env.JWT_SECRET && process.env.JWT_SECRET_KEY) {
+    process.env.JWT_SECRET = process.env.JWT_SECRET_KEY;
+}
+
 if (!process.env.JWT_SECRET && !IS_PRODUCTION) {
     process.env.JWT_SECRET = 'development_only_jwt_secret_change_me';
 }
@@ -83,7 +88,7 @@ async function startServer() {
     }
 
     if (!process.env.JWT_SECRET) {
-        throw new Error('JWT_SECRET is required');
+        throw new Error('JWT_SECRET is required. Set it in Render service Environment variables.');
     }
 
     await mongoose.connect(MONGO_URI);
