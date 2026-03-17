@@ -151,7 +151,8 @@ const forgotPassword = async (req, res) => {
 
 const resetPassword = async (req, res) => {
     try {
-        const { email, newPassword, token } = req.body || {};
+        const { email, newPassword, token: bodyToken, resetToken } = req.body || {};
+        const token = bodyToken || resetToken || req.query?.token;
 
         if (!email || !newPassword) {
             return res.status(400).json({ success: false, message: "email and newPassword are required" });

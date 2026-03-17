@@ -42,6 +42,11 @@ const ResetPassword = () => {
             return;
         }
 
+        if (!token) {
+            setErrorMessage('Reset token is missing. Please use the reset link from your email.');
+            return;
+        }
+
         if (newPassword !== confirmPassword) {
             setErrorMessage('Confirm password must match');
             return;
@@ -52,11 +57,8 @@ const ResetPassword = () => {
             const payload = {
                 email: normalizedEmail,
                 newPassword,
+                token,
             };
-
-            if (token) {
-                payload.token = token;
-            }
 
             await axios.post(getApiUrl('/auth/reset-password'), payload);
 

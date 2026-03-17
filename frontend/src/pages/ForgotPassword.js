@@ -15,6 +15,7 @@ const ForgotPassword = () => {
 
     const [email, setEmail] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
     const [loading, setLoading] = useState(false);
 
     const loginPath = `/${role}login`;
@@ -22,6 +23,7 @@ const ForgotPassword = () => {
     const handleSubmit = async (event) => {
         event.preventDefault();
         setErrorMessage('');
+        setSuccessMessage('');
 
         const normalizedEmail = email.trim().toLowerCase();
         if (!EMAIL_REGEX.test(normalizedEmail)) {
@@ -36,16 +38,26 @@ const ForgotPassword = () => {
             });
 
             const responseToken = response?.data?.data?.resetToken;
+            const responseLink = response?.data?.data?.resetLink;
             const query = new URLSearchParams({
                 email: normalizedEmail,
                 role,
             });
 
-            if (responseToken) {
-                query.set('token', responseToken);
+            if (responseLink) {
+                const parsedLink = new URL(responseLink);
+                parsedLink.searchParams.set('role', role);
+                navigate(`/reset-password?${parsedLink.searchParams.toString()}`);
+                return;
             }
 
-            navigate(`/reset-password?${query.toString()}`);
+            if (responseToken) {
+                query.set('token', responseToken);
+                navigate(`/reset-password?${query.toString()}`);
+                return;
+            }
+
+            setSuccessMessage('If the account exists, a reset link has been sent to your email.');
         } catch (error) {
             setErrorMessage(getApiErrorMessage(error, 'Unable to process forgot password request'));
         } finally {
@@ -81,6 +93,9 @@ const ForgotPassword = () => {
 
                     {errorMessage && (
                         <p className="text-sm text-red-600 font-semibold">{errorMessage}</p>
+                    )}
+                    {successMessage && (
+                        <p className="text-sm text-green-600 font-semibold">{successMessage}</p>
                     )}
 
                     <button
