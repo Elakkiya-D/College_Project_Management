@@ -6,6 +6,7 @@
   "scripts": {
     "start": "nodemon index.js",
     "build": "npm i",
+    "seed:dropdown": "node scripts/seedDependentDropdownSample.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

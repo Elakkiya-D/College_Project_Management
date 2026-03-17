@@ -12,6 +12,27 @@ const listCourses = asyncHandler(async (_req, res) => {
   res.status(200).json({ items });
 });
 
+const listCoursesByDepartment = asyncHandler(async (req, res) => {
+  const { departmentId } = req.params;
+
+  const department = await Department.findById(departmentId).select("_id name code");
+  if (!department) throw new ApiError(404, "Department not found");
+
+  const items = await Course.find({ department: departmentId })
+    .select("name code department")
+    .sort({ name: 1 });
+
+  res.status(200).json({
+    department,
+    items: items.map((item) => ({
+      _id: item._id,
+      courseName: item.name,
+      courseCode: item.code,
+      departmentId: item.department,
+    })),
+  });
+});
+
 const getCourse = asyncHandler(async (req, res) => {
   const item = await Course.findById(req.params.id)
     .populate("department", "name code")
@@ -107,5 +128,5 @@ const deleteCourse = asyncHandler(async (req, res) => {
   res.status(200).json({ ok: true });
 });
 
-module.exports = { listCourses, getCourse, createCourse, updateCourse, deleteCourse };
+module.exports = { listCourses, listCoursesByDepartment, getCourse, createCourse, updateCourse, deleteCourse };
 

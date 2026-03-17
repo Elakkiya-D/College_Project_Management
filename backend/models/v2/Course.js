@@ -2,10 +2,10 @@ const mongoose = require("mongoose");
 
 const courseSchema = new mongoose.Schema(
   {
-    name: { type: String, required: true, trim: true, minlength: 2, maxlength: 160 },
-    code: { type: String, required: true, trim: true, uppercase: true, minlength: 2, maxlength: 20 },
+    name: { type: String, required: true, trim: true, minlength: 2, maxlength: 160, alias: "courseName" },
+    code: { type: String, required: true, trim: true, uppercase: true, minlength: 2, maxlength: 20, alias: "courseCode" },
     credits: { type: Number, required: true, min: 0, max: 30 },
-    department: { type: mongoose.Schema.Types.ObjectId, ref: "v2_department", required: true, index: true },
+    department: { type: mongoose.Schema.Types.ObjectId, ref: "v2_department", required: true, index: true, alias: "departmentId" },
     assignedFaculty: { type: mongoose.Schema.Types.ObjectId, ref: "v2_faculty", default: null, index: true },
   },
   { timestamps: true }

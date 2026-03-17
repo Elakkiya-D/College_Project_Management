@@ -7,7 +7,7 @@ const { requireFields, validateEmailField, validateNumberField, validateArrayFie
 const { signup, login, me } = require("../controllers/v2/authController");
 const { listDepartments, createDepartment, updateDepartment, deleteDepartment } = require("../controllers/v2/departmentController");
 const { createFaculty, listFaculty, getFaculty, updateFaculty, deleteFaculty } = require("../controllers/v2/facultyController");
-const { listCourses, getCourse, createCourse, updateCourse, deleteCourse } = require("../controllers/v2/courseController");
+const { listCourses, listCoursesByDepartment, getCourse, createCourse, updateCourse, deleteCourse } = require("../controllers/v2/courseController");
 const { createStudent, listStudents, getStudent, updateStudent, deleteStudent } = require("../controllers/v2/studentController");
 const { createOrUpdateAttendanceSession, getStudentAttendanceSummary } = require("../controllers/v2/attendanceController");
 const { upsertResult, listStudentResults } = require("../controllers/v2/resultController");
@@ -50,6 +50,11 @@ router.delete("/faculty/:id", requireAuth, requireRole("ADMIN"), validateObjectI
 
 // Course (ADMIN)
 router.get("/courses", requireAuth, requireRole("ADMIN"), listCourses);
+router.get(
+	"/courses/by-department/:departmentId",
+	validateObjectIdParam("departmentId"),
+	listCoursesByDepartment
+);
 router.get("/courses/:id", requireAuth, requireRole("ADMIN"), validateObjectIdParam("id"), getCourse);
 router.post(
 	"/courses",

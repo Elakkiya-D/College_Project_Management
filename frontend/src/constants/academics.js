@@ -52,3 +52,21 @@ export const PG_COURSES = [
   "M.Ed",
 ];
 
+export const DEPARTMENT_COURSE_OPTIONS = {
+  "Arts & Humanities": [
+    { courseName: "BA English", courseCode: "BA-ENG" },
+    { courseName: "BA History", courseCode: "BA-HIS" },
+    { courseName: "BA Economics", courseCode: "BA-ECO" },
+  ],
+  Engineering: [
+    { courseName: "B.E Computer Science", courseCode: "BE-CSE" },
+    { courseName: "B.E Mechanical", courseCode: "BE-MECH" },
+    { courseName: "B.Tech IT", courseCode: "BTECH-IT" },
+  ],
+  "Commerce & Management": [
+    { courseName: "B.Com", courseCode: "BCOM" },
+    { courseName: "BBA", courseCode: "BBA" },
+    { courseName: "MBA", courseCode: "MBA" },
+  ],
+};
+
