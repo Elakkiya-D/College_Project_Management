@@ -11,11 +11,17 @@ export const getApiUrl = (path = '') => {
 };
 
 export const getAuthHeaders = () => {
-    const token = localStorage.getItem('authToken');
+    const token = localStorage.getItem('token') || localStorage.getItem('authToken');
     return token ? { Authorization: `Bearer ${token}` } : {};
 };
 
 export const getApiErrorMessage = (error, fallback = 'Request failed') => {
+    if (error?.response?.status === 401) {
+        return "Unauthorized - Please login again";
+    }
+    if (error?.message === "Network Error") {
+        return "Network Error - Please check your connection or CORS configuration";
+    }
     return error?.response?.data?.message || error?.message || fallback;
 };
 
@@ -24,7 +30,7 @@ axios.defaults.timeout = 15000;
 
 axios.interceptors.request.use(
     (config) => {
-        const token = localStorage.getItem('authToken');
+        const token = localStorage.getItem('token') || localStorage.getItem('authToken');
 
         if (token) {
             config.headers = config.headers || {};
@@ -36,6 +42,20 @@ axios.interceptors.request.use(
         return config;
     },
     (error) => Promise.reject(error)
+);
+
+axios.interceptors.response.use(
+    (response) => {
+        return response;
+    },
+    (error) => {
+        if (error?.response?.status === 401) {
+            localStorage.clear();
+            sessionStorage.clear();
+            window.location.href = '/choose'; // Redirect to login choice
+        }
+        return Promise.reject(error);
+    }
 );
 
 export default axios;

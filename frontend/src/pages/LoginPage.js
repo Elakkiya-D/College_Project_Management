@@ -78,7 +78,7 @@ const LoginPage = ({ role }) => {
             setShowPopup(true);
             setLoader(false);
         } else if (status === 'error') {
-            setMessage("Network Error");
+            setMessage(String(error || "Network Error"));
             setShowPopup(true);
             setLoader(false);
         }
@@ -168,7 +168,7 @@ const LoginPage = ({ role }) => {
                                             <label className="text-sm font-extrabold tracking-wider text-textDark/80 uppercase">Roll Number</label>
                                             <input
                                                 name="rollNumber"
-                                                type="number"
+                                                type="text"
                                                 placeholder="Enter your roll number"
                                                 className={`w-full px-4 py-3.5 rounded-xl border ${rollNumberError ? 'border-red-500 bg-red-50' : 'border-black/10'} focus:outline-none focus:ring-4 focus:ring-accent/30 transition-all font-bold text-textDark shadow-sm`}
                                                 onChange={handleInputChange}

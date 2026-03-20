@@ -144,6 +144,30 @@ const ViewStudent = () => {
                                     <DetailBlock label="Assigned Class" value={userDetails.sclassName?.sclassName} />
                                     <DetailBlock label="Institution" value={userDetails.school?.schoolName} />
                                 </div>
+
+                                <div className="mt-12">
+                                    <h4 className="text-xs font-black uppercase tracking-widest text-blue-600 mb-6 flex items-center gap-2">
+                                        <ClassIcon fontSize="inherit" /> Enrolled Curriculum
+                                    </h4>
+                                    {userDetails.attendance && userDetails.attendance.length > 0 ? (
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                            {Object.entries(groupAttendanceBySubject(userDetails.attendance)).map(([subName, { subId }], index) => (
+                                                <div key={index} className="flex items-center gap-3 p-3 bg-white rounded-xl border border-black/5 shadow-sm group hover:border-blue-200 transition-all">
+                                                    <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600 font-black text-xs group-hover:bg-blue-600 group-hover:text-white transition-all">
+                                                        {subName.charAt(0)}
+                                                    </div>
+                                                    <div className="flex flex-col">
+                                                        <span className="text-sm font-bold text-textDark/80">{subName}</span>
+                                                        <span className="text-[10px] font-black text-textDark/30 uppercase tracking-tighter">Code: {subId?.slice(-6) || 'N/A'}</span>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <p className="text-sm font-medium text-textDark/40 italic text-center py-8 bg-slate-50 rounded-2xl border border-dashed border-black/10">No subjects assigned to this student profile.</p>
+                                    )}
+                                </div>
+
                                 <div className="mt-12 flex gap-4">
                                     <button className="h-11 px-6 bg-blue-600 text-white font-bold rounded-xl shadow-md hover:brightness-110 transition-all">
                                         Edit Record

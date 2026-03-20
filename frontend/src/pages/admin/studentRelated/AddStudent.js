@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { registerUser } from '../../../redux/userRelated/userHandle';
+import { registerUser, updateUser, getUserDetails as getClassDetails } from '../../../redux/userRelated/userHandle';
+import api from '../../../utils/api';
 import Popup from '../../../components/Popup';
 import { underControl } from '../../../redux/userRelated/userSlice';
 import { getAllSclasses } from '../../../redux/sclassRelated/sclassHandle';
 import PageHeader from '../../../components/PageHeader';
 import ContentCard from '../../../components/ContentCard';
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
-import { DEPARTMENT_COURSE_OPTIONS } from '../../../constants/academics';
-import { getApiErrorMessage, getApiUrl, getAuthHeaders } from '../../../utils/api';
+import EditIcon from '@mui/icons-material/Edit';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -19,421 +18,260 @@ const AddStudent = ({ situation }) => {
     const navigate = useNavigate();
     const params = useParams();
 
-    const userState = useSelector(state => state.user);
-    const { status, currentUser, response, authToken, error } = userState;
+    const { status, currentUser, response, error, userDetails } = useSelector(state => state.user);
     const { sclassesList } = useSelector((state) => state.sclass);
+
+    const editID = params.id;
+    const isEditMode = !!editID;
+    const adminID = currentUser._id;
 
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
+    const [phone, setPhone] = useState('');
     const [rollNum, setRollNum] = useState('');
     const [password, setPassword] = useState('');
-
     const [departmentId, setDepartmentId] = useState('');
-    const [departmentLabel, setDepartmentLabel] = useState('');
-    const [legacyDepartmentId, setLegacyDepartmentId] = useState('');
-
-    const [courseId, setCourseId] = useState('');
-    const [courseLabel, setCourseLabel] = useState('');
-    const [departmentOptions, setDepartmentOptions] = useState([]);
-    const [courseOptions, setCourseOptions] = useState([]);
-    const [courseLoader, setCourseLoader] = useState(false);
-    const [courseError, setCourseError] = useState('');
+    const [year, setYear] = useState('1st');
+    const [semester, setSemester] = useState('1');
+    const [gender, setGender] = useState('Male');
+    const [address, setAddress] = useState('');
+    const [assignedCourses, setAssignedCourses] = useState([]);
+    const [fetchingCourses, setFetchingCourses] = useState(false);
 
     const [loader, setLoader] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
     const [message, setMessage] = useState('');
 
-    const adminID = currentUser._id;
-    const role = 'Student';
-    const attendance = [];
-
-    useEffect(() => {
-        if (situation !== 'Student') {
-            setLegacyDepartmentId(params.id);
-            setDepartmentId(params.id);
-        }
-    }, [params.id, situation]);
-
     useEffect(() => {
         dispatch(getAllSclasses(adminID, 'Sclass'));
-    }, [adminID, dispatch]);
-
-    useEffect(() => {
-        if (!Array.isArray(sclassesList) || !sclassesList.length) return;
-
-        const fallbackDepartments = sclassesList.map((item) => ({
-            id: item._id,
-            departmentName: item.sclassName,
-        }));
-
-        setDepartmentOptions((prev) => (prev.length ? prev : fallbackDepartments));
-
-        if (departmentId && !departmentLabel) {
-            const selected = fallbackDepartments.find((item) => item.id === departmentId);
-            if (selected) setDepartmentLabel(selected.departmentName);
+        if (isEditMode) {
+            dispatch(getClassDetails(editID, "Student"));
         }
-    }, [departmentId, departmentLabel, sclassesList]);
+    }, [adminID, editID, isEditMode, dispatch]);
 
     useEffect(() => {
-        if (situation !== 'Student') return;
-
-        let isMounted = true;
-
-        const loadDepartments = async () => {
-            try {
-                const result = await axios.get(getApiUrl('/api/v2/departments'), {
-                    headers: { ...getAuthHeaders() },
-                });
-
-                const apiDepartments = Array.isArray(result.data?.items) ? result.data.items : [];
-                if (!isMounted || !apiDepartments.length) return;
-
-                const options = apiDepartments.map((item) => ({
-                    id: item._id,
-                    departmentName: item.name,
-                }));
-
-                setDepartmentOptions(options);
-
-                if (departmentId) {
-                    const selected = options.find((item) => item.id === departmentId);
-                    if (selected) setDepartmentLabel(selected.departmentName);
+        const fetchCourses = async () => {
+            if (departmentId) {
+                setFetchingCourses(true);
+                try {
+                    const response = await api.get(`/courses/by-department/${departmentId}`);
+                    setAssignedCourses(response.data || []);
+                } catch (err) {
+                    console.error("No courses found:", err);
+                    setAssignedCourses([]);
+                } finally {
+                    setFetchingCourses(false);
                 }
-            } catch (_error) {
-                // Fallback is handled from existing local department state.
+            } else {
+                setAssignedCourses([]);
             }
         };
-
-        loadDepartments();
-
-        return () => {
-            isMounted = false;
-        };
-    }, [departmentId, situation]);
+        fetchCourses();
+    }, [departmentId]);
 
     useEffect(() => {
-        if (situation !== 'Student') return;
-
-        if (!departmentId) {
-            setCourseOptions([]);
-            setCourseError('');
-            return;
+        if (isEditMode && userDetails && userDetails._id === editID) {
+            setName(userDetails.name || '');
+            setEmail(userDetails.email || '');
+            setPhone(userDetails.phone || '');
+            setRollNum(userDetails.registerNumber || userDetails.rollNum || '');
+            setDepartmentId(userDetails.sclassName?._id || userDetails.sclassName || '');
+            setYear(userDetails.year || '1st');
+            setSemester(userDetails.semester || '1');
+            setGender(userDetails.gender || 'Male');
+            setAddress(userDetails.address || '');
         }
+    }, [userDetails, editID, isEditMode]);
 
-        let isMounted = true;
-
-        const loadCourses = async () => {
-            setCourseLoader(true);
-            setCourseError('');
-
-            try {
-                const result = await axios.get(getApiUrl(`/api/v2/courses/by-department/${departmentId}`), {
-                    headers: { ...getAuthHeaders() },
-                });
-
-                const apiCourses = Array.isArray(result.data?.items) ? result.data.items : [];
-                if (!isMounted) return;
-
-                if (apiCourses.length) {
-                    setCourseOptions(apiCourses.map((item) => ({
-                        id: item._id,
-                        courseName: item.courseName || item.name,
-                        courseCode: item.courseCode || item.code,
-                    })));
-                    return;
-                }
-
-                const fallbackCourses = DEPARTMENT_COURSE_OPTIONS[departmentLabel] || [];
-                setCourseOptions(
-                    fallbackCourses.map((item) => ({
-                        id: `fallback-${item.courseCode}`,
-                        courseName: item.courseName,
-                        courseCode: item.courseCode,
-                    }))
-                );
-
-                if (!fallbackCourses.length) {
-                    setCourseError('No courses available for the selected department.');
-                }
-            } catch (_error) {
-                if (!isMounted) return;
-
-                const fallbackCourses = DEPARTMENT_COURSE_OPTIONS[departmentLabel] || [];
-                setCourseOptions(
-                    fallbackCourses.map((item) => ({
-                        id: `fallback-${item.courseCode}`,
-                        courseName: item.courseName,
-                        courseCode: item.courseCode,
-                    }))
-                );
-
-                if (!fallbackCourses.length) {
-                    setCourseError(getApiErrorMessage(_error, 'Unable to load courses for the selected department.'));
-                }
-            } finally {
-                if (isMounted) setCourseLoader(false);
-            }
-        };
-
-        loadCourses();
-
-        return () => {
-            isMounted = false;
-        };
-    }, [departmentId, departmentLabel, situation]);
-
-    const handleDepartmentChange = (event) => {
-        const nextDepartmentId = event.target.value;
-        const selected = departmentOptions.find((item) => item.id === nextDepartmentId);
-        const matchedLegacyDepartment = Array.isArray(sclassesList)
-            ? sclassesList.find((item) => item.sclassName === selected?.departmentName)
-            : null;
-
-        setDepartmentId(nextDepartmentId);
-        setDepartmentLabel(selected?.departmentName || '');
-        setLegacyDepartmentId(matchedLegacyDepartment?._id || '');
-
-        setCourseId('');
-        setCourseLabel('');
-        setCourseOptions([]);
-        setCourseError('');
-    };
-
-    const handleCourseChange = (event) => {
-        const nextCourseId = event.target.value;
-        const selected = courseOptions.find((item) => item.id === nextCourseId);
-
-        setCourseId(nextCourseId);
-        setCourseLabel(selected?.courseName || '');
-    };
-
-    const fields = {
-        name,
-        email: email.trim().toLowerCase(),
-        rollNum,
-        registerNumber: rollNum,
-        password,
-        sclassName: legacyDepartmentId,
-        departmentId,
-        departmentName: departmentLabel,
-        courseId,
-        courseName: courseLabel,
-        enrolledCourseIds: courseId && !String(courseId).startsWith('fallback-') ? [courseId] : [],
-        adminID,
-        role,
-        attendance,
-        skipCourseValidation: situation !== 'Student',
-    };
+    useEffect(() => {
+        if (situation !== 'Student' && params.id && !isEditMode) {
+            setDepartmentId(params.id);
+        }
+    }, [params.id, situation, isEditMode]);
 
     const submitHandler = (event) => {
         event.preventDefault();
 
-        if (!name.trim() || !email.trim() || !rollNum.trim() || !password.trim()) {
-            setMessage('Please fill all required fields before submitting.');
+        if (!name.trim() || !email.trim() || !rollNum.trim() || (!password.trim() && !isEditMode) || !departmentId || !phone.trim()) {
+            setMessage('Please fill all required fields.');
             setShowPopup(true);
             return;
         }
 
-        if (!EMAIL_REGEX.test(email.trim().toLowerCase())) {
-            setMessage('Please enter a valid student email address.');
+        if (assignedCourses.length === 0 && !isEditMode) {
+            setMessage('No courses available for this department. Creation restricted.');
             setShowPopup(true);
             return;
         }
 
-        if (situation === 'Student' && !departmentId) {
-            setMessage('Please select a department.');
+        if (!EMAIL_REGEX.test(email.toLowerCase())) {
+            setMessage('Invalid email format.');
             setShowPopup(true);
             return;
         }
 
-        if (situation === 'Student' && !courseId) {
-            setMessage('Please select a course.');
-            setShowPopup(true);
-            return;
-        }
+        const fields = {
+            name,
+            email: email.trim().toLowerCase(),
+            phone,
+            rollNum,
+            registerNumber: rollNum,
+            sclassName: departmentId,
+            departmentId,
+            year,
+            semester,
+            gender,
+            address,
+            adminID,
+        };
 
-        if (situation === 'Student' && !legacyDepartmentId) {
-            setMessage('Selected department is not mapped for student enrollment.');
-            setShowPopup(true);
-            return;
-        }
-
-        if (situation !== 'Student' && !legacyDepartmentId) {
-            setMessage('Department mapping is missing for this enrollment flow.');
-            setShowPopup(true);
-            return;
-        }
-
-        if (!authToken) {
-            setMessage('Session expired. Please log out and sign in again.');
-            setShowPopup(true);
-            return;
-        }
+        if (password.trim()) fields.password = password;
 
         setLoader(true);
-        dispatch(registerUser(fields, role));
+        if (isEditMode) {
+            dispatch(updateUser(fields, editID, 'Student'));
+        } else {
+            dispatch(registerUser(fields, 'Student'));
+        }
     };
 
     useEffect(() => {
         if (status === 'added') {
             setLoader(false);
-            setMessage('Done Successfully');
+            setMessage(isEditMode ? 'Student Record Updated' : 'Student Enrolled Successfully');
             setShowPopup(true);
-
-            const redirectTimer = setTimeout(() => {
+            setTimeout(() => {
                 dispatch(underControl());
-                navigate('/students');
-            }, 900);
-
-            return () => clearTimeout(redirectTimer);
+                navigate('/Admin/students');
+            }, 1000);
         } else if (status === 'failed') {
             setMessage(response);
             setShowPopup(true);
             setLoader(false);
         } else if (status === 'error') {
-            setMessage(error || 'Network error encountered while saving student data.');
+            setMessage(String(error || 'Network error encountered.'));
             setShowPopup(true);
             setLoader(false);
         }
-    }, [status, navigate, response, error, dispatch]);
+    }, [status, navigate, response, error, dispatch, isEditMode]);
 
     return (
         <div className="max-w-7xl mx-auto px-6 py-8 w-full animate-fade-in">
             <PageHeader
-                title="Enroll New Student"
-                subtitle="Add a student record to the central registry. Ensure roll numbers are unique."
-                actions={[
-                    {
-                        label: 'Cancel',
-                        variant: 'secondary',
-                        onClick: () => navigate('/students')
-                    }
-                ]}
+                title={isEditMode ? "Modify Entrollee Record" : "Enroll New Student"}
+                subtitle={isEditMode ? "Update details for the institutional student registry." : "Primary registration for institutional student body."}
+                actions={[{ label: 'Return', variant: 'secondary', onClick: () => navigate(-1) }]}
             />
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 mt-8">
-                <div className="lg:col-span-7">
-                    <ContentCard title="Student Information" subtitle="Official student identification and enrollment data.">
-                        <form onSubmit={submitHandler} className="space-y-6">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <InputField label="Full Student Name" placeholder="e.g. Johnathan Smith" value={name} onChange={setName} type="text" required />
-                                <InputField label="Student Email" placeholder="name@college.edu" value={email} onChange={setEmail} type="email" required />
+            <div className="mt-8 max-w-4xl mx-auto">
+                <ContentCard>
+                    <div className="flex items-center gap-4 mb-8 pb-6 border-b border-black/5">
+                        <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600">
+                            {isEditMode ? <EditIcon /> : <PersonAddAltIcon />}
+                        </div>
+                        <div>
+                            <h3 className="text-xl font-black text-textDark">{isEditMode ? "Edit Profile" : "Create Profile"}</h3>
+                            <p className="text-sm font-medium text-textDark/60">Manage personal and academic database records.</p>
+                        </div>
+                    </div>
 
-                                {situation === 'Student' && (
-                                    <div className="flex flex-col space-y-2 group">
-                                        <label className="text-sm font-medium text-gray-700 group-focus-within:text-blue-600 transition-colors">Department</label>
-                                        <select
-                                            className="w-full px-4 py-3 bg-white rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800 transition-all appearance-none"
-                                            value={departmentId}
-                                            onChange={handleDepartmentChange}
-                                            required
-                                        >
-                                            <option value="">Select a department...</option>
-                                            {departmentOptions.map((item) => (
-                                                <option key={item.id} value={item.id}>
-                                                    {item.departmentName}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                )}
+                    <form onSubmit={submitHandler} className="space-y-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <InputField label="Name" value={name} onChange={setName} required />
+                            <InputField label="Email" type="email" value={email} onChange={setEmail} required />
+                            <InputField label="Phone" type="tel" value={phone} onChange={setPhone} required />
+                            <InputField label="Roll Number" value={rollNum} onChange={setRollNum} required />
+                            
+                            <Dropdown label="Department" value={departmentId} onChange={setDepartmentId} required disabled={situation !== 'Student' && !isEditMode}>
+                                <option value="">Select Department</option>
+                                {sclassesList && sclassesList.map((item) => <option key={item._id} value={item._id}>{item.sclassName}</option>)}
+                            </Dropdown>
 
-                                {situation === 'Student' && (
-                                    <div className="flex flex-col space-y-2 group">
-                                        <label className="text-sm font-medium text-gray-700 group-focus-within:text-blue-600 transition-colors">Course</label>
-                                        <select
-                                            className="w-full px-4 py-3 bg-white rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800 transition-all appearance-none disabled:bg-gray-100 disabled:text-gray-500"
-                                            value={courseId}
-                                            onChange={handleCourseChange}
-                                            required
-                                            disabled={!departmentId || courseLoader}
-                                        >
-                                            <option value="">
-                                                {!departmentId
-                                                    ? 'Select a department first'
-                                                    : courseLoader
-                                                        ? 'Loading courses...'
-                                                        : courseOptions.length
-                                                            ? 'Select a course...'
-                                                            : 'No courses available'}
-                                            </option>
-                                            {courseOptions.map((item) => (
-                                                <option key={item.id} value={item.id}>
-                                                    {item.courseName} ({item.courseCode})
-                                                </option>
-                                            ))}
-                                        </select>
-                                        {courseError && (
-                                            <p className="text-xs text-red-600 font-medium">{courseError}</p>
-                                        )}
-                                    </div>
-                                )}
-
-                                <InputField label="Register Number" placeholder="e.g. 202401" value={rollNum} onChange={setRollNum} type="text" required />
-                                <InputField label="Create Account Password" placeholder="••••••••" value={password} onChange={setPassword} type="password" required />
+                            <div className="grid grid-cols-2 gap-4">
+                                <Dropdown label="Year" value={year} onChange={setYear}>
+                                    <option value="1st">1st Year</option>
+                                    <option value="2nd">2nd Year</option>
+                                    <option value="3rd">3rd Year</option>
+                                    <option value="4th">4th Year</option>
+                                </Dropdown>
+                                <Dropdown label="Semester" value={semester} onChange={setSemester}>
+                                    {[1, 2, 3, 4, 5, 6, 7, 8].map(s => <option key={s} value={s}>{s}</option>)}
+                                </Dropdown>
                             </div>
 
-                            <div className="pt-6 border-t border-gray-100 flex justify-end">
-                                <button
-                                    type="submit"
-                                    disabled={loader}
-                                    className={`px-5 py-2.5 rounded-lg font-semibold shadow-sm transition-all duration-200 flex items-center justify-center gap-2 ${loader ? 'bg-gray-300 text-white cursor-not-allowed' : 'bg-blue-600 text-white hover:bg-blue-700'}`}
-                                >
-                                    {loader ? (
-                                        <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24">
-                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
-                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                        </svg>
-                                    ) : (
-                                        <>
-                                            <PersonAddAltIcon fontSize="small" />
-                                            Confirm Registration
-                                        </>
-                                    )}
-                                </button>
-                            </div>
-                        </form>
-                    </ContentCard>
-                </div>
+                            <InputField label={isEditMode ? "New Password (Leave blank for no change)" : "System Password"} type="password" value={password} onChange={setPassword} required={!isEditMode} />
+                            
+                             <Dropdown label="Gender" value={gender} onChange={setGender}>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </Dropdown>
+                        </div>
 
-                <div className="lg:col-span-5 space-y-6">
-                    <ContentCard title="Registration Guide" subtitle="Essential requirements for enrollment.">
-                        <ul className="space-y-4">
-                            <GuideItem title="Unique Register Numbers" detail="Ensure the register number has not been assigned to another student in the same department and course pipeline." />
-                            <GuideItem title="Secure Passwords" detail="Passwords must be at least 6 characters long for student security." />
-                            <GuideItem title="Department and Course Mapping" detail="Each student must be mapped to a department first, then the course must be selected from that department." />
-                        </ul>
-                    </ContentCard>
-                </div>
+                        {departmentId && (
+                            <div className="p-6 bg-slate-50 rounded-2xl border border-black/5 animate-slide-up">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h4 className="text-xs font-black uppercase tracking-widest text-blue-600">Auto-assigned Curriculum</h4>
+                                    <span className="text-[10px] bg-blue-100 text-blue-700 font-black px-2 py-0.5 rounded-full uppercase">Computed</span>
+                                </div>
+                                {fetchingCourses ? (
+                                    <p className="text-sm font-medium text-gray-400">Loading curriculum...</p>
+                                ) : assignedCourses.length > 0 ? (
+                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                                        {assignedCourses.map((course) => (
+                                            <div key={course._id} className="bg-white px-3 py-2 rounded-xl border border-black/5 flex items-center gap-2">
+                                                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
+                                                <span className="text-xs font-bold text-gray-700 truncate">{course.subName}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <p className="text-sm font-medium text-red-400">No courses defined for this department. Creation will fail.</p>
+                                )}
+                            </div>
+                        )}
+
+                        <div className="space-y-2">
+                            <label className="text-xs font-black uppercase text-gray-400 block tracking-widest">Address</label>
+                            <textarea
+                                value={address}
+                                onChange={(e) => setAddress(e.target.value)}
+                                className="w-full px-4 py-3 bg-white rounded-xl border border-black/5 outline-none h-20 font-medium text-gray-800 focus:ring-2 focus:ring-blue-500/20"
+                                placeholder="..."
+                            />
+                        </div>
+
+                        <div className="pt-8 border-t border-gray-100 flex justify-end">
+                            <button
+                                type="submit"
+                                disabled={loader}
+                                className="px-10 py-3.5 bg-blue-600 text-white rounded-2xl font-black shadow-lg shadow-blue-500/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50"
+                            >
+                                {loader ? 'Processing...' : isEditMode ? 'Update Enrollee' : 'Enroll Student'}
+                            </button>
+                        </div>
+                    </form>
+                </ContentCard>
             </div>
-
             <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} />
         </div>
     );
 };
 
-const InputField = ({ label, placeholder, value, onChange, type, required }) => (
-    <div className="flex flex-col space-y-2 group">
-        <label className="text-sm font-medium text-gray-700 group-focus-within:text-blue-600 transition-colors">{label}</label>
-        <input
-            className="w-full px-4 py-3 bg-white rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800 transition-all placeholder-gray-400"
-            type={type}
-            placeholder={placeholder}
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-            required={required}
-        />
+const InputField = ({ label, value, onChange, type = "text", required = false }) => (
+    <div className="space-y-2">
+        <label className="text-xs font-black uppercase tracking-widest text-gray-400 block">{label}</label>
+        <input type={type} value={value} onChange={(e) => onChange(e.target.value)} required={required} className="w-full px-4 py-3.5 bg-white rounded-xl border border-black/5 outline-none font-bold text-gray-800 shadow-sm focus:ring-2 focus:ring-blue-500/20 transition-all" />
     </div>
 );
 
-const GuideItem = ({ title, detail }) => (
-    <li className="flex gap-3">
-        <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-blue-600 shrink-0"></div>
-        <div>
-            <p className="text-xs font-black text-textDark leading-tight mb-1">{title}</p>
-            <p className="text-[11px] font-medium text-textDark/60 leading-normal">{detail}</p>
-        </div>
-    </li>
+const Dropdown = ({ label, value, onChange, children, required, disabled }) => (
+    <div className="space-y-2">
+        <label className="text-xs font-black uppercase tracking-widest text-gray-400 block">{label}</label>
+        <select value={value} onChange={(e) => onChange(e.target.value)} required={required} disabled={disabled} className="w-full px-4 py-3.5 bg-white rounded-xl border border-black/5 outline-none font-bold text-gray-800 shadow-sm focus:ring-2 focus:ring-blue-500/20 transition-all disabled:opacity-50">
+            {children}
+        </select>
+    </div>
 );
 
 export default AddStudent;

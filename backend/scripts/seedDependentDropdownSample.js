@@ -1,8 +1,8 @@
 require("dotenv").config();
 const mongoose = require("mongoose");
 
-const Department = require("../models/v2/Department");
-const Course = require("../models/v2/Course");
+const Department = require('../models/Department.model');
+const Course = require('../models/Course.model');
 
 const departmentSeed = [
   {

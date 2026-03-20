@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { CircularProgress } from "@mui/material";
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { addStuff } from '../../../redux/userRelated/userHandle';
+import { addStuff, updateUser, getUserDetails as getClassDetails } from '../../../redux/userRelated/userHandle';
 import { underControl } from '../../../redux/userRelated/userSlice';
 import Popup from '../../../components/Popup';
 import FormLayout from "../../../components/FormLayout";
@@ -10,23 +10,42 @@ import AddIcon from '@mui/icons-material/Add';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import SaveIcon from '@mui/icons-material/Save';
 import CloseIcon from '@mui/icons-material/Close';
+import EditIcon from '@mui/icons-material/Edit';
 
 const SubjectForm = () => {
-    const [subjects, setSubjects] = useState([{ subName: "", subCode: "", sessions: "" }]);
-
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const params = useParams()
+    const location = useLocation()
 
-    const { status, currentUser, response } = useSelector(state => state.user);
+    const { status, currentUser, response, userDetails } = useSelector(state => state.user);
 
-    const sclassName = params.id
+    const isEditMode = location.pathname.includes('/Admin/editsubject/');
+    const editID = params.id;
+    const sclassName = !isEditMode ? params.id : '';
     const adminID = currentUser._id
     const address = "Subject"
 
+    const [subjects, setSubjects] = useState([{ subName: "", subCode: "", sessions: "" }]);
     const [showPopup, setShowPopup] = useState(false);
     const [message, setMessage] = useState("");
     const [loader, setLoader] = useState(false)
+
+    useEffect(() => {
+        if (isEditMode) {
+            dispatch(getClassDetails(editID, "Subject"));
+        }
+    }, [dispatch, editID, isEditMode]);
+
+    useEffect(() => {
+        if (isEditMode && userDetails && userDetails._id === editID) {
+            setSubjects([{
+                subName: userDetails.subName || "",
+                subCode: userDetails.subCode || "",
+                sessions: userDetails.sessions || ""
+            }]);
+        }
+    }, [userDetails, editID, isEditMode]);
 
     const handleSubjectNameChange = (index) => (event) => {
         const newSubjects = [...subjects];
@@ -53,30 +72,43 @@ const SubjectForm = () => {
     const handleRemoveSubject = (index) => () => {
         const newSubjects = [...subjects];
         newSubjects.splice(index, 1);
-        setSubjects(newSubjects);
-    };
-
-    const fields = {
-        sclassName,
-        subjects: subjects.map((subject) => ({
-            subName: subject.subName,
-            subCode: subject.subCode,
-            sessions: subject.sessions,
-        })),
-        adminID,
+        setSubjects([...newSubjects]);
     };
 
     const submitHandler = (event) => {
         event.preventDefault();
         setLoader(true)
-        dispatch(addStuff(fields, address))
+
+        if (isEditMode) {
+            const fields = {
+                subName: subjects[0].subName,
+                subCode: subjects[0].subCode,
+                sessions: subjects[0].sessions,
+            };
+            dispatch(updateUser(fields, editID, address));
+        } else {
+            const fields = {
+                sclassName,
+                subjects: subjects.map((subject) => ({
+                    subName: subject.subName,
+                    subCode: subject.subCode,
+                    sessions: subject.sessions,
+                })),
+                adminID,
+            };
+            dispatch(addStuff(fields, address));
+        }
     };
 
     useEffect(() => {
         if (status === 'added') {
-            navigate("/Admin/subjects");
-            dispatch(underControl())
-            setLoader(false)
+            setMessage(isEditMode ? "Course updated" : "Course curriculum added");
+            setShowPopup(true);
+            setTimeout(() => {
+                navigate("/Admin/subjects");
+                dispatch(underControl());
+                setLoader(false);
+            }, 1000);
         }
         else if (status === 'failed') {
             setMessage(response)
@@ -88,12 +120,12 @@ const SubjectForm = () => {
             setShowPopup(true)
             setLoader(false)
         }
-    }, [status, navigate, response, dispatch]);
+    }, [status, navigate, response, dispatch, isEditMode]);
 
     return (
         <FormLayout
-            title="Create New Courses"
-            subtitle="Register course modules. You can add multiple courses simultaneously."
+            title={isEditMode ? "Edit Course Module" : "Create New Courses"}
+            subtitle={isEditMode ? "Modify existing curriculum module specifications." : "Register course modules. You can add multiple courses simultaneously."}
             headerActions={[
                 {
                     label: 'Back to List',
@@ -106,12 +138,12 @@ const SubjectForm = () => {
                 <div className="space-y-12">
                     {subjects.map((subject, index) => (
                         <div key={index} className="relative animate-fade-in">
-                            {/* Entry Header */}
                             <div className="flex items-center justify-between mb-6">
-                                <h4 className="text-xs font-black uppercase tracking-[0.2em] text-blue-600 bg-blue-50 px-3 py-1 rounded-md">
-                                    Course Entry #{index + 1}
+                                <h4 className="text-xs font-black uppercase tracking-[0.2em] text-blue-600 bg-blue-50 px-3 py-1 rounded-md flex items-center gap-2">
+                                    {isEditMode ? <EditIcon sx={{ fontSize: 14 }} /> : null}
+                                    {isEditMode ? 'Editing Course Record' : `Course Entry #${index + 1}`}
                                 </h4>
-                                {subjects.length > 1 && (
+                                {subjects.length > 1 && !isEditMode && (
                                     <button
                                         type="button"
                                         onClick={handleRemoveSubject(index)}
@@ -123,7 +155,6 @@ const SubjectForm = () => {
                                 )}
                             </div>
 
-                            {/* Form Grid */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                                 <FormInput
                                     label="Course Name"
@@ -150,24 +181,23 @@ const SubjectForm = () => {
                                 />
                             </div>
 
-                            {/* Separator */}
                             {index < subjects.length - 1 && <div className="mt-12 pt-1 border-t border-slate-100" />}
                         </div>
                     ))}
                 </div>
 
-                {/* Secondary Action: Add Another */}
-                <div className="flex justify-start">
-                    <button
-                        type="button"
-                        onClick={handleAddSubject}
-                        className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-6 py-3 rounded-xl transition-all hover:scale-[1.02] shadow-sm"
-                    >
-                        <AddIcon fontSize="small" /> Add Another Course
-                    </button>
-                </div>
+                {!isEditMode && (
+                    <div className="flex justify-start">
+                        <button
+                            type="button"
+                            onClick={handleAddSubject}
+                            className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-6 py-3 rounded-xl transition-all hover:scale-[1.02] shadow-sm"
+                        >
+                            <AddIcon fontSize="small" /> Add Another Course
+                        </button>
+                    </div>
+                )}
 
-                {/* Form Footer Actions */}
                 <div className="flex justify-end items-center gap-4 pt-8 border-t border-slate-100">
                     <button
                         type="button"
@@ -183,7 +213,7 @@ const SubjectForm = () => {
                     >
                         {loader ? <CircularProgress size={20} color="inherit" /> : (
                             <>
-                                <SaveIcon fontSize="small" /> Save Curriculum
+                                <SaveIcon fontSize="small" /> {isEditMode ? 'Update Record' : 'Save Curriculum'}
                             </>
                         )}
                     </button>

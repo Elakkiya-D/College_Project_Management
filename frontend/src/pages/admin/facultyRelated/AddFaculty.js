@@ -6,205 +6,168 @@ import { CircularProgress } from '@mui/material';
 import PageHeader from '../../../components/PageHeader';
 import ContentCard from '../../../components/ContentCard';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
-import { registerUser } from '../../../redux/userRelated/userHandle';
+import EditIcon from '@mui/icons-material/Edit';
+import { registerUser, updateUser, getUserDetails as getClassDetails } from '../../../redux/userRelated/userHandle';
 import { underControl } from '../../../redux/userRelated/userSlice';
 import Popup from '../../../components/Popup';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const AddFaculty = () => {
-  const params = useParams();
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+    const { subjectID, facultyID } = useParams();
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
-  const subjectID = params.id;
+    const isEditMode = !!facultyID;
+    const activeID = isEditMode ? facultyID : subjectID;
 
-  const { status, response, error, authToken } = useSelector(state => state.user);
-  const { subjectDetails } = useSelector((state) => state.sclass);
+    console.log("Mode:", isEditMode ? "Edit" : "Add");
+    console.log("Active ID:", activeID);
 
-  useEffect(() => {
-    dispatch(getSubjectDetails(subjectID, 'Subject'));
-  }, [dispatch, subjectID]);
+    const { status, response, error, userDetails } = useSelector(state => state.user);
+    const { subjectDetails } = useSelector((state) => state.sclass);
 
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [designation, setDesignation] = useState('Faculty');
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [designation, setDesignation] = useState('Faculty');
 
-  const [showPopup, setShowPopup] = useState(false);
-  const [message, setMessage] = useState('');
-  const [loader, setLoader] = useState(false);
+    const [showPopup, setShowPopup] = useState(false);
+    const [message, setMessage] = useState('');
+    const [loader, setLoader] = useState(false);
 
-  const role = 'Faculty';
-  const school = subjectDetails && subjectDetails.school;
-  const teachSubject = subjectDetails && subjectDetails._id;
-  const teachSclass = subjectDetails && subjectDetails.sclassName && subjectDetails.sclassName._id;
+    useEffect(() => {
+        if (isEditMode) {
+            dispatch(getClassDetails(facultyID, "Faculty"));
+        } else if (subjectID) {
+            dispatch(getSubjectDetails(subjectID, 'Subject'));
+        }
+    }, [dispatch, subjectID, facultyID, isEditMode]);
 
-  const fields = {
-    name,
-    email: email.trim().toLowerCase(),
-    password,
-    role,
-    school,
-    teachSubject,
-    teachSclass,
-    designation,
-  };
+    useEffect(() => {
+        if (isEditMode && userDetails && userDetails._id === facultyID) {
+            setName(userDetails.name || '');
+            setEmail(userDetails.email || '');
+            setDesignation(userDetails.designation || 'Faculty');
+        }
+    }, [userDetails, facultyID, isEditMode]);
 
-  const submitHandler = (event) => {
-    event.preventDefault();
+    const submitHandler = (event) => {
+        event.preventDefault();
+        console.log("Submitting form...");
 
-    if (!name.trim() || !email.trim() || !password.trim() || !designation.trim()) {
-      setMessage('Please fill all required fields before submitting.');
-      setShowPopup(true);
-      return;
-    }
+        if (!name.trim() || !email.trim() || (!password.trim() && !isEditMode) || !designation.trim()) {
+            setMessage('Please fill all required fields.');
+            setShowPopup(true);
+            return;
+        }
 
-    if (!EMAIL_REGEX.test(email.trim().toLowerCase())) {
-      setMessage('Please enter a valid faculty email address.');
-      setShowPopup(true);
-      return;
-    }
+        if (!EMAIL_REGEX.test(email.toLowerCase())) {
+            setMessage('Invalid email address.');
+            setShowPopup(true);
+            return;
+        }
+        const fields = {
+            name,
+            email: email.trim().toLowerCase(),
+            designation,
+        };
+        console.log("Submitting faculty data payload:", fields);
 
-    if (!school || !teachSclass || !teachSubject) {
-      setMessage('Department and course mapping is required for faculty registration.');
-      setShowPopup(true);
-      return;
-    }
+        if (password.trim()) fields.password = password;
+        if (!isEditMode) {
+            fields.role = 'Faculty';
+            fields.school = subjectDetails?.school;
+            fields.teachSubject = subjectDetails?._id;
+            fields.teachSclass = subjectDetails?.sclassName?._id;
+            
+            if (!fields.school || !fields.teachSclass) {
+                setMessage('Department mapping is required.');
+                setShowPopup(true);
+                return;
+            }
+        }
 
-    if (!authToken) {
-      setMessage('Session expired. Please log out and sign in again.');
-      setShowPopup(true);
-      return;
-    }
+        setLoader(true);
+        if (isEditMode) {
+            dispatch(updateUser(fields, facultyID, "Faculty"));
+        } else {
+            dispatch(registerUser(fields, 'Faculty'));
+        }
+    };
 
-    setLoader(true);
-    dispatch(registerUser(fields, role));
-  };
+    useEffect(() => {
+        if (status === 'added') {
+            setLoader(false);
+            setMessage(isEditMode ? 'Faculty Data Updated' : 'Faculty Registered Successfully');
+            setShowPopup(true);
+            setTimeout(() => {
+                dispatch(underControl());
+                navigate('/Admin/faculty');
+            }, 1000);
+        } else if (status === 'failed') {
+            setMessage(response);
+            setShowPopup(true);
+            setLoader(false);
+        } else if (status === 'error') {
+            setMessage(error || 'Network connection failed.');
+            setShowPopup(true);
+            setLoader(false);
+        }
+    }, [status, navigate, error, response, dispatch, isEditMode]);
 
-  useEffect(() => {
-    if (status === 'added') {
-      setLoader(false);
-      setMessage('Done Successfully');
-      setShowPopup(true);
+    return (
+        <div className="max-w-7xl mx-auto px-6 py-8 w-full animate-fade-in">
+            <PageHeader
+                title={isEditMode ? "Modify Faculty Record" : "Onboard Faculty Member"}
+                subtitle={isEditMode ? "Update the professional database for academic staff." : "Initialize a new faculty account and assign the primary course load."}
+                actions={[{ label: 'Return', variant: 'secondary', onClick: () => navigate(-1) }]}
+            />
 
-      const redirectTimer = setTimeout(() => {
-        dispatch(underControl());
-        navigate('/Admin/faculty');
-      }, 900);
+            <div className="mt-8 animate-slide-up max-w-2xl mx-auto">
+                <ContentCard>
+                    <div className="flex items-center gap-4 mb-8 pb-6 border-b border-black/5">
+                        <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600">
+                            {isEditMode ? <EditIcon /> : <PersonAddAlt1Icon />}
+                        </div>
+                        <div>
+                            <h3 className="text-xl font-black text-textDark">{isEditMode ? "Edit Profile" : "Onboard Staff"}</h3>
+                            <p className="text-sm font-medium text-textDark/60">
+                                {!isEditMode ? `Assigning to: ${subjectDetails?.subName || '...'}` : 'Manage authentication and professional data.'}
+                            </p>
+                        </div>
+                    </div>
 
-      return () => clearTimeout(redirectTimer);
-    }
-    if (status === 'failed') {
-      setMessage(response);
-      setShowPopup(true);
-      setLoader(false);
-    }
-    if (status === 'error') {
-      setMessage(error || 'Network Error');
-      setShowPopup(true);
-      setLoader(false);
-    }
-  }, [status, navigate, error, response, dispatch]);
+                    <form onSubmit={submitHandler} className="space-y-6">
+                        <div className="space-y-4">
+                            <InputField label="Staff Full Name" value={name} onChange={setName} required />
+                            <InputField label="Institutional Email" type="email" value={email} onChange={setEmail} required />
+                            <InputField label="Designation / Title" value={designation} onChange={setDesignation} required />
+                            <InputField label={isEditMode ? "New Password (Optional)" : "System Password"} type="password" value={password} onChange={setPassword} required={!isEditMode} />
+                        </div>
 
-  return (
-    <div className="max-w-7xl mx-auto px-6 py-8 w-full animate-fade-in">
-      <PageHeader
-        title="Register Faculty Member"
-        subtitle="Create a new faculty account and assign them to the selected course."
-        actions={[
-          {
-            label: 'Go Back',
-            variant: 'secondary',
-            onClick: () => navigate('/Admin/faculty'),
-          },
-        ]}
-      />
-
-      <div className="mt-8 animate-slide-up max-w-2xl mx-auto">
-        <ContentCard>
-          <div className="flex items-center gap-4 mb-8 pb-6 border-b border-black/5">
-            <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600">
-              <PersonAddAlt1Icon />
+                        <div className="pt-8 border-t border-gray-100 flex justify-end">
+                            <button
+                                type="submit"
+                                disabled={loader}
+                                className="px-10 py-3.5 bg-blue-600 text-white rounded-2xl font-black shadow-lg shadow-blue-500/20 hover:scale-[1.02] transition-all disabled:opacity-50"
+                            >
+                                {loader ? 'Processing...' : isEditMode ? 'Update Staff Member' : 'Confirm Registration'}
+                            </button>
+                        </div>
+                    </form>
+                </ContentCard>
             </div>
-            <div>
-              <h3 className="text-xl font-black text-textDark">Account Details</h3>
-              <p className="text-sm font-medium text-textDark/60">
-                Assigning to: <span className="text-blue-600 font-bold">{subjectDetails && subjectDetails.sclassName && subjectDetails.sclassName.sclassName}</span> - <span className="font-bold text-textDark">{subjectDetails && subjectDetails.subName}</span>
-              </p>
-            </div>
-          </div>
-
-          <form onSubmit={submitHandler} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2 col-span-1 md:col-span-2">
-                <label className="text-sm font-medium text-gray-700 block">Full Legal Name</label>
-                <input
-                  type="text"
-                  placeholder="Enter faculty member name..."
-                  value={name}
-                  onChange={(event) => setName(event.target.value)}
-                  autoComplete="name"
-                  required
-                  className="w-full px-4 py-3 bg-white rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-gray-800"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700 block">Email Address</label>
-                <input
-                  type="email"
-                  placeholder="name@institution.edu"
-                  value={email}
-                  onChange={(event) => setEmail(event.target.value)}
-                  autoComplete="email"
-                  required
-                  className="w-full px-4 py-3 bg-white rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-gray-800"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700 block">System Password</label>
-                <input
-                  type="password"
-                  placeholder="Create strong password..."
-                  value={password}
-                  onChange={(event) => setPassword(event.target.value)}
-                  autoComplete="new-password"
-                  required
-                  className="w-full px-4 py-3 bg-white rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-gray-800"
-                />
-              </div>
-
-              <div className="space-y-2 md:col-span-2">
-                <label className="text-sm font-medium text-gray-700 block">Designation</label>
-                <input
-                  type="text"
-                  placeholder="e.g. Assistant Professor"
-                  value={designation}
-                  onChange={(event) => setDesignation(event.target.value)}
-                  required
-                  className="w-full px-4 py-3 bg-white rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-gray-800"
-                />
-              </div>
-            </div>
-
-            <div className="pt-6 border-t border-gray-100 flex justify-end">
-              <button
-                type="submit"
-                disabled={loader}
-                className="px-5 py-2.5 bg-blue-600 text-white rounded-lg shadow-sm font-semibold hover:bg-blue-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[160px]"
-              >
-                {loader ? <CircularProgress size={20} color="inherit" /> : 'Register Faculty'}
-              </button>
-            </div>
-          </form>
-        </ContentCard>
-      </div>
-
-      <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} />
-    </div>
-  );
+            <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} />
+        </div>
+    );
 };
+
+const InputField = ({ label, value, onChange, type = "text", required = false }) => (
+    <div className="space-y-2">
+        <label className="text-xs font-black uppercase tracking-widest text-gray-400 block">{label}</label>
+        <input type={type} value={value} onChange={(e) => onChange(e.target.value)} required={required} className="w-full px-4 py-3.5 bg-white rounded-xl border border-black/5 outline-none font-bold text-gray-800 shadow-sm focus:ring-2 focus:ring-blue-500/20 transition-all font-poppins" />
+    </div>
+);
 
 export default AddFaculty;

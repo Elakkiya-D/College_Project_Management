@@ -22,7 +22,7 @@ if (!process.env.JWT_SECRET && !IS_PRODUCTION) {
 
 const Routes = require("./routes/route.js")
 const v2Routes = require("./routes/v2.js")
-const errorHandler = require('./middlewares/errorHandler');
+const errorHandler = require('./middleware/error.middleware');
 
 const app = express()
 

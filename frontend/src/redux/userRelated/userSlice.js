@@ -7,7 +7,7 @@ const initialState = {
     loading: false,
     currentUser: JSON.parse(localStorage.getItem('user')) || null,
     currentRole: (JSON.parse(localStorage.getItem('user')) || {}).role || null,
-    authToken: localStorage.getItem('authToken') || null,
+    authToken: localStorage.getItem('token') || localStorage.getItem('authToken') || null,
     error: null,
     response: null,
     darkMode: true
@@ -43,7 +43,7 @@ const userSlice = createSlice({
 
             localStorage.setItem('user', JSON.stringify(resolvedUser));
             if (resolvedToken) {
-                localStorage.setItem('authToken', resolvedToken);
+                localStorage.setItem('token', resolvedToken);
             }
 
             state.response = null;
@@ -59,6 +59,7 @@ const userSlice = createSlice({
         },
         authLogout: (state) => {
             localStorage.removeItem('user');
+            localStorage.removeItem('token');
             localStorage.removeItem('authToken');
             state.currentUser = null;
             state.status = 'idle';

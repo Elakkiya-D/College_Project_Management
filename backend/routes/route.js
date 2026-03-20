@@ -1,13 +1,13 @@
 const router = require('express').Router();
 const multer = require('multer');
 
-// const { adminRegister, adminLogIn, deleteAdmin, getAdminDetail, updateAdmin } = require('../controllers/admin-controller.js');
+// const { adminRegister, adminLogIn, deleteAdmin, getAdminDetail, updateAdmin } = require('../controllers/admin.controller');
 
-const { adminRegister, adminLogIn, getAdminDetail, deleteAdmin, updateAdmin } = require('../controllers/admin-controller.js');
+const { adminRegister, adminLogIn, getAdminDetail, deleteAdmin, updateAdmin } = require('../controllers/admin.controller');
 
-const { sclassCreate, sclassList, deleteSclass, deleteSclasses, getSclassDetail, getSclassStudents } = require('../controllers/class-controller.js');
-const { complainCreate, complainList, deleteComplain, deleteComplains } = require('../controllers/complain-controller.js');
-const { noticeCreate, noticeList, deleteNotices, deleteNotice, updateNotice } = require('../controllers/notice-controller.js');
+const { sclassCreate, sclassList, deleteSclass, deleteSclasses, getSclassDetail, getSclassStudents, updateSclass } = require('../controllers/class.controller');
+const { complainCreate, complainList, deleteComplain, deleteComplains } = require('../controllers/complain.controller');
+const { noticeCreate, noticeList, deleteNotices, deleteNotice, updateNotice } = require('../controllers/notice.controller');
 const {
     studentRegister,
     studentLogIn,
@@ -24,11 +24,11 @@ const {
     removeStudentAttendanceBySubject,
     removeStudentAttendance,
     bulkUploadStudents,
-    createStudentByFaculty } = require('../controllers/student_controller.js');
-const { subjectCreate, classSubjects, deleteSubjectsByClass, getSubjectDetail, deleteSubject, freeSubjectList, allSubjects, deleteSubjects } = require('../controllers/subject-controller.js');
-const { facultyRegister, facultyLogIn, getFacultyList, getFacultyDetail, deleteFacultyList, deleteFacultyByClass, deleteFaculty, updateFacultySubject, facultyAttendance, bulkUploadFaculty } = require('../controllers/faculty-controller.js');
-const { forgotPassword, resetPassword } = require('../controllers/auth-password-controller.js');
-const { requireAuth, requireRole } = require('../middlewares/auth');
+    createStudentByFaculty } = require('../controllers/student.controller');
+const { subjectCreate, classSubjects, deleteSubjectsByClass, getSubjectDetail, deleteSubject, freeSubjectList, allSubjects, deleteSubjects, updateSubject, getSubjectsByDepartment } = require('../controllers/subject.controller');
+const { facultyRegister, facultyLogIn, getFacultyList, getFacultyDetail, deleteFacultyList, deleteFacultyByClass, deleteFaculty, updateFacultySubject, facultyAttendance, bulkUploadFaculty, updateFacultyV1 } = require('../controllers/faculty.controller');
+const { forgotPassword, resetPassword } = require('../controllers/auth-password.controller');
+const { requireAuth, requireRole } = require('../middleware/auth.middleware');
 
 const upload = multer({
     storage: multer.memoryStorage(),
@@ -92,6 +92,7 @@ router.delete("/FacultiesClass/:id", requireAdmin, deleteFacultyByClass)
 router.delete("/Faculty/:id", requireAdmin, deleteFaculty)
 
 router.put("/FacultySubject", requireAdmin, updateFacultySubject)
+router.put("/Faculty/:id", requireAdmin, updateFacultyV1)
 
 router.post('/FacultyAttendance/:id', requireAdmin, facultyAttendance)
 
@@ -126,6 +127,7 @@ router.get("/Sclass/Students/:id", getSclassStudents)
 
 router.delete("/Sclasses/:id", requireAdmin, deleteSclasses)
 router.delete("/Sclass/:id", requireAdmin, deleteSclass)
+router.put("/Sclass/:id", requireAdmin, updateSclass)
 
 // Subject
 
@@ -139,6 +141,8 @@ router.get("/Subject/:id", getSubjectDetail)
 router.delete("/Subject/:id", requireAdmin, deleteSubject)
 router.delete("/Subjects/:id", requireAdmin, deleteSubjects)
 router.delete("/SubjectsClass/:id", requireAdmin, deleteSubjectsByClass)
+router.put("/Subject/:id", requireAdmin, updateSubject)
+router.get('/courses/by-department/:id', getSubjectsByDepartment);
 
 // Fee Management
 const {
@@ -149,7 +153,7 @@ const {
     createFeeReceipt,
     getStudentReceipts,
     getReceiptById,
-} = require('../controllers/fee-controller.js');
+} = require('../controllers/fee.controller');
 
 // Admin Fee Routes
 router.post('/api/admin/fees/create', feeCreate);
@@ -166,7 +170,7 @@ router.get('/api/fees/receipt/:receiptId', getReceiptById);
 router.get('/api/fees/:studentId', getStudentReceipts);
 
 // Payment & Billing Routes
-const { createPaymentIntent, confirmPaymentIntent, handleStripeWebhook } = require('../controllers/payment-controller.js');
+const { createPaymentIntent, confirmPaymentIntent, handleStripeWebhook } = require('../controllers/payment.controller');
 router.post('/api/payment/create-intent', createPaymentIntent);
 router.post('/api/payment/confirm', confirmPaymentIntent);
 

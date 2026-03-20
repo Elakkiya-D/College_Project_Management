@@ -1,16 +1,19 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { IconButton, Box, Menu, MenuItem, ListItemIcon, Tooltip } from '@mui/material';
 import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { getAllSclasses } from '../../../redux/sclassRelated/sclassHandle';
 import TableTemplate from '../../../components/TableTemplate';
+import { deleteUser } from '../../../redux/userRelated/userHandle';
 
 import SpeedDialIcon from '@mui/material/SpeedDialIcon';
 import PostAddIcon from '@mui/icons-material/PostAdd';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import AddCardIcon from '@mui/icons-material/AddCard';
 import Popup from '../../../components/Popup';
+import ConfirmDelete from '../../../components/ConfirmDelete';
 import ModuleLayout from '../../../components/ModuleLayout';
 
 const ShowClasses = () => {
@@ -26,31 +29,40 @@ const ShowClasses = () => {
     dispatch(getAllSclasses(adminID, "Sclass"));
   }, [adminID, dispatch]);
 
-  if (error) {
-    console.log(error)
-  }
-
   const [showPopup, setShowPopup] = useState(false);
   const [message, setMessage] = useState("");
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
 
-  const deleteHandler = (deleteID, address) => {
-    console.log(deleteID);
-    console.log(address);
-    setMessage("Sorry the delete function has been disabled for now.")
-    setShowPopup(true)
-    // dispatch(deleteUser(deleteID, address))
-    //   .then(() => {
-    //     dispatch(getAllSclasses(adminID, "Sclass"));
-    //   })
+  const deleteHandler = (id) => {
+    setDeleteId(id);
+    setShowConfirm(true);
+  }
+
+  const confirmDeletion = () => {
+    dispatch(deleteUser(deleteId, "Sclass"))
+      .then(() => {
+        dispatch(getAllSclasses(adminID, "Sclass"));
+        setMessage("Department removed successfully");
+        setShowPopup(true);
+      })
+      .catch((err) => {
+        setMessage(err.message || "Failed to remove department");
+        setShowPopup(true);
+      });
   }
 
   const sclassColumns = [
-    { id: 'name', label: 'Department (Dept)', minWidth: 170 },
+    { id: 'name', label: 'Department Name', minWidth: 170 },
+    { id: 'category', label: 'Category', minWidth: 120 },
+    { id: 'level', label: 'Level', minWidth: 80 },
   ]
 
   const sclassRows = Array.isArray(sclassesList)
     ? sclassesList.map((sclass) => ({
       name: sclass.sclassName,
+      category: sclass.category || '—',
+      level: sclass.level || '—',
       id: sclass._id,
     }))
     : [];
@@ -69,8 +81,14 @@ const ShowClasses = () => {
           View
         </button>
         <button
-          onClick={() => deleteHandler(row.id, "Sclass")}
-          className="p-1.5 text-red-500 hover:text-white bg-white hover:bg-red-500 border border-transparent rounded-lg transition-all"
+          onClick={() => navigate("/Admin/editclass/" + row.id)}
+          className="p-1.5 text-blue-600 hover:text-white bg-blue-50 hover:bg-blue-600 border border-transparent rounded-lg transition-all"
+        >
+          <EditIcon fontSize="small" />
+        </button>
+        <button
+          onClick={() => deleteHandler(row.id)}
+          className="p-1.5 text-red-500 hover:text-white bg-red-50 hover:bg-red-500 border border-transparent rounded-lg transition-all"
         >
           <DeleteIcon fontSize="small" />
         </button>
@@ -81,49 +99,32 @@ const ShowClasses = () => {
 
   const ActionMenu = ({ actions }) => {
     const [anchorEl, setAnchorEl] = useState(null);
-
     const open = Boolean(anchorEl);
-
-    const handleClick = (event) => {
-      setAnchorEl(event.currentTarget);
-    };
-    const handleClose = () => {
-      setAnchorEl(null);
-    };
     return (
       <>
         <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
-          <Tooltip title="Add Students & Subjects">
-            <IconButton
-              onClick={handleClick}
-              size="small"
-              sx={{ ml: 2 }}
-              aria-controls={open ? 'account-menu' : undefined}
-              aria-haspopup="true"
-              aria-expanded={open ? 'true' : undefined}
-            >
-              <h5>Add</h5>
-              <SpeedDialIcon />
+          <Tooltip title="Management Actions">
+            <IconButton onClick={(e) => setAnchorEl(e.currentTarget)} size="small" sx={{ ml: 1 }}>
+              <SpeedDialIcon sx={{ fontSize: 18 }} />
             </IconButton>
           </Tooltip>
         </Box>
         <Menu
           anchorEl={anchorEl}
-          id="account-menu"
           open={open}
-          onClose={handleClose}
-          onClick={handleClose}
+          onClose={() => setAnchorEl(null)}
+          onClick={() => setAnchorEl(null)}
           PaperProps={{
-            elevation: 0,
+            elevation: 3,
             sx: styles.styledPaper,
           }}
           transformOrigin={{ horizontal: 'right', vertical: 'top' }}
           anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
         >
-          {actions.map((action) => (
-            <MenuItem onClick={action.action}>
-              <ListItemIcon fontSize="small">
-                {action.icon}
+          {actions.map((action, index) => (
+            <MenuItem key={index} onClick={action.action} sx={{ px: 2, py: 1.5, gap: 1.5, fontSize: '0.875rem', fontWeight: 700 }}>
+              <ListItemIcon sx={{ minWidth: 'auto !important', color: 'primary.main' }}>
+                {React.cloneElement(action.icon, { fontSize: 'small' })}
               </ListItemIcon>
               {action.name}
             </MenuItem>
@@ -136,10 +137,10 @@ const ShowClasses = () => {
   return (
     <ModuleLayout
       title="Department Registry"
-      subtitle="Manage departments, assign courses, and organize students."
+      subtitle="Institutional structured organization of academic departments."
       actions={[
         {
-          label: 'Add Department',
+          label: 'Create Department',
           variant: 'primary',
           icon: <AddCardIcon fontSize="small" />,
           onClick: () => navigate("/Admin/addclass")
@@ -147,14 +148,20 @@ const ShowClasses = () => {
       ]}
       loading={loading}
       isEmpty={getresponse}
-      emptyTitle="No Departments Assigned"
-      emptySubtitle="Your academic registry is currently empty. Define your first department to begin curriculum mapping."
+      emptyTitle="Registry is Empty"
+      emptySubtitle="No departments defined yet. Begin by setting up your first institutional department."
       emptyIcon={<AddCardIcon />}
       emptyAction={() => navigate("/Admin/addclass")}
-      emptyActionLabel="Create Department"
     >
       <TableTemplate buttonHaver={SclassButtonHaver} columns={sclassColumns} rows={sclassRows} />
       <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} />
+      <ConfirmDelete 
+        open={showConfirm} 
+        setOpen={setShowConfirm} 
+        onConfirm={confirmDeletion} 
+        title="Delete Department"
+        message="This will permanently delete this department along with all its students and assigned courses."
+      />
     </ModuleLayout>
   );
 };
@@ -164,14 +171,10 @@ export default ShowClasses;
 const styles = {
   styledPaper: {
     overflow: 'visible',
-    filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+    filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.1))',
     mt: 1.5,
-    '& .MuiAvatar-root': {
-      width: 32,
-      height: 32,
-      ml: -0.5,
-      mr: 1,
-    },
+    borderRadius: '16px',
+    border: '1px solid rgba(0,0,0,0.05)',
     '&:before': {
       content: '""',
       display: 'block',

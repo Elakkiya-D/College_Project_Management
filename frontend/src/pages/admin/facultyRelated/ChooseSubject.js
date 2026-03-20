@@ -110,7 +110,7 @@ const ChooseSubject = ({ situation }) => {
                                         <td className="px-6 py-4 text-right flex justify-end">
                                             {situation === 'Norm' ? (
                                                 <button
-                                                    onClick={() => navigate('/Admin/faculty/addfaculty/' + subject._id)}
+                                                    onClick={() => navigate('/Admin/faculty/add/' + subject._id)}
                                                     className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold uppercase tracking-wider hover:brightness-110 shadow-md transition-all"
                                                 >
                                                     <MenuBookIcon fontSize="small" /> Register

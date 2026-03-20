@@ -1,10 +1,10 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
 
-const Department = require('../models/v2/Department');
-const Faculty = require('../models/v2/Faculty');
-const Course = require('../models/v2/Course');
-const Student = require('../models/v2/Student');
+const Department = require('../models/Department.model');
+const { V2Faculty: Faculty } = require('../models/faculty.model');
+const Course = require('../models/Course.model');
+const { V2Student: Student } = require('../models/student.model');
 
 const mongoUri = process.env.MONGO_URI || process.env.mongo;
 

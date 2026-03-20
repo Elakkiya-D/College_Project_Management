@@ -50,7 +50,7 @@ const AddNotice = () => {
       dispatch(underControl());
       navigate('/Admin/notices');
     } else if (status === 'error') {
-      setMessage("Network Error");
+      setMessage(String(error || "Network Error"));
       setShowPopup(true);
       setLoader(false);
       dispatch(underControl());

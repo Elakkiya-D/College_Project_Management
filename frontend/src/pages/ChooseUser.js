@@ -11,7 +11,7 @@ const ChooseUser = ({ visitor }) => {
   const navigate = useNavigate();
   const password = "zxc";
 
-  const { status, currentUser, currentRole } = useSelector(state => state.user);
+  const { status, currentUser, currentRole, error } = useSelector(state => state.user);
 
   const [loader, setLoader] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
@@ -60,10 +60,10 @@ const ChooseUser = ({ visitor }) => {
       }
     } else if (status === 'error') {
       setLoader(false);
-      setMessage("Network Error");
+      setMessage(String(error || "Network Error"));
       setShowPopup(true);
     }
-  }, [status, currentRole, navigate, currentUser]);
+  }, [status, currentRole, navigate, currentUser, error]);
 
   return (
     <div

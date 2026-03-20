@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from '../../utils/api';
 import { getApiErrorMessage, getApiUrl, getAuthHeaders } from '../../utils/api';
 import {
     authRequest,

@@ -1,17 +1,17 @@
 const router = require("express").Router();
 
-const { requireAuth, requireRole } = require("../middleware/v2/auth");
-const { validateObjectIdParam, validateObjectIdBody } = require("../middleware/v2/validate");
-const { requireFields, validateEmailField, validateNumberField, validateArrayField } = require("../middleware/v2/requestValidation");
+const { requireAuth, requireRole } = require('../middleware/auth.middleware');
+const { validateObjectIdParam, validateObjectIdBody } = require('../middleware/validate.middleware');
+const { requireFields, validateEmailField, validateNumberField, validateArrayField } = require('../middleware/requestValidation.middleware');
 
-const { signup, login, me } = require("../controllers/v2/authController");
-const { forgotPassword, resetPassword } = require("../controllers/auth-password-controller");
-const { listDepartments, createDepartment, updateDepartment, deleteDepartment } = require("../controllers/v2/departmentController");
-const { createFaculty, listFaculty, getFaculty, updateFaculty, deleteFaculty } = require("../controllers/v2/facultyController");
-const { listCourses, listCoursesByDepartment, getCourse, createCourse, updateCourse, deleteCourse } = require("../controllers/v2/courseController");
-const { createStudent, listStudents, getStudent, updateStudent, deleteStudent } = require("../controllers/v2/studentController");
-const { createOrUpdateAttendanceSession, getStudentAttendanceSummary } = require("../controllers/v2/attendanceController");
-const { upsertResult, listStudentResults } = require("../controllers/v2/resultController");
+const { signup, login, me } = require('../controllers/auth.controller');
+const { forgotPassword, resetPassword } = require('../controllers/auth-password.controller');
+const { listDepartments, createDepartment, updateDepartment, deleteDepartment } = require('../controllers/department.controller');
+const { createFaculty, listFaculty, getFaculty, updateFaculty, deleteFaculty } = require('../controllers/faculty.controller');
+const { listCourses, listCoursesByDepartment, getCourse, createCourse, updateCourse, deleteCourse } = require('../controllers/course.controller');
+const { createStudent, listStudents, getStudent, updateStudentV2, deleteStudent } = require('../controllers/student.controller');
+const { createOrUpdateAttendanceSession, getStudentAttendanceSummary } = require('../controllers/attendance.controller');
+const { upsertResult, listStudentResults } = require('../controllers/result.controller');
 
 // Auth (public)
 router.post("/auth/signup", requireFields(["name", "email", "password", "role"]), validateEmailField("email"), signup);
@@ -163,7 +163,7 @@ router.put(
 	validateObjectIdBody("departmentId"),
 	validateArrayField("enrolledCourseIds"),
 	validateObjectIdBody("enrolledCourseIds", { isArray: true }),
-	updateStudent
+	updateStudentV2
 );
 router.delete("/students/:id", requireAuth, requireRole("ADMIN"), validateObjectIdParam("id"), deleteStudent);
 
@@ -190,7 +190,7 @@ router.put(
 	validateObjectIdBody("departmentId"),
 	validateArrayField("enrolledCourseIds"),
 	validateObjectIdBody("enrolledCourseIds", { isArray: true }),
-	updateStudent
+	updateStudentV2
 );
 router.delete("/student/:id", requireAuth, requireRole("ADMIN"), validateObjectIdParam("id"), deleteStudent);
 

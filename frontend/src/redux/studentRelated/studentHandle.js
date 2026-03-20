@@ -8,11 +8,15 @@ import {
     stuffDone
 } from './studentSlice';
 
-export const getAllStudents = (id) => async (dispatch) => {
+export const getAllStudents = (id, department = "") => async (dispatch) => {
     dispatch(getRequest());
 
     try {
-        const result = await axios.get(getApiUrl(`/Students/${id}`));
+        let url = getApiUrl(`/Students/${id}`);
+        if (department) {
+            url += `?department=${department}`;
+        }
+        const result = await axios.get(url);
         if (result.data.message) {
             dispatch(getFailed(result.data.message));
         } else {
