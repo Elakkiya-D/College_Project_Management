@@ -3,9 +3,9 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { 
-    Box, Typography, Button, Paper, Checkbox, 
+    Box, Typography, Paper, Checkbox, 
     FormControlLabel, Grid, CircularProgress, 
-    Divider, IconButton, Tooltip, Snackbar, Alert
+    Divider, Snackbar, Alert
 } from '@mui/material';
 import PageHeader from '../../../components/PageHeader';
 import ContentCard from '../../../components/ContentCard';
