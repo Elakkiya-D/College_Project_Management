@@ -241,4 +241,29 @@ const getCourseStudents = async (req, res) => {
     }
 }
 
-module.exports = { markAttendance, getStudentAttendance, getFacultyCourses, getCourseStudents, getAttendanceByCourseAndDate };
+const updateAttendance = async (req, res) => {
+    try {
+        const { student, course, date, status } = req.body;
+        const facultyId = (req.user && (req.user.id || req.user._id)) || (req.auth && (req.auth.id || req.auth.sub));
+        
+        if (!student || !course || !date || !status) {
+            return res.status(400).json({ message: "Student, Course, Date and Status are required" });
+        }
+
+        const selectedDate = new Date(date);
+        selectedDate.setHours(0,0,0,0);
+
+        const updated = await Attendance.updateOne(
+            { student, course, date: selectedDate },
+            { $set: { status, faculty: facultyId, updatedAt: new Date() } },
+            { upsert: true }
+        );
+
+        res.status(200).json({ success: true, message: "Attendance updated" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+}
+
+module.exports = { markAttendance, getStudentAttendance, getFacultyCourses, getCourseStudents, getAttendanceByCourseAndDate, updateAttendance };

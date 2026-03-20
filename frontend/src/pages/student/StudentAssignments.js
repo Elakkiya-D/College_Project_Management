@@ -16,12 +16,13 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 const StudentAssignments = () => {
     const { currentUser, authToken: reduxToken } = useSelector(state => state.user);
     const token = reduxToken || localStorage.getItem('token') || localStorage.getItem('authToken');
-    const baseUrl = process.env.REACT_APP_BASE_URL || 'http://localhost:5000';
+    const baseUrl = process.env.REACT_APP_API_URL || process.env.REACT_APP_BASE_URL || 'http://localhost:5000';
 
     const [assignments, setAssignments] = useState([]);
     const [loading, setLoading] = useState(true);
     const [openUploadDialog, setOpenUploadDialog] = useState(false);
     const [selectedAssignment, setSelectedAssignment] = useState(null);
+    const [isEdit, setIsEdit] = useState(false);
     const [file, setFile] = useState(null);
     const [uploading, setUploading] = useState(false);
 
@@ -76,19 +77,24 @@ const StudentAssignments = () => {
 
         const formData = new FormData();
         formData.append('file', file);
-        formData.append('assignmentId', selectedAssignment._id);
+        if (!isEdit) formData.append('assignmentId', selectedAssignment._id);
 
         try {
             setUploading(true);
-            await axios.post(`${baseUrl}/api/submissions`, formData, {
+            const subId = selectedAssignment.submissionId?.toString() || selectedAssignment.submissionId;
+            const endpoint = isEdit ? `${baseUrl}/api/submissions/${subId}` : `${baseUrl}/api/submissions`;
+            const method = isEdit ? 'put' : 'post';
+
+            await axios[method](endpoint, formData, {
                 headers: { 
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'multipart/form-data'
                 }
             });
-            showSnackbar("Assignment submitted successfully");
+            showSnackbar(isEdit ? "Submission updated" : "Assignment submitted successfully");
             setOpenUploadDialog(false);
             setFile(null);
+            setIsEdit(false);
             fetchAssignments();
         } catch (error) {
             showSnackbar(error.response?.data?.message || "Upload failed", "error");
@@ -172,25 +178,26 @@ const StudentAssignments = () => {
 
                                     <Box display="flex" justifyContent="flex-end" gap={2}>
                                         {asgn.status === 'Submitted' ? (
-                                            <Button 
-                                                variant="outlined" 
-                                                startIcon={<VisibilityIcon />} 
-                                                href={`${baseUrl}${asgn.fileUrl}`} 
-                                                target="_blank"
-                                                component={Link}
-                                            >
-                                                View Submission
-                                            </Button>
+                                            <>
+                                                <Button size="small" startIcon={<VisibilityIcon />} href={`${baseUrl}${asgn.fileUrl}`} target="_blank" component={Link}>View</Button>
+                                                <Button 
+                                                    size="small" 
+                                                    variant="outlined" 
+                                                    onClick={() => {
+                                                        setSelectedAssignment(asgn);
+                                                        setIsEdit(true);
+                                                        setOpenUploadDialog(true);
+                                                    }}
+                                                >
+                                                    Edit Submission
+                                                </Button>
+                                            </>
                                         ) : (
-                                            <Button 
-                                                variant="contained" 
-                                                startIcon={<CloudUploadIcon />} 
-                                                onClick={() => {
-                                                    setSelectedAssignment(asgn);
-                                                    setOpenUploadDialog(true);
-                                                }}
-                                                sx={{ borderRadius: 2 }}
-                                            >
+                                            <Button variant="contained" startIcon={<CloudUploadIcon />} onClick={() => {
+                                                setSelectedAssignment(asgn);
+                                                setIsEdit(false);
+                                                setOpenUploadDialog(true);
+                                            }} sx={{ borderRadius: 2 }}>
                                                 Upload Submission
                                             </Button>
                                         )}
@@ -209,7 +216,7 @@ const StudentAssignments = () => {
 
             {/* Upload Dialog */}
             <Dialog open={openUploadDialog} onClose={() => !uploading && setOpenUploadDialog(false)} fullWidth maxWidth="sm">
-                <DialogTitle fontWeight="black">Submit Assignment</DialogTitle>
+                <DialogTitle fontWeight="black">{isEdit ? "Edit Submission" : "Submit Assignment"}</DialogTitle>
                 <DialogContent>
                     <Box textAlign="center" py={4} sx={{ border: '2px dashed #eee', borderRadius: 3, mt: 1 }}>
                         <CloudUploadIcon sx={{ fontSize: 48, color: 'primary.main', mb: 2, opacity: 0.5 }} />
@@ -247,7 +254,7 @@ const StudentAssignments = () => {
                         disabled={!file || uploading}
                         sx={{ borderRadius: 2, px: 4 }}
                     >
-                        {uploading ? "Submitting..." : "Submit"}
+                        {uploading ? "Submitting..." : (isEdit ? "Update" : "Submit")}
                     </Button>
                 </DialogActions>
             </Dialog>

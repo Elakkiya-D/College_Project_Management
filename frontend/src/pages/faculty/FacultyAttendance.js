@@ -11,6 +11,7 @@ import axios from 'axios';
 const FacultyAttendance = () => {
     const { currentUser, authToken: reduxToken } = useSelector(state => state.user);
     const token = reduxToken || localStorage.getItem('token') || localStorage.getItem('authToken');
+    const baseUrl = process.env.REACT_APP_API_URL || process.env.REACT_APP_BASE_URL || 'http://localhost:5000';
 
     const [courses, setCourses] = useState([]);
     const [selectedCourse, setSelectedCourse] = useState('');
@@ -107,7 +108,7 @@ const FacultyAttendance = () => {
         if (attendanceData.length === 0) return showSnackbar("No students to mark", "warning");
 
         try {
-            const res = await axios.post(`${process.env.REACT_APP_BASE_URL || 'http://localhost:5000'}/api/attendance`, {
+            const res = await axios.post(`${baseUrl}/api/attendance`, {
                 course: selectedCourse,
                 date: selectedDate,
                 records: attendanceData
@@ -171,6 +172,7 @@ const FacultyAttendance = () => {
                     <Box display="flex" justifyContent="center" py={4}><CircularProgress /></Box>
                 ) : students.length > 0 ? (
                     <>
+                        <Typography variant="h6" sx={{ mt: 4, mb: 1, fontWeight: 'bold' }}>Attendance Roster</Typography>
                         <TableContainer component={Paper} elevation={2} sx={{ mb: 3 }}>
                             <Table>
                                 <TableHead sx={{ bgcolor: '#f5f5f5' }}>

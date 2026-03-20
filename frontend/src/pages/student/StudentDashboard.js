@@ -11,6 +11,7 @@ import StudentSubjects from './StudentSubjects';
 import ViewStdAttendance from './ViewStdAttendance';
 import StudentComplain from './StudentComplain';
 import StudentAssignments from './StudentAssignments';
+import StudentMaterials from './StudentMaterials';
 import StudentFees from './StudentFees';
 import FeeReceipt from '../fees/FeeReceipt';
 import Logout from '../Logout';
@@ -82,8 +83,9 @@ const StudentDashboard = () => {
                             <Route path="/Student/fees" element={<StudentFees />} />
                             <Route path="/Student/fees/receipt/:receiptId" element={<FeeReceipt />} />
                             <Route path="/Student/complain" element={<StudentComplain />} />
-                            <Route path="/student/assignments" element={<StudentAssignments />} />
                             <Route path="/Student/assignments" element={<StudentAssignments />} />
+                            <Route path="/student/materials" element={<StudentMaterials />} />
+                            <Route path="/Student/materials" element={<StudentMaterials />} />
 
                             <Route path="/logout" element={<Logout />} />
                         </Routes>

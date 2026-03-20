@@ -55,6 +55,12 @@ const StudentSideBar = () => {
                     pathMatchPattern="/student/assignments"
                 />
                 <MenuItem
+                    to="/student/materials"
+                    icon={<ClassOutlinedIcon />}
+                    label="Study Materials"
+                    pathMatchPattern="/student/materials"
+                />
+                <MenuItem
                     to="/Student/fees"
                     icon={<AccountBalanceWalletIcon />}
                     label="Fees"

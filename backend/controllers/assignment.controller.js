@@ -106,7 +106,8 @@ async function mapSubmissions(assignments, studentId) {
             ...asgn.toObject(),
             status: submission ? 'Submitted' : 'Not submitted',
             submittedAt: submission?.submittedAt,
-            fileUrl: submission?.fileUrl
+            fileUrl: submission?.fileUrl,
+            submissionId: submission?._id
         };
     }));
 }
@@ -139,6 +140,72 @@ exports.submitAssignment = async (req, res) => {
 
         await submission.save();
         res.status(201).json({ success: true, message: "Assignment submitted", data: submission });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+// Update assignment (Faculty)
+exports.updateAssignment = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { title, description, dueDate, course } = req.body;
+        const facultyId = (req.user && (req.user.id || req.user._id)) || (req.auth && (req.auth.id || req.auth.sub));
+
+        const assignment = await Assignment.findById(id);
+        if (!assignment) return res.status(404).json({ message: "Assignment not found" });
+
+        if (assignment.faculty.toString() !== facultyId.toString()) {
+            return res.status(403).json({ message: "Unauthorized: You did not create this assignment" });
+        }
+
+        const updated = await Assignment.findByIdAndUpdate(id, {
+            $set: {
+                title: title || assignment.title,
+                description: description || assignment.description,
+                dueDate: dueDate ? new Date(dueDate) : assignment.dueDate,
+                course: course || assignment.course
+            }
+        }, { new: true });
+
+        res.status(200).json({ success: true, message: "Assignment updated", data: updated });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+// Update submission (Student)
+exports.updateSubmission = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const studentId = (req.user && (req.user.id || req.user._id)) || (req.auth && (req.auth.id || req.auth.sub));
+        const fs = require('fs');
+        const path = require('path');
+
+        const submission = await Submission.findById(id);
+        if (!submission) return res.status(404).json({ message: "Submission not found" });
+
+        if (submission.student.toString() !== studentId.toString()) {
+            return res.status(403).json({ message: "Unauthorized: You did not make this submission" });
+        }
+
+        if (req.file) {
+            // Delete old file
+            if (submission.fileUrl) {
+                const oldPath = path.join(__dirname, "..", submission.fileUrl);
+                if (fs.existsSync(oldPath)) {
+                    fs.unlinkSync(oldPath);
+                }
+            }
+            submission.fileUrl = `/uploads/${req.file.filename}`;
+        }
+
+        submission.submittedAt = Date.now();
+        await submission.save();
+
+        res.status(200).json({ success: true, message: "Submission updated", data: submission });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Internal server error" });

@@ -35,8 +35,17 @@ const {
     getFacultyAssignments, 
     getStudentAssignments, 
     submitAssignment, 
-    getAssignmentSubmissions 
+    getAssignmentSubmissions,
+    updateAssignment,
+    updateSubmission
 } = require('../controllers/assignment.controller');
+const materialUpload = require('../middlewares/materialUpload.middleware');
+const { 
+    createMaterial, 
+    getFacultyMaterials, 
+    getStudentMaterials,
+    updateMaterial
+} = require('../controllers/material.controller');
 
 const upload = multer({
     storage: multer.memoryStorage(),
@@ -185,13 +194,14 @@ router.post('/api/payment/confirm', confirmPaymentIntent);
 router.post('/api/webhook', handleStripeWebhook);
 
 // New Attendance Routes
-const { markAttendance, getStudentAttendance, getFacultyCourses, getCourseStudents, getAttendanceByCourseAndDate } = require('../controllers/attendanceNew.controller');
+const { markAttendance, getStudentAttendance, getFacultyCourses, getCourseStudents, getAttendanceByCourseAndDate, updateAttendance } = require('../controllers/attendanceNew.controller');
 router.post('/api/attendance', requireAuth, markAttendance);
 router.get('/api/attendance/student', requireAuth, getStudentAttendance);
 router.get('/api/attendance/student/:studentId', requireAuth, getStudentAttendance);
 router.get('/api/attendance/course/:courseId', requireAuth, getAttendanceByCourseAndDate);
 router.get('/api/courses/faculty/:facultyId', requireAuth, getFacultyCourses);
 router.get('/api/students/by-course/:courseId', requireAuth, getCourseStudents);
+router.put('/api/attendance/update', requireAuth, updateAttendance);
 
 // Assignment Routes
 router.post('/api/assignments', requireAuth, createAssignment);
@@ -199,5 +209,15 @@ router.get('/api/assignments/faculty', requireAuth, getFacultyAssignments);
 router.get('/api/assignments/student', requireAuth, getStudentAssignments);
 router.get('/api/assignments/submissions/:assignmentId', requireAuth, getAssignmentSubmissions);
 router.post('/api/submissions', requireAuth, assignmentUpload.single('file'), submitAssignment);
+router.put('/api/submissions/:id', requireAuth, assignmentUpload.single('file'), updateSubmission);
+router.put('/api/assignments/:id', requireAuth, updateAssignment);
+
+// Study Material Routes
+router.post('/api/materials', requireAuth, materialUpload.single('file'), createMaterial);
+router.put('/api/materials/:id', requireAuth, materialUpload.single('file'), updateMaterial);
+router.get('/api/materials/faculty', requireAuth, getFacultyMaterials);
+router.get('/api/materials/student', requireAuth, getStudentMaterials);
+
+
 
 module.exports = router;

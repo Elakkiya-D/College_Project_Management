@@ -9,6 +9,7 @@ import {
 } from '@mui/material';
 import axios from 'axios';
 import AddIcon from '@mui/icons-material/Add';
+import EditIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import DescriptionIcon from '@mui/icons-material/Description';
@@ -16,7 +17,7 @@ import DescriptionIcon from '@mui/icons-material/Description';
 const FacultyAssignments = () => {
     const { currentUser, authToken: reduxToken } = useSelector(state => state.user);
     const token = reduxToken || localStorage.getItem('token') || localStorage.getItem('authToken');
-    const baseUrl = process.env.REACT_APP_BASE_URL || 'http://localhost:5000';
+    const baseUrl = process.env.REACT_APP_API_URL || process.env.REACT_APP_BASE_URL || 'http://localhost:5000';
 
     const [assignments, setAssignments] = useState([]);
     const [courses, setCourses] = useState([]);
@@ -24,6 +25,8 @@ const FacultyAssignments = () => {
     const [openSubDialog, setOpenSubDialog] = useState(false);
     const [submissions, setSubmissions] = useState([]);
     const [selectedAssignment, setSelectedAssignment] = useState(null);
+    const [openEditDialog, setOpenEditDialog] = useState(false);
+    const [editData, setEditData] = useState({ title: '', description: '', course: '', dueDate: '' });
 
     // Form state
     const [formData, setFormData] = useState({
@@ -105,6 +108,34 @@ const FacultyAssignments = () => {
         }
     };
 
+    const openEdit = (asgn) => {
+        setSelectedAssignment(asgn);
+        setEditData({
+            title: asgn.title,
+            description: asgn.description,
+            course: asgn.course?._id || asgn.course,
+            dueDate: asgn.dueDate ? asgn.dueDate.split('T')[0] : ''
+        });
+        setOpenEditDialog(true);
+    };
+
+    const handleUpdate = async () => {
+        if (!editData.title || !editData.description || !editData.course || !editData.dueDate) {
+            return showSnackbar("Please fill all fields", "warning");
+        }
+        try {
+            const id = selectedAssignment._id?.toString() || selectedAssignment._id;
+            await axios.put(`${baseUrl}/api/assignments/${id}`, editData, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            showSnackbar("Assignment updated successfully");
+            setOpenEditDialog(false);
+            fetchAssignments();
+        } catch (error) {
+            showSnackbar(error.response?.data?.message || "Failed to update", "error");
+        }
+    };
+
     return (
         <Box sx={{ p: 4, fontFamily: 'Poppins, sans-serif' }}>
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
@@ -151,13 +182,23 @@ const FacultyAssignments = () => {
                                         <Typography variant="subtitle2" color="primary">
                                             {asgn.submissionCount || 0} Submissions
                                         </Typography>
-                                        <Button 
-                                            size="small" 
-                                            startIcon={<VisibilityIcon />} 
-                                            onClick={() => handleViewSubmissions(asgn)}
-                                        >
-                                            View
-                                        </Button>
+                                        <Box display="flex" gap={1}>
+                                            <Button 
+                                                size="small" 
+                                                variant="outlined" 
+                                                startIcon={<EditIcon />} 
+                                                onClick={() => openEdit(asgn)}
+                                            >
+                                                Edit
+                                            </Button>
+                                            <Button 
+                                                size="small" 
+                                                startIcon={<VisibilityIcon />} 
+                                                onClick={() => handleViewSubmissions(asgn)}
+                                            >
+                                                View
+                                            </Button>
+                                        </Box>
                                     </Box>
                                 </CardContent>
                             </Card>
@@ -217,6 +258,27 @@ const FacultyAssignments = () => {
                 <DialogActions sx={{ p: 3 }}>
                     <Button onClick={() => setOpenAddDialog(false)}>Cancel</Button>
                     <Button variant="contained" onClick={handleCreate}>Create</Button>
+                </DialogActions>
+            </Dialog>
+
+            <Dialog open={openEditDialog} onClose={() => setOpenEditDialog(false)} fullWidth maxWidth="sm">
+                <DialogTitle fontWeight="bold">Edit Assignment</DialogTitle>
+                <DialogContent sx={{ pt: 2 }}>
+                    <Box display="flex" flexDirection="column" gap={3}>
+                        <TextField label="Title" fullWidth value={editData.title} onChange={(e) => setEditData({...editData, title: e.target.value})} />
+                        <TextField label="Description" multiline rows={4} fullWidth value={editData.description} onChange={(e) => setEditData({...editData, description: e.target.value})} />
+                        <FormControl fullWidth>
+                            <InputLabel>Select Course</InputLabel>
+                            <Select value={editData.course} label="Select Course" onChange={(e) => setEditData({...editData, course: e.target.value})}>
+                                {courses.map(c => <MenuItem key={c._id} value={c._id}>{c.subName || c.name || c.courseName}</MenuItem>)}
+                            </Select>
+                        </FormControl>
+                        <TextField label="Due Date" type="date" fullWidth InputLabelProps={{ shrink: true }} value={editData.dueDate} onChange={(e) => setEditData({...editData, dueDate: e.target.value})} />
+                    </Box>
+                </DialogContent>
+                <DialogActions sx={{ p: 3 }}>
+                    <Button onClick={() => setOpenEditDialog(false)}>Cancel</Button>
+                    <Button variant="contained" onClick={handleUpdate}>Save Changes</Button>
                 </DialogActions>
             </Dialog>
 

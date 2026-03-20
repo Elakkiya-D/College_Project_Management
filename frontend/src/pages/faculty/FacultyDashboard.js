@@ -11,6 +11,7 @@ import FacultyViewStudent from './FacultyViewStudent';
 import FacultyAddStudent from './FacultyAddStudent';
 import FacultyAttendance from './FacultyAttendance';
 import FacultyAssignments from './FacultyAssignments';
+import FacultyMaterials from './FacultyMaterials';
 import Logout from '../Logout';
 import AccountMenu from '../../components/AccountMenu';
 import StudentExamMarks from '../admin/studentRelated/StudentExamMarks';
@@ -72,6 +73,8 @@ const FacultyDashboard = () => {
                             <Route path="/Faculty/addstudent" element={<FacultyAddStudent />} />
                             <Route path="/faculty/assignments" element={<FacultyAssignments />} />
                             <Route path="/Faculty/assignments" element={<FacultyAssignments />} />
+                            <Route path="/faculty/materials" element={<FacultyMaterials />} />
+                            <Route path="/Faculty/materials" element={<FacultyMaterials />} />
                             <Route path="/logout" element={<Logout />} />
                         </Routes>
                     </div>
