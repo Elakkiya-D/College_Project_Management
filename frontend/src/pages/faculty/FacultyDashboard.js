@@ -9,9 +9,9 @@ import FacultyClassDetails from './FacultyClassDetails';
 import FacultyComplain from './FacultyComplain';
 import FacultyViewStudent from './FacultyViewStudent';
 import FacultyAddStudent from './FacultyAddStudent';
+import FacultyAttendance from './FacultyAttendance';
 import Logout from '../Logout';
 import AccountMenu from '../../components/AccountMenu';
-import StudentAttendance from '../admin/studentRelated/StudentAttendance';
 import StudentExamMarks from '../admin/studentRelated/StudentExamMarks';
 
 const FacultyDashboard = () => {
@@ -62,10 +62,11 @@ const FacultyDashboard = () => {
                             <Route path="*" element={<Navigate to="/" />} />
                             <Route path="/Faculty/dashboard" element={<FacultyHomePage />} />
                             <Route path="/Faculty/profile" element={<FacultyProfile />} />
+                            <Route path="/faculty/attendance" element={<FacultyAttendance />} />
+                            <Route path="/Faculty/attendance" element={<FacultyAttendance />} />
                             <Route path="/Faculty/complain" element={<FacultyComplain />} />
                             <Route path="/Faculty/class" element={<FacultyClassDetails />} />
                             <Route path="/Faculty/class/student/:id" element={<FacultyViewStudent />} />
-                            <Route path="/Faculty/class/student/attendance/:studentID/:subjectID" element={<StudentAttendance situation="Subject" />} />
                             <Route path="/Faculty/class/student/marks/:studentID/:subjectID" element={<StudentExamMarks situation="Subject" />} />
                             <Route path="/Faculty/addstudent" element={<FacultyAddStudent />} />
                             <Route path="/logout" element={<Logout />} />

@@ -43,10 +43,10 @@ const StudentSideBar = () => {
                     pathMatchPattern="/Student/subjects"
                 />
                 <MenuItem
-                    to="/Student/attendance"
+                    to="/student/attendance"
                     icon={<ClassOutlinedIcon />}
                     label="Attendance"
-                    pathMatchPattern="/Student/attendance"
+                    pathMatchPattern="/student/attendance"
                 />
                 <MenuItem
                     to="/Student/fees"

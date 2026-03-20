@@ -176,5 +176,13 @@ router.post('/api/payment/confirm', confirmPaymentIntent);
 
 router.post('/api/webhook', handleStripeWebhook);
 
+// New Attendance Routes
+const { markAttendance, getStudentAttendance, getFacultyCourses, getCourseStudents, getAttendanceByCourseAndDate } = require('../controllers/attendanceNew.controller');
+router.post('/api/attendance', requireAuth, markAttendance);
+router.get('/api/attendance/student', requireAuth, getStudentAttendance);
+router.get('/api/attendance/student/:studentId', requireAuth, getStudentAttendance);
+router.get('/api/attendance/course/:courseId', requireAuth, getAttendanceByCourseAndDate);
+router.get('/api/courses/faculty/:facultyId', requireAuth, getFacultyCourses);
+router.get('/api/students/by-course/:courseId', requireAuth, getCourseStudents);
 
 module.exports = router;
