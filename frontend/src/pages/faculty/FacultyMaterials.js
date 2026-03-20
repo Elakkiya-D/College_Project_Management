@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { 
-    Box, Typography, Button, Paper, Table, TableBody, TableCell, 
-    TableContainer, TableHead, TableRow, Select, MenuItem, 
+    Box, Typography, Button, Select, MenuItem, 
     FormControl, InputLabel, Snackbar, Alert, Grid, TextField,
     Dialog, DialogTitle, DialogContent, DialogActions,
-    Card, CardContent, Chip, IconButton, Link, RadioGroup, FormControlLabel, Radio,
+    Card, CardContent, Chip, RadioGroup, FormControlLabel, Radio,
     CircularProgress
 } from '@mui/material';
 import axios from 'axios';
@@ -14,7 +13,6 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import LinkIcon from '@mui/icons-material/Link';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
-import DeleteIcon from '@mui/icons-material/Delete';
 
 const FacultyMaterials = () => {
     const { currentUser, authToken: reduxToken } = useSelector(state => state.user);

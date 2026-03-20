@@ -5,13 +5,12 @@ import {
     TableContainer, TableHead, TableRow, Select, MenuItem, 
     FormControl, InputLabel, Snackbar, Alert, Grid, TextField,
     Dialog, DialogTitle, DialogContent, DialogActions,
-    Card, CardContent, Chip, IconButton, Link
+    Card, CardContent, Chip, Link
 } from '@mui/material';
 import axios from 'axios';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import AssignmentIcon from '@mui/icons-material/Assignment';
 import DescriptionIcon from '@mui/icons-material/Description';
 
 const FacultyAssignments = () => {

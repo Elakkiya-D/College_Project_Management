@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { 
-    Box, Typography, Button, Paper, Grid, Card, CardContent, 
-    Chip, Snackbar, Alert, CircularProgress, IconButton, Link
+    Box, Typography, Grid, Card, CardContent, 
+    Chip, Snackbar, Alert, CircularProgress, Link
 } from '@mui/material';
 import axios from 'axios';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import LinkIcon from '@mui/icons-material/Link';
 import SchoolIcon from '@mui/icons-material/School';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+
 
 const StudentMaterials = () => {
     const { currentUser, authToken: reduxToken } = useSelector(state => state.user);
