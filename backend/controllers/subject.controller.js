@@ -34,7 +34,15 @@ const subjectCreate = async (req, res) => {
 
 const allSubjects = async (req, res) => {
     try {
-        let subjects = await Subject.find({ school: req.params.id })
+        const { id: schoolID } = req.params;
+        const { department } = req.query;
+
+        let filter = { school: schoolID };
+        if (department && department !== "all") {
+            filter.sclassName = department;
+        }
+
+        let subjects = await Subject.find(filter)
             .populate("sclassName", "sclassName")
         if (subjects.length > 0) {
             res.send(subjects)

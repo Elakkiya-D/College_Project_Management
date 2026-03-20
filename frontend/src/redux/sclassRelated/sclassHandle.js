@@ -56,11 +56,15 @@ export const getClassDetails = (id, address) => async (dispatch) => {
     }
 }
 
-export const getSubjectList = (id, address) => async (dispatch) => {
+export const getSubjectList = (id, address, department = "") => async (dispatch) => {
     dispatch(getRequest());
 
     try {
-        const result = await axios.get(getApiUrl(`/${address}/${id}`));
+        let url = getApiUrl(`/${address}/${id}`);
+        if (department) {
+            url += `?department=${department}`;
+        }
+        const result = await axios.get(url);
         if (result.data.message) {
             dispatch(getFailed(result.data.message));
         } else {

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from "react-router-dom";
-import { getSubjectList } from '../../../redux/sclassRelated/sclassHandle';
+import { getSubjectList, getAllSclasses } from '../../../redux/sclassRelated/sclassHandle';
 import { deleteUser } from '../../../redux/userRelated/userHandle';
 import PostAddIcon from '@mui/icons-material/PostAdd';
 import DeleteIcon from "@mui/icons-material/DeleteForever";
@@ -18,9 +18,16 @@ const ShowSubjects = () => {
     const { subjectsList, loading, response } = useSelector((state) => state.sclass);
     const { currentUser } = useSelector(state => state.user)
 
+    const { sclassesList } = useSelector((state) => state.sclass);
+    const [selectedDept, setSelectedDept] = useState("all");
+
     useEffect(() => {
-        dispatch(getSubjectList(currentUser._id, "AllSubjects"));
+        dispatch(getAllSclasses(currentUser._id, "Sclass"));
     }, [currentUser._id, dispatch]);
+
+    useEffect(() => {
+        dispatch(getSubjectList(currentUser._id, "AllSubjects", selectedDept));
+    }, [currentUser._id, dispatch, selectedDept]);
 
     const [showPopup, setShowPopup] = useState(false);
     const [message, setMessage] = useState("");
@@ -98,11 +105,34 @@ const ShowSubjects = () => {
             ]}
             loading={loading}
             isEmpty={response}
-            emptyTitle="Inventory is Empty"
-            emptySubtitle="No courses have been defined yet. Initialize your curriculum mapping by registering a course."
+            emptyTitle={selectedDept !== 'all' ? "No Courses Found" : "Inventory is Empty"}
+            emptySubtitle={selectedDept !== 'all' ? "There are no academic courses registered under the selected department filter." : "No courses have been defined yet. Initialize your curriculum mapping by registering a course."}
             emptyIcon={<PostAddIcon />}
             emptyAction={() => navigate("/Admin/subjects/chooseclass")}
         >
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 bg-white p-4 rounded-2xl border border-black/5 shadow-sm">
+                <div className="flex items-center gap-3">
+                    <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
+                    </div>
+                    <div>
+                        <h4 className="text-sm font-black text-textDark uppercase tracking-wider">Inventory Filter</h4>
+                        <p className="text-[10px] font-bold text-textDark/40">Showing {selectedDept !== 'all' ? (sclassesList.find(d => d._id === selectedDept)?.sclassName || 'Selected') : 'All'} Courses</p>
+                    </div>
+                </div>
+                
+                <select 
+                    value={selectedDept} 
+                    onChange={(e) => setSelectedDept(e.target.value)}
+                    className="h-11 px-4 bg-slate-50 border border-black/5 rounded-xl text-sm font-bold text-textDark outline-none focus:ring-2 focus:ring-blue-500/20 transition-all min-w-[240px]"
+                >
+                    <option value="all">All Departments</option>
+                    {Array.isArray(sclassesList) && sclassesList.map((dept) => (
+                        <option key={dept._id} value={dept._id}>{dept.sclassName}</option>
+                    ))}
+                </select>
+            </div>
+
             <TableTemplate buttonHaver={SubjectActions} columns={subjectColumns} rows={subjectRows} />
             <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} />
             <ConfirmDelete 

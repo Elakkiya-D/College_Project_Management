@@ -136,7 +136,11 @@ const studentLogIn = async (req, res) => {
 const getStudents = async (req, res) => {
     try {
         const { department } = req.query;
-        let students = await Student.find({ school: req.params.id, ...(department && { sclassName: department }) }).populate("sclassName", "sclassName");
+        let query = { school: req.params.id };
+        if (department && department !== 'all') {
+            query.sclassName = department;
+        }
+        let students = await Student.find(query).populate("sclassName", "sclassName");
         if (students.length > 0) {
             let modifiedStudents = students.map((student) => {
                 return { ...student._doc, password: undefined };

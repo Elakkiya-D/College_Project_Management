@@ -20,7 +20,7 @@ const ShowFaculty = () => {
     const { currentUser } = useSelector(state => state.user);
 
     const { sclassesList } = useSelector((state) => state.sclass);
-    const [selectedDept, setSelectedDept] = useState("");
+    const [selectedDept, setSelectedDept] = useState("all");
 
     useEffect(() => {
         dispatch(getAllSclasses(currentUser._id, "Sclass"));
@@ -107,8 +107,8 @@ const ShowFaculty = () => {
             ]}
             loading={loading}
             isEmpty={response}
-            emptyTitle="Directory is Empty"
-            emptySubtitle="No faculty members have been registered. Begin onboarding your academic staff to build the curriculum."
+            emptyTitle={selectedDept !== 'all' ? "No Faculty Found" : "Directory is Empty"}
+            emptySubtitle={selectedDept !== 'all' ? "No faculty members match the selected department filter." : "No faculty members have been registered. Begin onboarding your academic staff to build the curriculum."}
             emptyIcon={<PersonAddAlt1Icon />}
             emptyAction={() => navigate("/Admin/faculty/chooseclass")}
         >
@@ -119,7 +119,7 @@ const ShowFaculty = () => {
                     </div>
                     <div>
                         <h4 className="text-sm font-black text-textDark uppercase tracking-wider">Department Filter</h4>
-                        <p className="text-[10px] font-bold text-textDark/40">Showing {selectedDept ? sclassesList.find(d => d._id === selectedDept)?.sclassName : 'All'} Academic Staff</p>
+                        <p className="text-[10px] font-bold text-textDark/40">Showing {selectedDept !== 'all' ? (sclassesList.find(d => d._id === selectedDept)?.sclassName || 'Selected') : 'All'} Academic Staff</p>
                     </div>
                 </div>
                 
@@ -128,7 +128,7 @@ const ShowFaculty = () => {
                     onChange={(e) => setSelectedDept(e.target.value)}
                     className="h-11 px-4 bg-slate-50 border border-black/5 rounded-xl text-sm font-bold text-textDark outline-none focus:ring-2 focus:ring-blue-500/20 transition-all min-w-[240px]"
                 >
-                    <option value="">All Departments</option>
+                    <option value="all">All Departments</option>
                     {Array.isArray(sclassesList) && sclassesList.map((dept) => (
                         <option key={dept._id} value={dept._id}>{dept.sclassName}</option>
                     ))}

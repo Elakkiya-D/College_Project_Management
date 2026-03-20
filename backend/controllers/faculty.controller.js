@@ -109,7 +109,11 @@ const facultyLogIn = async (req, res) => {
 const getFacultyList = async (req, res) => {
     try {
         const { department } = req.query;
-        let faculty = await Faculty.find({ school: req.params.id, ...(department && { teachSclass: department }) })
+        let query = { school: req.params.id };
+        if (department && department !== 'all') {
+            query.teachSclass = department;
+        }
+        let faculty = await Faculty.find(query)
             .populate('teachSubject', 'subName')
             .populate('teachSclass', 'sclassName');
         if (faculty.length > 0) {

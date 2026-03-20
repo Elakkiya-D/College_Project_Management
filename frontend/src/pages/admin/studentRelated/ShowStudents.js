@@ -24,7 +24,7 @@ const ShowStudents = () => {
 
     const { sclassesList } = useSelector((state) => state.sclass);
 
-    const [selectedDept, setSelectedDept] = useState("");
+    const [selectedDept, setSelectedDept] = useState("all");
 
     useEffect(() => {
         dispatch(getAllSclasses(currentUser._id, "Sclass"));
@@ -164,8 +164,8 @@ const ShowStudents = () => {
             ]}
             loading={loading}
             isEmpty={response}
-            emptyTitle="No Students Enrolled"
-            emptySubtitle="Your student registry is empty. Enroll your first student to begin managing the institution."
+            emptyTitle={selectedDept !== 'all' ? "No Students Found" : "No Students Enrolled"}
+            emptySubtitle={selectedDept !== 'all' ? "There are no students currently registered in the selected department." : "Your student registry is empty. Enroll your first student to begin managing the institution."}
             emptyIcon={<PersonAddAlt1Icon />}
             emptyAction={() => navigate("/Admin/addstudents")}
         >
@@ -178,7 +178,7 @@ const ShowStudents = () => {
                     </div>
                     <div>
                         <h4 className="text-sm font-black text-textDark uppercase tracking-wider">Department Filter</h4>
-                        <p className="text-[10px] font-bold text-textDark/40">Showing {selectedDept ? sclassesList.find(d => d._id === selectedDept)?.sclassName : 'All'} Students</p>
+                        <p className="text-[10px] font-bold text-textDark/40">Showing {selectedDept !== 'all' ? (sclassesList.find(d => d._id === selectedDept)?.sclassName || 'Selected') : 'All'} Students</p>
                     </div>
                 </div>
                 
@@ -187,7 +187,7 @@ const ShowStudents = () => {
                     onChange={(e) => setSelectedDept(e.target.value)}
                     className="h-11 px-4 bg-slate-50 border border-black/5 rounded-xl text-sm font-bold text-textDark outline-none focus:ring-2 focus:ring-blue-500/20 transition-all min-w-[240px]"
                 >
-                    <option value="">All Departments</option>
+                    <option value="all">All Departments</option>
                     {Array.isArray(sclassesList) && sclassesList.map((dept) => (
                         <option key={dept._id} value={dept._id}>{dept.sclassName}</option>
                     ))}
