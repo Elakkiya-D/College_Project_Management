@@ -64,7 +64,9 @@ const ShowFaculty = () => {
         name: faculty.name,
         designation: faculty.designation || 'Academic Staff',
         sclassName: faculty.teachSclass?.sclassName || '—',
-        teachSubject: faculty.teachSubject?.subName || 'Unassigned',
+        teachSubject: (faculty.assignedCourses && faculty.assignedCourses.length > 0)
+            ? `${faculty.assignedCourses.length} Courses`
+            : (faculty.teachSubject?.subName || 'Unassigned'),
         id: faculty._id,
     })) : [];
 

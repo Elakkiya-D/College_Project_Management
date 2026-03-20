@@ -125,6 +125,14 @@ const deleteCourse = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const deleted = await Course.findByIdAndDelete(id);
   if (!deleted) throw new ApiError(404, "Course not found");
+
+  // Remove from assignedCourses for all V2 Faculty
+  const { V2Faculty } = require('../models/faculty.model');
+  await V2Faculty.updateMany(
+    {},
+    { $pull: { assignedCourses: id } }
+  );
+
   res.status(200).json({ ok: true });
 });
 

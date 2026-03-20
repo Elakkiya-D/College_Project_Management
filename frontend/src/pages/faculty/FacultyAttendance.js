@@ -34,23 +34,21 @@ const FacultyAttendance = () => {
     useEffect(() => {
         const fetchCourses = async () => {
             try {
-                const facultyId = currentUser?._id || currentUser?.id;
-                if (!facultyId) return;
-                const res = await axios.get(`${process.env.REACT_APP_BASE_URL || 'http://localhost:5000'}/api/courses/faculty/${facultyId}`, {
+                const res = await axios.get(`${baseUrl}/api/faculty/my-courses`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-                const fetchedCourses = res.data.data || res.data || [];
-                setCourses(fetchedCourses);
+                console.log("Assigned Courses Fetched:", res.data);
+                setCourses(res.data || []);
             } catch (error) {
                 console.error(error);
-                showSnackbar("Failed to fetch courses", "error");
+                showSnackbar("Failed to fetch assigned courses", "error");
             }
         };
 
-        if (currentUser && (currentUser._id || currentUser.id)) {
+        if (currentUser) {
             fetchCourses();
         }
-    }, [currentUser, token, showSnackbar]);
+    }, [currentUser, token, baseUrl, showSnackbar]);
 
     useEffect(() => {
         const fetchStudents = async () => {
@@ -146,7 +144,7 @@ const FacultyAttendance = () => {
                                 <MenuItem value=""><em>Select Course</em></MenuItem>
                                 {courses.map(course => (
                                     <MenuItem key={course._id} value={course._id}>
-                                        {course.name || course.subName || course.courseName}
+                                        {course.name || course.subName} ({course.department})
                                     </MenuItem>
                                 ))}
                             </Select>

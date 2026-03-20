@@ -68,6 +68,7 @@ const facultyRegister = async (req, res) => {
             teachSubject: mappedCourse._id,
             teachSclass: mappedDepartment._id,
             designation,
+            assignedCourses: [mappedCourse._id]
         });
 
         let result = await faculty.save();
@@ -115,7 +116,8 @@ const getFacultyList = async (req, res) => {
         }
         let faculty = await Faculty.find(query)
             .populate('teachSubject', 'subName')
-            .populate('teachSclass', 'sclassName');
+            .populate('teachSclass', 'sclassName')
+            .populate('assignedCourses', 'subName');
         if (faculty.length > 0) {
             let modifiedFaculty = faculty.map((member) => {
                 return { ...member._doc, password: undefined };
@@ -134,7 +136,11 @@ const getFacultyDetail = async (req, res) => {
         let faculty = await Faculty.findById(req.params.id)
             .populate('teachSubject', 'subName sessions')
             .populate('school', 'schoolName')
-            .populate('teachSclass', 'sclassName');
+            .populate('teachSclass', 'sclassName')
+            .populate({
+                path: 'assignedCourses',
+                populate: { path: 'sclassName', select: 'sclassName' }
+            });
         if (faculty) {
             faculty.password = undefined;
             res.send(faculty);
@@ -377,9 +383,6 @@ const bulkUploadFaculty = async (req, res) => {
     }
 };
 
-
-
-
 /* --- MERGED V2 Content --- */
 const ApiError = require('../utils/ApiError');
 const asyncHandler = require('../utils/asyncHandler');
@@ -387,6 +390,145 @@ const bcryptjs = require("bcryptjs");
 const User = require('../models/User.model');
 const { V2Faculty } = require('../models/faculty.model');
 const Department = require('../models/Department.model');
+const V2Course = require('../models/Course.model');
+
+// Assign courses to faculty
+const assignCourses = async (req, res) => {
+    try {
+        const { facultyId, courseIds } = req.body;
+        if (!facultyId || !courseIds || !Array.isArray(courseIds)) {
+            return res.status(400).json({ message: "Faculty ID and course IDs array are required" });
+        }
+
+        // Prevent duplicates
+        const uniqueCourseIds = [...new Set(courseIds)];
+
+        // Try V1 first
+        let faculty = await Faculty.findById(facultyId);
+        if (faculty) {
+            faculty.assignedCourses = uniqueCourseIds;
+            await faculty.save();
+            return res.status(200).json({ success: true, message: "Courses assigned successfully", data: faculty });
+        }
+
+        // Try V2
+        const v2Faculty = await V2Faculty.findById(facultyId);
+        if (v2Faculty) {
+            v2Faculty.assignedCourses = uniqueCourseIds;
+            await v2Faculty.save();
+            return res.status(200).json({ success: true, message: "Courses assigned successfully", data: v2Faculty });
+        }
+
+        return res.status(404).json({ message: "Faculty not found" });
+    } catch (error) {
+        console.error("Assign Courses Error:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+// Fetch faculty's assigned courses
+const getMyCourses = async (req, res) => {
+    try {
+        const facultyId = (req.user && (req.user.id || req.user._id)) || (req.auth && (req.auth.id || req.auth.sub));
+        if (!facultyId) return res.status(401).json({ message: "Unauthorized" });
+
+        // Try V1 (subjects)
+        let faculty = await Faculty.findById(facultyId).populate({
+            path: 'assignedCourses',
+            populate: { path: 'sclassName' }
+        });
+
+        if (faculty && faculty.assignedCourses.length > 0) {
+            const courses = faculty.assignedCourses.map(c => ({
+                _id: c._id,
+                name: c.subName,
+                code: c.subCode,
+                department: c.sclassName?.sclassName || "Unassigned",
+                type: 'v1'
+            }));
+            return res.status(200).json(courses);
+        }
+
+        // Try V2 (v2_courses)
+        const v2Faculty = await V2Faculty.findOne({ user: facultyId }).populate({
+            path: 'assignedCourses',
+            populate: { path: 'department' }
+        });
+
+        if (v2Faculty && v2Faculty.assignedCourses.length > 0) {
+            const courses = v2Faculty.assignedCourses.map(c => ({
+                _id: c._id,
+                name: c.name,
+                code: c.code,
+                department: c.department?.name || "Unassigned",
+                type: 'v2'
+            }));
+            return res.status(200).json(courses);
+        }
+
+        // Fallback for V1
+        if (faculty && faculty.teachSubject) {
+            const single = await Subject.findById(faculty.teachSubject).populate('sclassName');
+            if (single) {
+                return res.status(200).json([{
+                    _id: single._id,
+                    name: single.subName,
+                    code: single.subCode,
+                    department: single.sclassName?.sclassName || "Unassigned",
+                    type: 'v1'
+                }]);
+            }
+        }
+
+        // Fallback for V2 (Check assignedFaculty in Course)
+        if (v2Faculty) {
+            const courses = await V2Course.find({ assignedFaculty: v2Faculty._id }).populate('department');
+            if (courses.length > 0) {
+                return res.status(200).json(courses.map(c => ({
+                    _id: c._id,
+                    name: c.name,
+                    code: c.code,
+                    department: c.department?.name || "Unassigned",
+                    type: 'v2'
+                })));
+            }
+        }
+
+        return res.status(200).json([]);
+    } catch (error) {
+        console.error("Get My Courses Error:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+const getAllCourses = async (req, res) => {
+    try {
+        const v1Subjects = await Subject.find().populate("sclassName");
+        const v2Courses = await V2Course.find().populate("department");
+
+        const merged = [
+            ...v1Subjects.map(s => ({
+                _id: s._id,
+                name: s.subName,
+                code: s.subCode,
+                department: s.sclassName?.sclassName || "Unassigned",
+                type: 'v1'
+            })),
+            ...v2Courses.map(c => ({
+                _id: c._id,
+                name: c.name,
+                code: c.code,
+                department: c.department?.name || "Unassigned",
+                type: 'v2'
+            }))
+        ];
+
+        res.status(200).json(merged);
+    } catch (err) {
+        console.error("All Courses Error:", err);
+        res.status(500).json({ message: "Error fetching courses" });
+    }
+};
 
 const createFaculty = asyncHandler(async (req, res) => {
   const { name, email, password, phone, departmentId, designation } = req.body;
@@ -424,6 +566,7 @@ const listFaculty = asyncHandler(async (_req, res) => {
   const items = await V2Faculty.find()
     .populate("user", "name email role isActive")
     .populate("department", "name code")
+    .populate("assignedCourses", "name code")
     .sort({ createdAt: -1 });
   res.status(200).json({ items });
 });
@@ -431,7 +574,11 @@ const listFaculty = asyncHandler(async (_req, res) => {
 const getFaculty = asyncHandler(async (req, res) => {
   const item = await V2Faculty.findById(req.params.id)
     .populate("user", "name email role isActive")
-    .populate("department", "name code");
+    .populate("department", "name code")
+    .populate({
+      path: "assignedCourses",
+      populate: { path: "department", select: "name code" }
+    });
   if (!item) throw new ApiError(404, "V2Faculty not found");
   res.status(200).json({ item });
 });
@@ -479,11 +626,6 @@ const deleteFacultyV2 = asyncHandler(async (req, res) => {
   res.status(200).json({ ok: true });
 });
 
-
-
-
-
-
 const updateFacultyV1 = async (req, res) => {
     const { id } = req.params;
     console.log("Faculty Update Request:", id, req.body);
@@ -525,6 +667,9 @@ module.exports = {
   deleteFacultyByClass,
   facultyAttendance,
   bulkUploadFaculty,
+  assignCourses,
+  getMyCourses,
+  getAllCourses,
   createFaculty,
   listFaculty,
   getFaculty,

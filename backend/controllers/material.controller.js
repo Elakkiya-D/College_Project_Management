@@ -19,6 +19,18 @@ exports.createMaterial = async (req, res) => {
             return res.status(400).json({ message: "Title, Chapter, Course, and Type are required" });
         }
 
+        // Security check: Verify faculty is assigned to this course
+        const { Faculty, V2Faculty } = require("../models/faculty.model");
+        const facultyDoc = (await Faculty.findById(facultyId)) || (await V2Faculty.findOne({ user: facultyId }));
+        
+        if (!facultyDoc) return res.status(404).json({ message: "Faculty not found" });
+        const assignedIds = (facultyDoc.assignedCourses || []).map(id => id.toString());
+        const isAssigned = assignedIds.includes(course.toString()) || (facultyDoc.teachSubject?.toString() === course.toString());
+        
+        if (!isAssigned) {
+            return res.status(403).json({ message: "Unauthorized: You are not assigned to this course" });
+        }
+
         let fileUrl = null;
         if (type === "pdf") {
             if (!req.file) return res.status(400).json({ message: "PDF file is required for type 'pdf'" });

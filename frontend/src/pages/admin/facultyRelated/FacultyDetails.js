@@ -47,6 +47,11 @@ const FacultyDetails = () => {
                         subtitle="Faculty Member Details"
                         actions={[
                             {
+                                label: 'Manage Courses',
+                                variant: 'primary',
+                                onClick: () => navigate(`/Admin/faculty/manage-courses/${facultyDetails?._id}`),
+                            },
+                            {
                                 label: 'Go Back',
                                 variant: 'secondary',
                                 onClick: () => navigate(-1),
@@ -69,24 +74,44 @@ const FacultyDetails = () => {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <DetailBlock label="Assigned Department" value={facultyDetails?.teachSclass?.sclassName} icon={<ClassIcon className="text-blue-400" />} />
 
-                                    {isSubjectNamePresent ? (
-                                        <>
-                                            <DetailBlock label="Course Name" value={facultyDetails?.teachSubject?.subName} icon={<MenuBookIcon className="text-blue-400" />} />
-                                            <DetailBlock label="Course Sessions" value={facultyDetails?.teachSubject?.sessions} icon={<AccessTimeIcon className="text-blue-400" />} />
-                                        </>
-                                    ) : (
-                                        <div className="col-span-1 md:col-span-2 p-6 bg-slate-50 border border-black/5 rounded-2xl flex items-center justify-between">
-                                            <div>
-                                                <h4 className="font-bold text-textDark">No Course Assigned</h4>
-                                                <p className="text-sm text-textDark/60">This faculty member requires a course allocation.</p>
-                                            </div>
-                                            <button
-                                                onClick={handleAddSubject}
-                                                className="px-6 py-2 bg-blue-600 text-white font-bold rounded-xl shadow-md hover:brightness-110 transition-all"
-                                            >
-                                                Assign Course
-                                            </button>
+                                    {facultyDetails?.assignedCourses && facultyDetails.assignedCourses.length > 0 ? (
+                                        <div className="col-span-1 md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                            {facultyDetails.assignedCourses.map((course, index) => (
+                                                <div key={index} className="p-4 bg-white border border-black/5 rounded-2xl flex items-center gap-3 hover:shadow-sm transition-all">
+                                                    <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600">
+                                                        <MenuBookIcon fontSize="small" />
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-sm font-bold text-textDark">{course.subName || course.name}</p>
+                                                        <p className="text-[10px] font-bold text-textDark/40 uppercase tracking-widest">
+                                                            {course.sclassName?.sclassName || course.department?.name || "Shared"}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            ))}
                                         </div>
+                                    ) : (
+                                        <>
+                                            {isSubjectNamePresent ? (
+                                                <>
+                                                    <DetailBlock label="Primary Course" value={facultyDetails?.teachSubject?.subName} icon={<MenuBookIcon className="text-blue-400" />} />
+                                                    <DetailBlock label="Course Sessions" value={facultyDetails?.teachSubject?.sessions} icon={<AccessTimeIcon className="text-blue-400" />} />
+                                                </>
+                                            ) : (
+                                                <div className="col-span-1 md:col-span-2 p-6 bg-slate-50 border border-black/5 rounded-2xl flex items-center justify-between">
+                                                    <div>
+                                                        <h4 className="font-bold text-textDark">No Course Assigned</h4>
+                                                        <p className="text-sm text-textDark/60">This faculty member requires a course allocation.</p>
+                                                    </div>
+                                                    <button
+                                                        onClick={handleAddSubject}
+                                                        className="px-6 py-2 bg-blue-600 text-white font-bold rounded-xl shadow-md hover:brightness-110 transition-all"
+                                                    >
+                                                        Assign Course
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </>
                                     )}
                                 </div>
                             </ContentCard>

@@ -20,6 +20,18 @@ exports.createAssignment = async (req, res) => {
             return res.status(400).json({ message: "All fields are required" });
         }
 
+        // Security check: Verify faculty is assigned to this course
+        const { Faculty, V2Faculty } = require("../models/faculty.model");
+        const facultyDoc = (await Faculty.findById(facultyId)) || (await V2Faculty.findOne({ user: facultyId }));
+        
+        if (!facultyDoc) return res.status(404).json({ message: "Faculty not found" });
+        const assignedIds = (facultyDoc.assignedCourses || []).map(id => id.toString());
+        const isAssigned = assignedIds.includes(course.toString()) || (facultyDoc.teachSubject?.toString() === course.toString());
+        
+        if (!isAssigned) {
+            return res.status(403).json({ message: "Unauthorized: You are not assigned to this course" });
+        }
+
         const newAssignment = new Assignment({
             title,
             description,

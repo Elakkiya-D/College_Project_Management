@@ -15,6 +15,18 @@ const markAttendance = async (req, res) => {
     const facultyId = (req.user && (req.user.id || req.user._id)) || (req.auth && (req.auth.id || req.auth.sub));
     if (!facultyId) return res.status(401).json({ message: "Missing faculty ID" });
 
+    // Security check: Verify faculty is assigned to this course
+    const { Faculty, V2Faculty } = require("../models/faculty.model");
+    const facultyDoc = (await Faculty.findById(facultyId)) || (await V2Faculty.findOne({ user: facultyId }));
+    
+    if (!facultyDoc) return res.status(404).json({ message: "Faculty not found" });
+    const assignedIds = (facultyDoc.assignedCourses || []).map(id => id.toString());
+    const isAssigned = assignedIds.includes(course.toString()) || (facultyDoc.teachSubject?.toString() === course.toString());
+    
+    if (!isAssigned) {
+        return res.status(403).json({ message: "Unauthorized: You are not assigned to this course" });
+    }
+
     // Normalize date to midnight
     const selectedDate = new Date(date);
     selectedDate.setHours(0, 0, 0, 0);

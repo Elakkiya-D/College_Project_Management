@@ -29,6 +29,7 @@ import ChooseClass from './facultyRelated/ChooseClass';
 import ChooseSubject from './facultyRelated/ChooseSubject';
 import ShowFaculty from './facultyRelated/ShowFaculty';
 import FacultyDetails from './facultyRelated/FacultyDetails';
+import ManageFacultyCourses from './facultyRelated/ManageFacultyCourses';
 
 import AddClass from './classRelated/AddClass';
 import ClassDetails from './classRelated/ClassDetails';
@@ -145,6 +146,7 @@ const AdminDashboard = () => {
                         <Route path="/Admin/faculty/choosesubject/:classID/:facultyID" element={<ChooseSubject situation="Faculty" />} />
                         <Route path="/Admin/faculty/add/:subjectID" element={<AddFaculty />} />
                         <Route path="/Admin/faculty/edit/:facultyID" element={<AddFaculty />} />
+                        <Route path="/Admin/faculty/manage-courses/:id" element={<ManageFacultyCourses />} />
 
                         {/* Fees */}
                         <Route path="/Admin/fees" element={<ShowFees />} />

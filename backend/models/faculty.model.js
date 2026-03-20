@@ -19,6 +19,7 @@ const facultySchema = new mongoose.Schema({
     ],
     resetPasswordToken: { type: String, default: null },
     resetPasswordExpires: { type: Date, default: null },
+    assignedCourses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'subject' }]
 }, { timestamps: true });
 
 // --- V2 Faculty Schema ---
@@ -28,6 +29,7 @@ const v2FacultySchema = new mongoose.Schema(
     phone: { type: String, trim: true, default: "" },
     department: { type: mongoose.Schema.Types.ObjectId, ref: "v2_department", required: true, index: true },
     designation: { type: String, trim: true, default: "" },
+    assignedCourses: [{ type: mongoose.Schema.Types.ObjectId, ref: "v2_course" }]
   },
   { timestamps: true }
 );

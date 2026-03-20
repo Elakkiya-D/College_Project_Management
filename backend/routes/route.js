@@ -26,7 +26,7 @@ const {
     bulkUploadStudents,
     createStudentByFaculty } = require('../controllers/student.controller');
 const { subjectCreate, classSubjects, deleteSubjectsByClass, getSubjectDetail, deleteSubject, freeSubjectList, allSubjects, deleteSubjects, updateSubject, getSubjectsByDepartment } = require('../controllers/subject.controller');
-const { facultyRegister, facultyLogIn, getFacultyList, getFacultyDetail, deleteFacultyList, deleteFacultyByClass, deleteFaculty, updateFacultySubject, facultyAttendance, bulkUploadFaculty, updateFacultyV1 } = require('../controllers/faculty.controller');
+const { facultyRegister, facultyLogIn, getFacultyList, getFacultyDetail, deleteFacultyList, deleteFacultyByClass, deleteFaculty, updateFacultySubject, facultyAttendance, bulkUploadFaculty, updateFacultyV1, assignCourses, getMyCourses } = require('../controllers/faculty.controller');
 const { forgotPassword, resetPassword } = require('../controllers/auth-password.controller');
 const { requireAuth, requireRole } = require('../middleware/auth.middleware');
 const assignmentUpload = require('../middlewares/upload.middleware');
@@ -112,6 +112,19 @@ router.put("/FacultySubject", requireAdmin, updateFacultySubject)
 router.put("/Faculty/:id", requireAdmin, updateFacultyV1)
 
 router.post('/FacultyAttendance/:id', requireAdmin, facultyAttendance)
+
+// New Faculty-Course assignment routes
+const { getAllCourses, createFaculty, listFaculty, getFaculty, updateFaculty, deleteFacultyV2 } = require('../controllers/faculty.controller');
+router.get("/api/faculty/my-courses", requireAuth, getMyCourses);
+router.put("/api/faculty/assign-courses", requireAdmin, assignCourses);
+router.get("/api/courses", requireAdmin, getAllCourses);
+
+// V2 Faculty routes
+router.post('/api/v2/faculty', requireAdmin, createFaculty);
+router.get('/api/v2/faculty', requireAdmin, listFaculty);
+router.get('/api/v2/faculty/:id', requireAdmin, getFaculty);
+router.put('/api/v2/faculty/:id', requireAdmin, updateFaculty);
+router.delete('/api/v2/faculty/:id', requireAdmin, deleteFacultyV2);
 
 // Notice
 

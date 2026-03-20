@@ -48,15 +48,15 @@ const FacultyAssignments = () => {
 
     const fetchCourses = useCallback(async () => {
         try {
-            const facultyId = currentUser?._id || currentUser?.id;
-            const res = await axios.get(`${baseUrl}/api/courses/faculty/${facultyId}`, {
+            const res = await axios.get(`${baseUrl}/api/faculty/my-courses`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            setCourses(res.data.data || res.data || []);
+            console.log("Assigned Courses Fetched (Assignments):", res.data);
+            setCourses(res.data || []);
         } catch (error) {
             console.error(error);
         }
-    }, [currentUser, token, baseUrl]);
+    }, [token, baseUrl]);
 
     const fetchAssignments = useCallback(async () => {
         try {
@@ -233,16 +233,24 @@ const FacultyAssignments = () => {
                         <FormControl fullWidth>
                             <InputLabel>Select Course</InputLabel>
                             <Select
-                                value={formData.course}
-                                label="Select Course"
-                                onChange={(e) => setFormData({...formData, course: e.target.value})}
-                            >
-                                {courses.map(c => (
-                                    <MenuItem key={c._id} value={c._id}>
-                                        {c.subName || c.name || c.courseName}
-                                    </MenuItem>
-                                ))}
-                            </Select>
+                            value={formData.course}
+                            onChange={(e) => {
+                                const cId = e.target.value;
+                                const cObj = courses.find(c => c._id === cId);
+                                setFormData({ 
+                                    ...formData, 
+                                    course: cId,
+                                    courseModel: cObj?.type === 'v2' ? 'v2_course' : 'subject'
+                                });
+                            }}
+                            label="Course"
+                        >
+                            {courses.map((course) => (
+                                <MenuItem key={course._id} value={course._id}>
+                                    {course.name} ({course.department})
+                                </MenuItem>
+                            ))}
+                        </Select>
                         </FormControl>
                         <TextField 
                             label="Due Date" 
