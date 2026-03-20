@@ -24,6 +24,12 @@ const FacultyAttendance = () => {
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarSeverity, setSnackbarSeverity] = useState('success');
 
+    const showSnackbar = useCallback((message, severity) => {
+        setSnackbarMessage(message);
+        setSnackbarSeverity(severity);
+        setOpenSnackbar(true);
+    }, []);
+
     useEffect(() => {
         const fetchCourses = async () => {
             try {
@@ -117,12 +123,6 @@ const FacultyAttendance = () => {
             showSnackbar("Attendance publication failed", "error");
         }
     };
-
-    const showSnackbar = useCallback((message, severity) => {
-        setSnackbarMessage(message);
-        setSnackbarSeverity(severity);
-        setOpenSnackbar(true);
-    }, []);
 
     return (
         <Box sx={{ p: 4 }}>
