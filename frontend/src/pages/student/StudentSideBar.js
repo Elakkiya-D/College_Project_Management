@@ -49,6 +49,12 @@ const StudentSideBar = () => {
                     pathMatchPattern="/student/attendance"
                 />
                 <MenuItem
+                    to="/student/assignments"
+                    icon={<AssignmentIcon />}
+                    label="Assignments"
+                    pathMatchPattern="/student/assignments"
+                />
+                <MenuItem
                     to="/Student/fees"
                     icon={<AccountBalanceWalletIcon />}
                     label="Fees"

@@ -120,7 +120,8 @@ const FacultyAttendance = () => {
             }
         } catch (error) {
             console.error(error);
-            showSnackbar("Attendance publication failed", "error");
+            const msg = error.response?.data?.message || "Attendance publication failed";
+            showSnackbar(msg, "error");
         }
     };
 

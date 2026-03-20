@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require("express")
 const cors = require("cors")
 const mongoose = require("mongoose")
+const path = require("path")
 
 const DEFAULT_FRONTEND_URL = 'https://college-project-management.vercel.app';
 const DEFAULT_LOCAL_FRONTEND_URL = 'http://localhost:3000';
@@ -52,6 +53,8 @@ app.options('*', cors(corsOptions));
 app.use('/api/webhook', express.raw({ type: 'application/json' }));
 app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.get('/health', (_req, res) => {
     res.status(200).json({

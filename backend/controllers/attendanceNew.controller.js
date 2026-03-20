@@ -1,10 +1,12 @@
 const Attendance = require("../models/Attendance.model");
+const V2Course = require("../models/Course.model");
+const mongoose = require("mongoose");
+// Register student schemas
+require("../models/student.model");
 
 const markAttendance = async (req, res) => {
   try {
     const { course, date, records } = req.body;
-    const mongoose = require("mongoose");
-    const V2Course = require("../models/Course.model");
     
     if (!course || !date || !records || !Array.isArray(records)) {
         return res.status(400).json({ message: "Invalid request format. Course, Date and Records are required." });
@@ -55,7 +57,7 @@ const markAttendance = async (req, res) => {
 
   } catch (error) {
     console.error("Attendance Submission Error:", error);
-    res.status(500).json({ message: "Attendance failed to publish" });
+    res.status(500).json({ message: error.message || "Attendance failed to publish" });
   }
 };
 

@@ -18,6 +18,7 @@ const FacultySideBar = ({ onNavigate }) => {
         { to: '/Faculty/class', label: departmentName, icon: <ClassOutlinedIcon /> },
         { to: '/Faculty/addstudent', label: 'Add Student', icon: <PersonAddAltOutlinedIcon /> },
         { to: '/faculty/attendance', label: 'Attendance', icon: <AnnouncementOutlinedIcon /> },
+        { to: '/faculty/assignments', label: 'Assignments', icon: <AnnouncementOutlinedIcon /> },
         { to: '/Faculty/complain', label: 'Grievances', icon: <AnnouncementOutlinedIcon /> },
         { to: '/Faculty/profile', label: 'Profile', icon: <AccountCircleOutlinedIcon /> },
     ];

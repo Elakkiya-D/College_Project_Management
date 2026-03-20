@@ -29,6 +29,14 @@ const { subjectCreate, classSubjects, deleteSubjectsByClass, getSubjectDetail, d
 const { facultyRegister, facultyLogIn, getFacultyList, getFacultyDetail, deleteFacultyList, deleteFacultyByClass, deleteFaculty, updateFacultySubject, facultyAttendance, bulkUploadFaculty, updateFacultyV1 } = require('../controllers/faculty.controller');
 const { forgotPassword, resetPassword } = require('../controllers/auth-password.controller');
 const { requireAuth, requireRole } = require('../middleware/auth.middleware');
+const assignmentUpload = require('../middlewares/upload.middleware');
+const { 
+    createAssignment, 
+    getFacultyAssignments, 
+    getStudentAssignments, 
+    submitAssignment, 
+    getAssignmentSubmissions 
+} = require('../controllers/assignment.controller');
 
 const upload = multer({
     storage: multer.memoryStorage(),
@@ -184,5 +192,12 @@ router.get('/api/attendance/student/:studentId', requireAuth, getStudentAttendan
 router.get('/api/attendance/course/:courseId', requireAuth, getAttendanceByCourseAndDate);
 router.get('/api/courses/faculty/:facultyId', requireAuth, getFacultyCourses);
 router.get('/api/students/by-course/:courseId', requireAuth, getCourseStudents);
+
+// Assignment Routes
+router.post('/api/assignments', requireAuth, createAssignment);
+router.get('/api/assignments/faculty', requireAuth, getFacultyAssignments);
+router.get('/api/assignments/student', requireAuth, getStudentAssignments);
+router.get('/api/assignments/submissions/:assignmentId', requireAuth, getAssignmentSubmissions);
+router.post('/api/submissions', requireAuth, assignmentUpload.single('file'), submitAssignment);
 
 module.exports = router;
