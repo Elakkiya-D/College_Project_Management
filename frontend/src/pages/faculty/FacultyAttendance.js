@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { 
     Box, Typography, Button, Paper, Table, TableBody, TableCell, 
@@ -17,7 +17,6 @@ const FacultyAttendance = () => {
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
     const [students, setStudents] = useState([]);
     const [attendanceData, setAttendanceData] = useState([]);
-    const [loadingCourses, setLoadingCourses] = useState(true);
     const [loadingStudents, setLoadingStudents] = useState(false);
     
     // For popup
@@ -26,76 +25,74 @@ const FacultyAttendance = () => {
     const [snackbarSeverity, setSnackbarSeverity] = useState('success');
 
     useEffect(() => {
+        const fetchCourses = async () => {
+            try {
+                const facultyId = currentUser?._id || currentUser?.id;
+                if (!facultyId) return;
+                const res = await axios.get(`${process.env.REACT_APP_BASE_URL || 'http://localhost:5000'}/api/courses/faculty/${facultyId}`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                const fetchedCourses = res.data.data || res.data || [];
+                setCourses(fetchedCourses);
+            } catch (error) {
+                console.error(error);
+                showSnackbar("Failed to fetch courses", "error");
+            }
+        };
+
         if (currentUser && (currentUser._id || currentUser.id)) {
             fetchCourses();
         }
-    }, [currentUser]);
-
-    const fetchCourses = async () => {
-        setLoadingCourses(true);
-        try {
-            const facultyId = currentUser._id || currentUser.id;
-            const res = await axios.get(`${process.env.REACT_APP_BASE_URL || 'http://localhost:5000'}/api/courses/faculty/${facultyId}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            const fetchedCourses = res.data.data || res.data || [];
-            setCourses(fetchedCourses);
-        } catch (error) {
-            console.error(error);
-            showSnackbar("Failed to fetch courses", "error");
-        } finally {
-            setLoadingCourses(false);
-        }
-    };
+    }, [currentUser, token, showSnackbar]);
 
     useEffect(() => {
+        const fetchStudents = async () => {
+            setLoadingStudents(true);
+            try {
+                // First get the student list for this course
+                const res = await axios.get(`${process.env.REACT_APP_BASE_URL || 'http://localhost:5000'}/api/students/by-course/${selectedCourse}`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                const fetchedStudents = res.data.data || res.data || [];
+                setStudents(fetchedStudents);
+
+                // Then check if attendance is already published for this date
+                const attRes = await axios.get(`${process.env.REACT_APP_BASE_URL || 'http://localhost:5000'}/api/attendance/course/${selectedCourse}?date=${selectedDate}`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                
+                const existingRecords = attRes.data || [];
+                
+                // Map existing progress to attendanceData or initialize with Present
+                const initialData = fetchedStudents.map(student => {
+                    const sId = student._id || student.id;
+                    const existing = existingRecords.find(er => {
+                        const erSId = (er.student && (er.student._id || er.student)) || er.studentId;
+                        return erSId === sId;
+                    });
+                    return {
+                        studentId: sId,
+                        status: existing ? existing.status : 'Present'
+                    };
+                });
+                setAttendanceData(initialData);
+
+                if (existingRecords.length > 0) {
+                    showSnackbar(`Viewing published attendance for ${selectedDate}`, "info");
+                }
+
+            } catch (error) {
+                console.error(error);
+                showSnackbar("Failed to load attendance roster", "error");
+            } finally {
+                setLoadingStudents(false);
+            }
+        };
+
         if (selectedCourse && selectedDate) {
             fetchStudents();
         }
-    }, [selectedCourse, selectedDate]);
-
-    const fetchStudents = async () => {
-        setLoadingStudents(true);
-        try {
-            // First get the student list for this course
-            const res = await axios.get(`${process.env.REACT_APP_BASE_URL || 'http://localhost:5000'}/api/students/by-course/${selectedCourse}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            const fetchedStudents = res.data.data || res.data || [];
-            setStudents(fetchedStudents);
-
-            // Then check if attendance is already published for this date
-            const attRes = await axios.get(`${process.env.REACT_APP_BASE_URL || 'http://localhost:5000'}/api/attendance/course/${selectedCourse}?date=${selectedDate}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            
-            const existingRecords = attRes.data || [];
-            
-            // Map existing progress to attendanceData or initialize with Present
-            const initialData = fetchedStudents.map(student => {
-                const sId = student._id || student.id;
-                const existing = existingRecords.find(er => {
-                    const erSId = (er.student && (er.student._id || er.student)) || er.studentId;
-                    return erSId === sId;
-                });
-                return {
-                    studentId: sId,
-                    status: existing ? existing.status : 'Present'
-                };
-            });
-            setAttendanceData(initialData);
-
-            if (existingRecords.length > 0) {
-                showSnackbar(`Viewing published attendance for ${selectedDate}`, "info");
-            }
-
-        } catch (error) {
-            console.error(error);
-            showSnackbar("Failed to load attendance roster", "error");
-        } finally {
-            setLoadingStudents(false);
-        }
-    };
+    }, [selectedCourse, selectedDate, token, showSnackbar]);
 
     const handleSubmit = async () => {
         if (!selectedCourse || !selectedDate) {
@@ -121,11 +118,11 @@ const FacultyAttendance = () => {
         }
     };
 
-    const showSnackbar = (message, severity) => {
+    const showSnackbar = useCallback((message, severity) => {
         setSnackbarMessage(message);
         setSnackbarSeverity(severity);
         setOpenSnackbar(true);
-    };
+    }, []);
 
     return (
         <Box sx={{ p: 4 }}>

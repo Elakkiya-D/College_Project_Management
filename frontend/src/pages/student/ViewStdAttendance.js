@@ -2,8 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { 
     Box, Typography, Paper, Table, TableBody, TableCell, 
-    TableContainer, TableHead, TableRow, CircularProgress, 
-    Snackbar, Alert
+    TableContainer, TableHead, TableRow, CircularProgress
 } from '@mui/material';
 import axios from 'axios';
 
@@ -32,7 +31,7 @@ const ViewStdAttendance = () => {
         if (currentUser) {
             fetchAttendance();
         }
-    }, [currentUser]);
+    }, [currentUser, token]);
 
     if (loading) {
         return <Box display="flex" justifyContent="center" mt={4}><CircularProgress /></Box>;

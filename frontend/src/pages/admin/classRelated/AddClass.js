@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { CircularProgress } from "@mui/material";
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { addStuff, updateUser, getUserDetails as getClassDetails } from '../../../redux/userRelated/userHandle';

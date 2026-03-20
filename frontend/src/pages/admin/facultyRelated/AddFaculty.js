@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getSubjectDetails } from '../../../redux/sclassRelated/sclassHandle';
-import { CircularProgress } from '@mui/material';
 import PageHeader from '../../../components/PageHeader';
 import ContentCard from '../../../components/ContentCard';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';

@@ -15,7 +15,6 @@ const FacultyClassDetails = () => {
 
     const { currentUser } = useSelector((state) => state.user);
     const classID = currentUser?.teachSclass?._id;
-    const subjectID = currentUser?.teachSubject?._id;
 
     useEffect(() => {
         if (classID) {

@@ -13,13 +13,13 @@ import * as React from 'react';
 import ModuleLayout from '../../../components/ModuleLayout';
 import axios from 'axios';
 import { getApiErrorMessage, getApiUrl, getAuthHeaders } from '../../../utils/api';
-import { deleteUser, getUserDetails as getClassDetails } from '../../../redux/userRelated/userHandle';
+import { deleteUser } from '../../../redux/userRelated/userHandle';
 import { getAllSclasses } from '../../../redux/sclassRelated/sclassHandle';
 
 const ShowStudents = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const { studentsList, loading, error, response } = useSelector((state) => state.student);
+    const { studentsList, loading, response } = useSelector((state) => state.student);
     const { currentUser } = useSelector(state => state.user);
 
     const { sclassesList } = useSelector((state) => state.sclass);
