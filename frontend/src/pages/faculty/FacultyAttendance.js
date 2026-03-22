@@ -99,7 +99,7 @@ const FacultyAttendance = () => {
         if (selectedCourse && selectedDate) {
             fetchStudents();
         }
-    }, [selectedCourse, selectedDate, token, showSnackbar]);
+    }, [selectedCourse, selectedDate, token, showSnackbar, baseUrl]);
 
     const handleSubmit = async () => {
         if (!selectedCourse || !selectedDate) {

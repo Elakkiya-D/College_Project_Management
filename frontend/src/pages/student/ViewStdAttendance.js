@@ -34,7 +34,7 @@ const ViewStdAttendance = () => {
         if (currentUser) {
             fetchAttendance();
         }
-    }, [currentUser, token]);
+    }, [currentUser, token, baseUrl]);
 
     if (loading) {
         return <Box display="flex" justifyContent="center" mt={4}><CircularProgress /></Box>;
