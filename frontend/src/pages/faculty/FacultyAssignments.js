@@ -51,7 +51,7 @@ const FacultyAssignments = () => {
             const res = await axios.get(`${baseUrl}/api/faculty/my-courses`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            console.log("Assigned Courses Fetched (Assignments):", res.data);
+            console.log("Courses:", res.data);
             setCourses(res.data || []);
         } catch (error) {
             console.error(error);
@@ -245,11 +245,15 @@ const FacultyAssignments = () => {
                             }}
                             label="Course"
                         >
-                            {courses.map((course) => (
-                                <MenuItem key={course._id} value={course._id}>
-                                    {course.name} ({course.department})
-                                </MenuItem>
-                            ))}
+                            {courses.length === 0 ? (
+                                <MenuItem disabled value="">No courses assigned</MenuItem>
+                            ) : (
+                                courses.map((course) => (
+                                    <MenuItem key={course._id} value={course._id}>
+                                        {course.name} ({course.department})
+                                    </MenuItem>
+                                ))
+                            )}
                         </Select>
                         </FormControl>
                         <TextField 

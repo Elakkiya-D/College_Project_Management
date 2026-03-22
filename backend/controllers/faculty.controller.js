@@ -432,69 +432,61 @@ const getMyCourses = async (req, res) => {
         const facultyId = (req.user && (req.user.id || req.user._id)) || (req.auth && (req.auth.id || req.auth.sub));
         if (!facultyId) return res.status(401).json({ message: "Unauthorized" });
 
-        // Try V1 (subjects)
+        // Try V1 first
         let faculty = await Faculty.findById(facultyId).populate({
             path: 'assignedCourses',
             populate: { path: 'sclassName' }
         });
 
-        if (faculty && faculty.assignedCourses.length > 0) {
-            const courses = faculty.assignedCourses.map(c => ({
-                _id: c._id,
-                name: c.subName,
-                code: c.subCode,
-                department: c.sclassName?.sclassName || "Unassigned",
-                type: 'v1'
-            }));
-            return res.status(200).json(courses);
+        if (!faculty) {
+            // Try V2 fallback
+            const v2Faculty = await V2Faculty.findOne({ user: facultyId }).populate({
+                path: 'assignedCourses',
+                populate: { path: 'department' }
+            });
+            
+            if (v2Faculty) {
+                console.log("Faculty Courses (V2):", v2Faculty.assignedCourses);
+                const courses = v2Faculty.assignedCourses.map(c => ({
+                    _id: c._id,
+                    name: c.name || c.courseName,
+                    code: c.code || c.courseCode,
+                    department: c.department?.name || "Unassigned",
+                    type: 'v2'
+                }));
+                return res.status(200).json(courses);
+            }
+            
+            return res.status(404).json({ message: "Faculty not found" });
         }
 
-        // Try V2 (v2_courses)
-        const v2Faculty = await V2Faculty.findOne({ user: facultyId }).populate({
-            path: 'assignedCourses',
-            populate: { path: 'department' }
-        });
+        // V1 Results
+        console.log("Faculty Courses (V1):", faculty.assignedCourses);
 
-        if (v2Faculty && v2Faculty.assignedCourses.length > 0) {
-            const courses = v2Faculty.assignedCourses.map(c => ({
-                _id: c._id,
-                name: c.name,
-                code: c.code,
-                department: c.department?.name || "Unassigned",
-                type: 'v2'
-            }));
-            return res.status(200).json(courses);
-        }
-
-        // Fallback for V1
-        if (faculty && faculty.teachSubject) {
+        // Fallback if assignedCourses empty but teachSubject exists
+        if (faculty.assignedCourses.length === 0 && faculty.teachSubject) {
             const single = await Subject.findById(faculty.teachSubject).populate('sclassName');
             if (single) {
-                return res.status(200).json([{
+                const singleCourse = {
                     _id: single._id,
                     name: single.subName,
                     code: single.subCode,
                     department: single.sclassName?.sclassName || "Unassigned",
                     type: 'v1'
-                }]);
+                };
+                return res.status(200).json([singleCourse]);
             }
         }
 
-        // Fallback for V2 (Check assignedFaculty in Course)
-        if (v2Faculty) {
-            const courses = await V2Course.find({ assignedFaculty: v2Faculty._id }).populate('department');
-            if (courses.length > 0) {
-                return res.status(200).json(courses.map(c => ({
-                    _id: c._id,
-                    name: c.name,
-                    code: c.code,
-                    department: c.department?.name || "Unassigned",
-                    type: 'v2'
-                })));
-            }
-        }
+        const courses = faculty.assignedCourses.map(c => ({
+            _id: c._id,
+            name: c.subName,
+            code: c.subCode,
+            department: c.sclassName?.sclassName || "Unassigned",
+            type: 'v1'
+        }));
 
-        return res.status(200).json([]);
+        res.status(200).json(courses);
     } catch (error) {
         console.error("Get My Courses Error:", error);
         res.status(500).json({ message: "Internal server error" });

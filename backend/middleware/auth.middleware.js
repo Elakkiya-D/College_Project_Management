@@ -14,6 +14,14 @@ const requireAuth = (req, res, next) => {
     try {
         const payload = jwt.verify(token, process.env.JWT_SECRET);
         req.auth = payload;
+        
+        // Task 11 Fix: set req.user and map sub -> id
+        req.user = {
+            ...payload,
+            id: payload.id || payload.sub,
+            _id: payload._id || payload.sub
+        };
+        
         return next();
     } catch (error) {
         return res.status(401).json({ message: "Invalid or expired token" });
