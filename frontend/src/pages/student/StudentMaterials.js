@@ -14,7 +14,9 @@ import BookmarkIcon from '@mui/icons-material/Bookmark';
 const StudentMaterials = () => {
     const { currentUser, authToken: reduxToken } = useSelector(state => state.user);
     const token = reduxToken || localStorage.getItem('token') || localStorage.getItem('authToken');
-    const baseUrl = process.env.REACT_APP_BASE_URL || 'http://localhost:5000';
+    const baseUrl = process.env.REACT_APP_API_URL || process.env.REACT_APP_BASE_URL || 'http://localhost:5000';
+    console.log("BASE_URL:", baseUrl);
+    console.log("Token:", token);
 
     const [materials, setMaterials] = useState([]);
     const [loading, setLoading] = useState(true);

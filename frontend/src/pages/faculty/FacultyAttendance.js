@@ -12,6 +12,8 @@ const FacultyAttendance = () => {
     const { currentUser, authToken: reduxToken } = useSelector(state => state.user);
     const token = reduxToken || localStorage.getItem('token') || localStorage.getItem('authToken');
     const baseUrl = process.env.REACT_APP_API_URL || process.env.REACT_APP_BASE_URL || 'http://localhost:5000';
+    console.log("BASE_URL:", baseUrl);
+    console.log("Token:", token);
 
     const [courses, setCourses] = useState([]);
     const [selectedCourse, setSelectedCourse] = useState('');
@@ -55,14 +57,14 @@ const FacultyAttendance = () => {
             setLoadingStudents(true);
             try {
                 // First get the student list for this course
-                const res = await axios.get(`${process.env.REACT_APP_BASE_URL || 'http://localhost:5000'}/api/students/by-course/${selectedCourse}`, {
+                const res = await axios.get(`${baseUrl}/api/students/by-course/${selectedCourse}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 const fetchedStudents = res.data.data || res.data || [];
                 setStudents(fetchedStudents);
 
                 // Then check if attendance is already published for this date
-                const attRes = await axios.get(`${process.env.REACT_APP_BASE_URL || 'http://localhost:5000'}/api/attendance/course/${selectedCourse}?date=${selectedDate}`, {
+                const attRes = await axios.get(`${baseUrl}/api/attendance/course/${selectedCourse}?date=${selectedDate}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 

@@ -19,8 +19,10 @@ const ManageFacultyCourses = () => {
     const navigate = useNavigate();
     const { currentUser } = useSelector(state => state.user);
     const facultyId = params.id;
-    const baseUrl = process.env.REACT_APP_BASE_URL || 'http://localhost:5000';
+    const baseUrl = process.env.REACT_APP_API_URL || process.env.REACT_APP_BASE_URL || 'http://localhost:5000';
     const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+    console.log("BASE_URL:", baseUrl);
+    console.log("Token:", token);
 
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
